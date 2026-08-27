@@ -1,4 +1,4 @@
-# PMA-2026 — React frontend + Flask (SQLite) backend
+# React frontend + Flask (SQLite) backend
 
 This repository now contains a minimal React frontend (Vite) in `/frontend` and a Flask backend in `/backend` using SQLite.
 
@@ -37,8 +37,3 @@ API endpoints (Flask):
 - GET /api/items/<id> => get item
 - PUT /api/items/<id> => update item
 - DELETE /api/items/<id> => delete item
-
-Notes:
-- This is a development scaffold intended to be adapted to your needs.
-- Keep the backend virtualenv isolated; do not commit virtualenv files.
-- To run production servers, use a WSGI server (gunicorn/uvicorn) and configure appropriate production settings.
