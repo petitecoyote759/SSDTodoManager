@@ -21,9 +21,14 @@ export default function App() {
 
 
   const [notes, setNotes] = useState<Note[]>([
-    new Note(0, "Test Note", 100, 100, "#441144", undefined, 
-      [new Entry("Testing!", 5), new Entry("Testing 2 but high prio", 10)]
-    )])
+    new Note(0, "Test Note", 0, 0, "#441144", undefined, 
+      [new Entry("Testing!", 2), new Entry("Testing 2 but high prio", 3)]
+    ),
+
+    new Note(0, "Other Note", 300, 0, "#111177", undefined, 
+      [new Entry("Maybe some other stuff!", 1)]
+    )
+  ])
 
   const [draggingNoteID, setDraggingNoteID] = useState<number | null>(null)
   const dragOffset = React.useRef({ x: 0, y: 0 })
@@ -37,12 +42,37 @@ export default function App() {
     setItems(j)
   }
 
-  async function addItem(e: Parameters<NonNullable<React.ComponentProps<"form">["onSubmit"]>>[0]) {
+
+
+  const [entryText, setEntryText] = useState('')
+  const [entryPriority, setEntryPriority] = useState<number>(0)
+  const [entryDueDate, setEntryDueDate] = useState('')
+
+  async function addItem(note: Note, e: Parameters<NonNullable<React.ComponentProps<"form">["onSubmit"]>>[0]) {
     e.preventDefault()
-    if (!name.trim()) return
-    await fetch(API, {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({name})})
-    setName('')
-    await loadItems()
+
+    if (!entryText.trim()) { return; }
+    
+    //await fetch(API, {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({name})})
+
+    const dueDate = entryDueDate ? new Date(`${entryDueDate}T00:00:00`) : null
+
+    const newEntry = new Entry(
+      entryText.trim(),
+      entryPriority,
+      dueDate
+    )
+
+    setNotes(previous =>
+      previous.map(noteAlt =>
+        noteAlt.id === note.id ?
+        { ...noteAlt, entries: [...noteAlt.entries, newEntry] } : noteAlt
+      )
+    )
+
+    setEntryText('')
+    setEntryPriority(0)
+    setEntryDueDate('')
   }
 
   async function deleteItem(id: number) {
@@ -156,22 +186,12 @@ export default function App() {
 
 
       <main className="list-area">
-        <form onSubmit={addItem}>
-          <input value={name} onChange={e => setName(e.target.value)} placeholder="New item name" />
-          <button type="submit">Add</button>
-        </form>
-        <ul>
-          {items.map(it => (
-            <li key={it.id}>
-              <strong>{it.name}</strong> {it.description || ''}
-              <button onClick={() => deleteItem(it.id)}>Delete</button>
-            </li>
-          ))}
-        </ul>
+        
 
 
 
         {notes.map(note => (
+          /*Notes*/
           <div key={note.id}
             className="note"
             style={{
@@ -179,6 +199,8 @@ export default function App() {
               top: note.positionY,
               backgroundColor: note.tertiaryColour
             }}>
+
+              {/*Note Header*/}
             <div className="note-header"
               style={{backgroundColor: note.primaryColour}}
 
@@ -189,13 +211,66 @@ export default function App() {
             >
               <span className="note-header-text">{note.name}</span>
           </div>
+
+          {/*Entries*/}
           {note.entries.sort((a, b) => b.priority - a.priority).map(entry => (
             <div className="note-entry" style={{backgroundColor: note.secondaryColour}}>
               <span className="note-entry-priority">{`(${entry.priority})`}</span>
               {entry.text}
             </div>
           ))}
-          </div>
+
+
+
+          {/*New Entry Form*/}
+          <form className="entry-form" 
+            onSubmit={(e) => addItem(note, e)}>
+              {/*Priority selector*/}
+              <div className="entry-form-section">
+                <label htmlFor={`priority-${note.id}`}>Priority</label>
+                <select 
+                  id={`priority-${note.id}`}
+                  value={entryPriority}
+                  onChange={e => setEntryPriority(Number(e.target.value))}
+                >
+                  <option value={0}>0 - Low</option>
+                  <option value={1}>1 - Medium</option>
+                  <option value={2}>2 - High</option>
+                  <option value={3}>3 - Critical</option>
+                </select>
+              </div>
+
+              {/*Entry Text*/}
+              <div className="entry-form-section">
+                <label htmlFor={`text-${note.id}`}>Entry</label>
+                <textarea
+                  id={`text-${note.id}`}
+                  value={entryText}
+                  onChange={e => setEntryText(e.target.value)}
+                  placeholder="New entry..."
+                  rows={2}
+                />
+              </div>
+
+              {/*Due Date*/}
+              <div className="entry-form-section">
+                <label htmlFor={`date-${note.id}`}>Due Date</label>
+                <input
+                  id={`date-${note.id}`}
+                  type="date"
+                  value={entryDueDate}
+                  onChange={e => setEntryDueDate(e.target.value)}
+                />
+              </div>
+
+            <button type="submit" className="entry-submit">Add</button>
+          </form>
+
+
+
+          {/*Close form button*/}
+        </div>
+
         ))}
       </main>
     </div>

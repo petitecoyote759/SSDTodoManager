@@ -121,3 +121,71 @@ body,
     flex-shrink: 0;
     white-space: nowrap;
 }
+
+
+/* << Entry Adding Form >> */
+
+.entry-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.15);
+    color: white
+}
+
+.entry-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px
+}
+
+.entry-form-section label {
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.entry-form-section input,
+.entry-form-section select,
+.entry-form-section textarea {
+    width: 100%;
+    padding: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    font: inherit;
+    font-size: 12px;
+}
+
+.entry-form-section select option {
+    background: #333;
+    color: white;
+}
+
+.entry-form-section input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+
+.entry-submit {
+    padding: 7px;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+}
+
+.entry-submit:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+
+
+
