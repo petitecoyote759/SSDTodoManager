@@ -37,3 +37,12 @@ API endpoints (Flask):
 - GET /api/items/<id> => get item
 - PUT /api/items/<id> => update item
 - DELETE /api/items/<id> => delete item
+
+
+
+## Requirements
+
+The frontend requires bootstrap to be installed via 
+```
+npm install bootstrap
+```
