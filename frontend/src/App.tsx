@@ -1,6 +1,7 @@
 import "./App.css";
 import {Note, Entry} from "./Classes.tsx"
 import React, { useEffect, useState } from 'react'
+import {darkenColour} from "./DarkenColour"
 
 const API = 'http://localhost:5000/api/items'
 
@@ -61,6 +62,19 @@ export default function App() {
   }
 
 
+
+
+
+  function changeNoteColour(noteId: number, colour: string) {
+    setNotes(previous =>
+      previous.map(note => 
+        note.id === noteId ? {...note, 
+          primaryColour: colour, 
+          secondaryColour: darkenColour(colour, 0.2), 
+          tertiaryColour: darkenColour(colour, 0.4)} : note
+      )
+    )
+  }
 
 
 
@@ -221,7 +235,8 @@ export default function App() {
             style={{
               left: note.positionX,
               top: note.positionY,
-              backgroundColor: note.tertiaryColour
+              backgroundColor: note.tertiaryColour,
+              color: note.textColour,
             }}>
 
               {/*Note Header*/}
@@ -245,7 +260,7 @@ export default function App() {
 
                   <button 
                     type="button"
-                    className="note-header-input-save"
+                    className="note-button note-header-input-save"
                     onPointerDown={e => e.stopPropagation()}
                     onClick={() => {setEditingNoteID(null); saveNoteName(note)}}
                     >
@@ -255,14 +270,44 @@ export default function App() {
               ) : (
                 <span className="note-header-text">{note.name}</span>
               )}
+
+              <button
+                className="note-button note-header-invert-button"
+                onPointerDown={e => e.stopPropagation()}
+                onClick={() => 
+                  setNotes(previous =>
+                    previous.map(noteAlt => 
+                      noteAlt.id === note.id ? {...noteAlt, textColour: noteAlt.textColour === "white" ? "black" : "white"} 
+                      : noteAlt
+                    )
+                )}>☼</button>
+
+              <label
+                className="note-button note-colour-button"
+                title="Change note colour"
+                onPointerDown={e => e.stopPropagation()}
+              >
+                🎨
+                <input
+                  type="color"
+                  value={note.primaryColour}
+                  onChange={e =>
+                    changeNoteColour(note.id, e.target.value)
+                  }
+                  aria-label="Change not colour"
+                  />
+              </label>
+
+
               <button 
-                className="note-header-edit-button"
+                className="note-button note-header-edit-button"
                 onPointerDown={e => e.stopPropagation()}
                 onClick={() => {
-                  editingNoteId == note.id ? 
-                    setEditingNoteID(null) :
+                  if (editingNoteId == note.id) { 
+                    setEditingNoteID(null) } else {
                     setEditingNoteID(note.id)
                     setEditedNoteName(note.name)
+                    }
                 }} 
               >✎</button>
           </div>

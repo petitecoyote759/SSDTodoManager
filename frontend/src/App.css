@@ -22,7 +22,6 @@ body,
     display: flex;
     flex-shrink: 0;
     height: 100%;
-    background-color: #333;
     overflow: hidden;
     flex-direction: column;
 }
@@ -32,6 +31,7 @@ body,
     min-width: 0;
     border: 2px solid black;
     flex: 1;
+    background-color: #1f1924;
 }
 
 
@@ -40,6 +40,7 @@ body,
     flex-direction: column;
     align-self: flex-end;
     width: 100%;
+    background-color: #2e2338;
     border-right: 2px solid black;
 }
 
@@ -72,10 +73,11 @@ body,
 
 .bookBar-title {
     display: flex;
-    background-color: #555;
+    background-color: #2e2338;
     justify-content: center;
     align-items: center;
     border-bottom: 2px solid black;
+    color: white;
 }
 
 
@@ -92,7 +94,8 @@ body,
     position: relative;
     flex: 1;
     overflow: auto;
-    background-color: #777;
+    /*background-color: #777;*/
+    background-color: #1a161c;
 }
 
 .note {
@@ -100,7 +103,6 @@ body,
     width: 400px;
     padding: 0 4px 12px;
     border-radius: 12px;
-    color: white;
     cursor: grab;
     user-select: none;
     touch-action: none;
@@ -128,32 +130,77 @@ body,
     margin-left: 8px;
 }
 
-.note-header-edit-button {
-    margin-left: auto;
-    margin-right: 8px;
 
-    width: 36px;
-    height: 24px;
 
+.note-button {
     border: none;
     border-radius: 6px;
 
     background: rgba(0, 0, 0, 0.2);
-    color: white;
+    color: inherit;
 
     font-size: 14px;
     cursor: pointer;
 
     transition: background-color 0.2s;
 }
-.note-header-edit-button:hover {
+
+.note-button:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
 
+
+
+
+
+
+
+.note-header-invert-button {
+    margin-right: 8px;
+    width: 36px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+
+.note-colour-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 36px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    padding-left: 7px;
+    padding-bottom: 1px;
+}
+.note-colour-button input[type="color"] {
+    position: absolute;
+    inset: 0;
+    width: 0;
+    height: 0;
+    opacity: 0;
+}
+
+
+
+
+.note-header-edit-button {
+    
+    margin-right: 8px;
+    flex-shrink: 0;
+
+    width: 36px;
+    height: 24px;
+}
+
+
+
 .note-header-input {
     background: rgba(0, 0, 0, 0.2);
-    color: white;
+    color: inherit;
 
     border: none;
     border-radius: 6px;
@@ -168,20 +215,6 @@ body,
 .note-header-input-save {
     width: 48px;
     height: 24px;
-
-    border: none;
-    border-radius: 6px;
-
-    background: rgba(0, 0, 0, 0.2);
-    color: white;
-
-    border: rgba(0, 0, 0, 0.3) solid 1px;
-    margin-left: 4px;
-
-    font-size: 14px;
-    cursor: pointer;
-
-    transition: background-color 0.2s;
 }
 
 .note-header-input-save:hover {
@@ -201,6 +234,7 @@ body,
     gap: 8px;
     margin-top: 2px;
     align-items: flex-start;
+    color: inherit;
 }
 
 
@@ -234,7 +268,7 @@ body,
     padding: 10px;
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.15);
-    color: white
+    color: inherit;
 }
 
 .entry-form-section {
@@ -247,6 +281,7 @@ body,
     font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
+    color: inherit;
     letter-spacing: 1px;
 }
 
@@ -258,18 +293,18 @@ body,
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 5px;
     background: rgba(0, 0, 0, 0.2);
-    color: white;
+    color: inherit;
     font: inherit;
     font-size: 12px;
 }
 
 .entry-form-section select option {
     background: #333;
-    color: white;
 }
 
 .entry-form-section input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
+    color: inherit;
     cursor: pointer;
 }
 
@@ -279,7 +314,7 @@ body,
     border: none;
     border-radius: 5px;
     background: rgba(255, 255, 255, 0.2);
-    color: white;
+    color: inherit;
     cursor: pointer;
 }
 
@@ -300,7 +335,7 @@ body,
     border-radius: 6px;
 
     background: rgba(0, 0, 0, 0.2);
-    color: white;
+    color: inherit;
 
     font-size: 14px;
     cursor: pointer;
