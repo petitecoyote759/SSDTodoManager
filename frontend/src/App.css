@@ -63,3 +63,61 @@ body,
 .books-title {
     display: flex;
 }
+
+
+
+
+/* <<Notes>> */
+
+.list-area {
+    position: relative;
+    flex: 1;
+    overflow: auto;
+    background-color: #777;
+}
+
+.note {
+    position: absolute;
+    width: 300px;
+    padding: 0 4px 12px;
+    border-radius: 12px;
+    color: white;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    overflow-wrap: anywhere;
+}
+
+.note:active {
+    cursor: grabbing;
+}
+
+.note-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 50px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.note-header-text {
+    font-size: clamp(12px, 5vw, 24px);
+    font-weight: bold;
+    text-align: center;
+}
+
+
+
+.note-entry {
+    display: flex;
+    gap: 8px;
+}
+
+
+.note-entry-priority {
+    width: 30px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
