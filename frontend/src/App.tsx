@@ -42,7 +42,7 @@ export default function App() {
         {/*Books Bar*/}
         <div className="bookBar">
           <div className="bookBar-title">
-            <h1>Books</h1>
+            <h1 className="books-title">Books</h1>
           </div>
           {/*Books go here*/}
         </div>
