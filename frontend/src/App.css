@@ -97,7 +97,7 @@ body,
 
 .note {
     position: absolute;
-    width: 300px;
+    width: 400px;
     padding: 0 4px 12px;
     border-radius: 12px;
     color: white;
@@ -125,13 +125,82 @@ body,
     font-size: clamp(12px, 5vw, 24px);
     font-weight: bold;
     text-align: center;
+    margin-left: 8px;
 }
+
+.note-header-edit-button {
+    margin-left: auto;
+    margin-right: 8px;
+
+    width: 36px;
+    height: 24px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    transition: background-color 0.2s;
+}
+.note-header-edit-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+
+.note-header-input {
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+
+    border: none;
+    border-radius: 6px;
+
+    padding-left: 8px;
+    margin-left: 8px;
+    
+    border: rgba(0, 0, 0, 0.3) solid 1px;
+}
+
+
+.note-header-input-save {
+    width: 48px;
+    height: 24px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+
+    border: rgba(0, 0, 0, 0.3) solid 1px;
+    margin-left: 4px;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    transition: background-color 0.2s;
+}
+
+.note-header-input-save:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+
+
+
+
+
 
 
 
 .note-entry {
     display: flex;
     gap: 8px;
+    margin-top: 2px;
+    align-items: flex-start;
 }
 
 
@@ -139,6 +208,19 @@ body,
     width: 30px;
     flex-shrink: 0;
     white-space: nowrap;
+    margin-left: 4px;
+}
+
+.note-entry-text {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.note-entry-date {
+    white-space: nowrap;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 

@@ -17,7 +17,10 @@ export default function App() {
   const [isDragging, setIsDragging] = useState(false)
 
   const [items, setItems] = useState<Item[]>([])
-  const [name, setName] = useState<string>('')
+
+
+  const [editingNoteId, setEditingNoteID] = useState<number | null>(null)
+  const [editedNoteName, setEditedNoteName] = useState("")
 
 
   const [notes, setNotes] = useState<Note[]>([
@@ -41,6 +44,25 @@ export default function App() {
     const j = await res.json()
     setItems(j)
   }
+
+
+
+
+
+
+
+  function saveNoteName(note: Note) {
+    setNotes(previous => 
+      previous.map(noteAlt => 
+        noteAlt.id === note.id ?
+          {...noteAlt, name: editedNoteName.trim() || noteAlt.name } : noteAlt
+      )
+    )
+  }
+
+
+
+
 
 
 
@@ -210,15 +232,47 @@ export default function App() {
               onPointerMove={e => dragNote(e, note)}
               onPointerUp={() => setDraggingNoteID(null)}
               onPointerCancel={() => setDraggingNoteID(null)}
-            >
-              <span className="note-header-text">{note.name}</span>
+            > {/*Either editing or just render the name*/}
+              {editingNoteId === note.id ? (
+                <>
+                  <input
+                    className="note-header-input"
+                    value={editedNoteName}
+                    onChange={e => setEditedNoteName(e.target.value)}
+                    onPointerDown={e => e.stopPropagation()}
+                    autoFocus
+                  />
+
+                  <button 
+                    type="button"
+                    className="note-header-input-save"
+                    onPointerDown={e => e.stopPropagation()}
+                    onClick={() => {setEditingNoteID(null); saveNoteName(note)}}
+                    >
+                      Save
+                    </button>
+                </>
+              ) : (
+                <span className="note-header-text">{note.name}</span>
+              )}
+              <button 
+                className="note-header-edit-button"
+                onPointerDown={e => e.stopPropagation()}
+                onClick={() => {
+                  editingNoteId == note.id ? 
+                    setEditingNoteID(null) :
+                    setEditingNoteID(note.id)
+                    setEditedNoteName(note.name)
+                }} 
+              >✎</button>
           </div>
 
           {/*Entries*/}
           {note.entries.sort((a, b) => b.priority - a.priority).map(entry => (
             <div className="note-entry" style={{backgroundColor: note.secondaryColour}}>
               <span className="note-entry-priority">{`(${entry.priority})`}</span>
-              {entry.text}
+              <span className="note-entry-text">{entry.text}</span>
+              {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
             </div>
           ))}
 
