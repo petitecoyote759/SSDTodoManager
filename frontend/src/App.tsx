@@ -25,7 +25,7 @@ export default function App() {
       [new Entry("Testing!", 2), new Entry("Testing 2 but high prio", 3)]
     ),
 
-    new Note(0, "Other Note", 300, 0, "#111177", undefined, 
+    new Note(1, "Other Note", 300, 0, "#111177", undefined, 
       [new Entry("Maybe some other stuff!", 1)]
     )
   ])
@@ -44,6 +44,7 @@ export default function App() {
 
 
 
+  const [openEntryFormID, setOpenEntryFormID] = useState<number | null>(null)
   const [entryText, setEntryText] = useState('')
   const [entryPriority, setEntryPriority] = useState<number>(0)
   const [entryDueDate, setEntryDueDate] = useState('')
@@ -169,20 +170,21 @@ export default function App() {
           </div>
           {/*Books go here*/}
         </div>
+
+
+        
+
+        {/*User Profile*/}
+        <div className="user-profile">
+          Here is the user
+          {/*Add onclick stuff to show info*/}
+        </div>
       </aside>
 
       <div 
         className={`resize-handle ${isDragging ? 'dragging': ''}`}
         onMouseDown={startResize}
       />
-
-
-
-      {/*User Profile*/}
-      <div className="user-profile">
-        Here is the user
-        {/*Add onclick stuff to show info*/}
-      </div>
 
 
       <main className="list-area">
@@ -223,6 +225,7 @@ export default function App() {
 
 
           {/*New Entry Form*/}
+          {openEntryFormID == note.id && (
           <form className="entry-form" 
             onSubmit={(e) => addItem(note, e)}>
               {/*Priority selector*/}
@@ -265,10 +268,16 @@ export default function App() {
 
             <button type="submit" className="entry-submit">Add</button>
           </form>
+          )}
 
 
 
           {/*Close form button*/}
+          <button type="button" 
+            className="toggle-entry-form"
+            onClick={() => openEntryFormID == note.id ? setOpenEntryFormID(null) : setOpenEntryFormID(note.id)}>
+            {openEntryFormID === note.id ? '⮝' : '⮟'}
+          </button>
         </div>
 
         ))}
