@@ -11,6 +11,10 @@ interface Item {
 
 
 export default function App() {
+
+  const [sidebarWidth, setSidebarWidth] = useState(250)
+  const [isDragging, setIsDragging] = useState(false)
+
   const [items, setItems] = useState<Item[]>([])
   const [name, setName] = useState<string>('')
 
@@ -35,10 +39,49 @@ export default function App() {
     await loadItems()
   }
 
+
+
+
+  function startResize(e: React.MouseEvent<HTMLDivElement>) {
+    e.preventDefault()
+    setIsDragging(true)
+
+    const startX = e.clientX
+    const startWidth = sidebarWidth
+
+    // Updated mouse move functions
+    function onMouseMove(mouseEvent: MouseEvent) {
+      const newWidth = startWidth + mouseEvent.clientX - startX
+      setSidebarWidth(Math.min(500, Math.max(150, newWidth))) // TODO: fix these hardcoded constants
+    }
+
+    function onMouseUp()
+    {
+      setIsDragging(false)
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+    }
+
+    // add those listeners
+    document.addEventListener('mousemove', onMouseMove)
+    document.addEventListener('mouseup', onMouseUp)
+  }
+
+
+
+
+
+
+
+
+
+
+
+
   return (
 
     <div className="app">
-      <aside className="sidebar">
+      <aside className="sidebar" style={{width : sidebarWidth}}>
         {/*Books Bar*/}
         <div className="bookBar">
           <div className="bookBar-title">
@@ -47,6 +90,12 @@ export default function App() {
           {/*Books go here*/}
         </div>
       </aside>
+
+      <div 
+        className={`resize-handle ${isDragging ? 'dragging': ''}`}
+        onMouseDown={startResize}
+      />
+
 
 
       {/*User Profile*/}
