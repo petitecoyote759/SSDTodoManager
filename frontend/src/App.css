@@ -157,11 +157,20 @@ body,
 
 
 .note-header-invert-button {
+    display: flex;
+    position: relative;
     margin-right: 8px;
     width: 36px;
     height: 24px;
     flex-shrink: 0;
     margin-left: auto;
+    font-size: 25px;
+    align-content: center;
+}
+.note-header-invert-symbol {
+    position: flex;
+    margin-top: -10px;
+    margin-left: 2px;
 }
 
 
@@ -189,7 +198,7 @@ body,
 
 .note-header-edit-button {
     
-    margin-right: 8px;
+    margin-left: 8px;
     flex-shrink: 0;
 
     width: 36px;
@@ -207,14 +216,19 @@ body,
 
     padding-left: 8px;
     margin-left: 8px;
+
+    width: auto;
+    flex: 0;
     
     border: rgba(0, 0, 0, 0.3) solid 1px;
 }
 
 
 .note-header-input-save {
+    min-width: 48px;
     width: 48px;
     height: 24px;
+    margin-right: 8px;
 }
 
 .note-header-input-save:hover {

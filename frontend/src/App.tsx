@@ -247,7 +247,21 @@ export default function App() {
               onPointerMove={e => dragNote(e, note)}
               onPointerUp={() => setDraggingNoteID(null)}
               onPointerCancel={() => setDraggingNoteID(null)}
-            > {/*Either editing or just render the name*/}
+            > 
+
+              <button 
+                className="note-button note-header-edit-button"
+                onPointerDown={e => e.stopPropagation()}
+                onClick={() => {
+                  if (editingNoteId == note.id) { 
+                    setEditingNoteID(null) } else {
+                    setEditingNoteID(note.id)
+                    setEditedNoteName(note.name)
+                    }
+                }} 
+              >✎</button>
+            
+              {/*Either editing or just render the name*/}
               {editingNoteId === note.id ? (
                 <>
                   <input
@@ -280,7 +294,7 @@ export default function App() {
                       noteAlt.id === note.id ? {...noteAlt, textColour: noteAlt.textColour === "white" ? "black" : "white"} 
                       : noteAlt
                     )
-                )}>☼</button>
+                )}><span className="note-header-invert-symbol">☼</span></button>
 
               <label
                 className="note-button note-colour-button"
@@ -299,17 +313,7 @@ export default function App() {
               </label>
 
 
-              <button 
-                className="note-button note-header-edit-button"
-                onPointerDown={e => e.stopPropagation()}
-                onClick={() => {
-                  if (editingNoteId == note.id) { 
-                    setEditingNoteID(null) } else {
-                    setEditingNoteID(note.id)
-                    setEditedNoteName(note.name)
-                    }
-                }} 
-              >✎</button>
+              
           </div>
 
           {/*Entries*/}
