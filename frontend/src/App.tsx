@@ -147,6 +147,28 @@ export default function App() {
 
 
 
+
+
+  function compareDates(a: Date | null, b: Date | null): number {
+    
+    if (a == null) {
+      if (b == null) { return 0; }
+    
+      return 1
+    }
+    if (b == null) {
+      return -1
+    }
+
+    return a < b ? -1 : 1
+  }
+
+
+
+
+
+
+
   // << Dragging Notes >> //
   function startNoteDrag(e: React.PointerEvent<HTMLDivElement>, note: Note) {
 
@@ -317,7 +339,9 @@ export default function App() {
           </div>
 
           {/*Entries*/}
-          {note.entries.sort((a, b) => b.priority - a.priority).map((entry, index) => {
+          {note.entries
+            .sort((a, b) => compareDates(a.dueDate, b.dueDate))
+            .sort((a, b) => b.priority - a.priority).map((entry, index) => {
 
             function addPriorityHeader() {
 
@@ -392,7 +416,7 @@ export default function App() {
                 <input
                   id={`date-${note.id}`}
                   type="date"
-                  value={entryDueDate}
+                  value ={entryDueDate}
                   onChange={e => setEntryDueDate(e.target.value)}
                 />
               </div>
