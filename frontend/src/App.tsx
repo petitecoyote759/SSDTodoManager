@@ -317,13 +317,41 @@ export default function App() {
           </div>
 
           {/*Entries*/}
-          {note.entries.sort((a, b) => b.priority - a.priority).map(entry => (
-            <div className="note-entry" style={{backgroundColor: note.secondaryColour}}>
-              <span className="note-entry-priority">{`(${entry.priority})`}</span>
-              <span className="note-entry-text">{entry.text}</span>
-              {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
+          {note.entries.sort((a, b) => b.priority - a.priority).map((entry, index) => {
+
+            function addPriorityHeader() {
+
+              if (index == 0 || note.entries[index - 1].priority != entry.priority) {
+              return (<span className="note-entry-priority">{(() => {
+            
+
+              switch (entry.priority) {
+                case 0:
+                  return "Low"
+                case 1:
+                  return "Medium"
+                case 2:
+                  return "High"
+                case 3: 
+                  return "Critical"
+                default:
+                  return "Error"
+              }
+              })()}</span>)
+              }
+            }
+        
+            
+            return (
+            <div>
+              {addPriorityHeader()}
+              <div className="note-entry" style={{backgroundColor: note.secondaryColour}}>
+                <span className="note-entry-text">{entry.text}</span>
+                {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
+              </div>
             </div>
-          ))}
+            )
+            })}
 
 
 

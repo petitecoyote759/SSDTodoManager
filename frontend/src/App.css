@@ -257,6 +257,11 @@ body,
     flex-shrink: 0;
     white-space: nowrap;
     margin-left: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: inherit;
+    letter-spacing: 1px;
 }
 
 .note-entry-text {
