@@ -445,7 +445,7 @@ export function MainScreen() {
                                     setEditingDescription(true)
                                 }}
                             >
-                                {entry.description || "Click to add description..."}
+                                {entry.description || <i>"Click to add description..."</i>}
                             </div>
                         )}    
                     </div>
