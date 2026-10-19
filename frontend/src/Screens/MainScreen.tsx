@@ -1,6 +1,7 @@
 import {Note, Entry} from "../Classes.tsx"
 import React, { useEffect, useState } from 'react'
 import {darkenColour} from "../DarkenColour"
+import "./MainScreen.css"
 
 interface Item {
   id: number
@@ -25,9 +26,12 @@ export function MainScreen() {
     const [editedNoteName, setEditedNoteName] = useState("")
 
 
+    const [openEntry, setOpenEntry] = useState<Entry | null>(null)
+
+
     const [notes, setNotes] = useState<Note[]>([
     new Note(0, "Test Note", 0, 0, "#441144", undefined, 
-        [new Entry("Testing!", 2), new Entry("Testing 2 but high prio", 3)]
+        [new Entry("Testing!", 2), new Entry("Testing 2 but high prio", 3, null, "This is a test description")]
     ),
 
     new Note(1, "Other Note", 300, 0, "#111177", undefined, 
@@ -173,39 +177,39 @@ export function MainScreen() {
     // << Dragging Notes >> //
     function startNoteDrag(e: React.PointerEvent<HTMLDivElement>, note: Note) {
 
-    if (e.currentTarget.parentElement === null) { return; }
-    const rect = e.currentTarget.parentElement.getBoundingClientRect()
+        if (e.currentTarget.parentElement === null) { return; }
+        const rect = e.currentTarget.parentElement.getBoundingClientRect()
 
-    dragOffset.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-    }
-
-
-    e.currentTarget.setPointerCapture(e.pointerId)
-    setDraggingNoteID(note.id)
-    }
-
-    function dragNote(e: React.PointerEvent<HTMLDivElement>, note: Note) {
-    if (draggingNoteID != note.id) { return; }
-
-    const noteElement = e.currentTarget.parentElement
-    const area = noteElement?.parentElement
-    if (noteElement == null || area == null) { return; }
-
-    const bounds = area.getBoundingClientRect()
-    const width = e.currentTarget.offsetWidth
-    const height = e.currentTarget.offsetHeight
+        dragOffset.current = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        }
 
 
-    const positionX = Math.max(0,
-        Math.min(bounds.width - width, e.clientX - bounds.left - dragOffset.current.x))
+        e.currentTarget.setPointerCapture(e.pointerId)
+        setDraggingNoteID(note.id)
+        }
 
-    const positionY = Math.max(0,
-        Math.min(bounds.height - height, e.clientY - bounds.top - dragOffset.current.y))
+        function dragNote(e: React.PointerEvent<HTMLDivElement>, note: Note) {
+        if (draggingNoteID != note.id) { return; }
+
+        const noteElement = e.currentTarget.parentElement
+        const area = noteElement?.parentElement
+        if (noteElement == null || area == null) { return; }
+
+        const bounds = area.getBoundingClientRect()
+        const width = e.currentTarget.offsetWidth
+        const height = e.currentTarget.offsetHeight
 
 
-    setNotes(previous => previous.map(noteAlt => noteAlt.id === note.id ? {...noteAlt, positionX, positionY} : noteAlt))
+        const positionX = Math.max(0,
+            Math.min(bounds.width - width, e.clientX - bounds.left - dragOffset.current.x))
+
+        const positionY = Math.max(0,
+            Math.min(bounds.height - height, e.clientY - bounds.top - dragOffset.current.y))
+
+
+        setNotes(previous => previous.map(noteAlt => noteAlt.id === note.id ? {...noteAlt, positionX, positionY} : noteAlt))
     }
 
 
@@ -362,10 +366,35 @@ export function MainScreen() {
             return (
             <div>
               {addPriorityHeader()}
-              <div className="note-entry" style={{backgroundColor: note.secondaryColour}}>
-                <span className="note-entry-text">{entry.text}</span>
-                {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
-              </div>
+
+
+
+                <div 
+                    className={`note-entry ${entry === openEntry ? "note-entry-open" : ""}`} 
+                    style={{backgroundColor: entry === openEntry ? "rgba(255, 255, 255, 0.2)" : note.secondaryColour}}
+                >
+                    
+                    <button
+                        className="note-entry-button"
+                        onPointerDown={e => e.stopPropagation()}
+                        onClick={() => 
+                            entry == openEntry ? setOpenEntry(null) : setOpenEntry(entry)
+                        }    
+                    >
+                        <span className="note-entry-text">
+                            {entry.text}
+                        </span>
+                    </button>
+
+                    {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
+                </div>
+
+                {entry === openEntry && (
+                    <div className="note-entry-description">
+                        {entry.description}    
+                    </div>
+                )}
+
             </div>
             )
             })}

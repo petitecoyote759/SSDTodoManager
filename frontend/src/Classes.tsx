@@ -58,13 +58,15 @@ export class Note {
 
 
 export class Entry {
-    constructor(text: string, priority: number, dueDate: Date | null = null) {
+    constructor(text: string, priority: number, dueDate: Date | null = null, description: string = "") {
         this.text = text
         this.priority = priority
         this.dueDate = dueDate
+        this.description = description
     }
 
     text: string
+    description: string
     priority: number
     dueDate: Date | null
 }
