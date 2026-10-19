@@ -63,8 +63,10 @@ export class Entry {
         this.priority = priority
         this.dueDate = dueDate
         this.description = description
+        this.uuid = crypto.randomUUID()
     }
 
+    uuid: string
     text: string
     description: string
     priority: number

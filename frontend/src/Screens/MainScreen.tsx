@@ -19,6 +19,9 @@ export function MainScreen() {
     const [sidebarWidth, setSidebarWidth] = useState(250)
     const [isDragging, setIsDragging] = useState(false)
 
+    const [editingDescription, setEditingDescription] = useState<boolean>(false)
+    const [editedDescription, setEditedDescription] = useState<string>("")
+
     const [items, setItems] = useState<Item[]>([])
 
 
@@ -26,7 +29,7 @@ export function MainScreen() {
     const [editedNoteName, setEditedNoteName] = useState("")
 
 
-    const [openEntry, setOpenEntry] = useState<Entry | null>(null)
+    const [openEntry, setOpenEntry] = useState<string | null>(null)
 
 
     const [notes, setNotes] = useState<Note[]>([
@@ -149,6 +152,27 @@ export function MainScreen() {
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
     }
+
+
+
+
+
+
+    function saveDescription(entry: Entry, description: string) {
+        setNotes(previous => 
+            previous.map(noteAlt => ({
+                ...noteAlt,
+                entries: noteAlt.entries.map(entryAlt =>
+                    entryAlt === entry
+                        ? { ...entryAlt, description: description }
+                        : entryAlt
+                )
+            }))
+        )
+        setEditingDescription(false)
+    }
+
+
 
 
 
@@ -370,15 +394,15 @@ export function MainScreen() {
 
 
                 <div 
-                    className={`note-entry ${entry === openEntry ? "note-entry-open" : ""}`} 
-                    style={{backgroundColor: entry === openEntry ? "rgba(255, 255, 255, 0.2)" : note.secondaryColour}}
+                    className={`note-entry ${entry.uuid === openEntry ? "note-entry-open" : ""}`} 
+                    style={{backgroundColor: entry.uuid === openEntry ? "rgba(255, 255, 255, 0.2)" : note.secondaryColour}}
                 >
                     
                     <button
                         className="note-entry-button"
                         onPointerDown={e => e.stopPropagation()}
                         onClick={() => 
-                            entry == openEntry ? setOpenEntry(null) : setOpenEntry(entry)
+                            entry.uuid == openEntry ? setOpenEntry(null) : setOpenEntry(entry.uuid)
                         }    
                     >
                         <span className="note-entry-text">
@@ -389,11 +413,47 @@ export function MainScreen() {
                     {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
                 </div>
 
-                {entry === openEntry && (
+
+
+
+                {entry.uuid === openEntry && (
                     <div className="note-entry-description">
-                        {entry.description}    
+                        {editingDescription ? (
+                            <textarea
+                                autoFocus
+                                value={editedDescription}
+                                onChange={e => setEditedDescription(e.target.value)}
+                                onFocus={e => {
+                                    const length = e.currentTarget.value.length
+                                    e.currentTarget.setSelectionRange(length, length)
+                                }}
+                                onKeyDown={e => {
+                                    if (e.key === "Enter" && !e.shiftKey) {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        saveDescription(entry, editedDescription)
+                                    }
+                                }}
+                                onBlur={() => {
+                                    saveDescription(entry, editedDescription)
+                                }}    
+                            />
+                        ) : (
+                            <div
+                                onClick={() => {
+                                    setEditedDescription(entry.description)
+                                    setEditingDescription(true)
+                                }}
+                            >
+                                {entry.description || "Click to add description..."}
+                            </div>
+                        )}    
                     </div>
                 )}
+
+
+
+
 
             </div>
             )
