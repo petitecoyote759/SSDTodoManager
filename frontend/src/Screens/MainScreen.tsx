@@ -1,4 +1,4 @@
-import {Note, Entry} from "../Classes.tsx"
+import {Note, Entry, EntryCompletion} from "../Classes.tsx"
 import React, { useEffect, useState } from 'react'
 import {darkenColour} from "../DarkenColour"
 import "./MainScreen.css"
@@ -405,6 +405,20 @@ export function MainScreen() {
                             entry.uuid == openEntry ? setOpenEntry(null) : setOpenEntry(entry.uuid)
                         }    
                     >
+                        <span className="note-entry-completion">
+                          {(() => { 
+                            switch (entry.completion) {
+                              case EntryCompletion.NotStarted:
+                                return "🔴"
+                              case EntryCompletion.InProgress:
+                                return "🟡"
+                              case EntryCompletion.Completed:
+                                return "🟢"
+                              case EntryCompletion.Blocked:
+                                return "🟣"
+                            }
+                          })()}
+                        </span>
                         <span className="note-entry-text">
                             {entry.text}
                         </span>

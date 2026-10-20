@@ -58,12 +58,17 @@ export class Note {
 
 
 export class Entry {
-    constructor(text: string, priority: number, dueDate: Date | null = null, description: string = "") {
+    constructor(
+        text: string, priority: number, 
+        dueDate: Date | null = null, description: string = "", 
+        completion: EntryCompletion = EntryCompletion.NotStarted) {
+
         this.text = text
         this.priority = priority
         this.dueDate = dueDate
         this.description = description
         this.uuid = crypto.randomUUID()
+        this.completion = completion
     }
 
     uuid: string
@@ -71,6 +76,14 @@ export class Entry {
     description: string
     priority: number
     dueDate: Date | null
+    completion: EntryCompletion
+}
+
+export enum EntryCompletion {
+    NotStarted,
+    InProgress,
+    Completed,
+    Blocked
 }
 
 
