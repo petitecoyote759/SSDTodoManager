@@ -5,10 +5,12 @@
 
 
 .note-entry-button {
+    display: flex;
     background-color: rgba(0, 0, 0, 0);
     border: none;
     color: inherit;
     width: 100%;
+    min-width: 100%;
     text-align: left;
 }
 
@@ -27,6 +29,11 @@
     white-space: pre-wrap;
     overflow-wrap: anywhere;
 }
+
+.enter-description-default {
+    color: rgba(255, 255, 255, 0.7)
+}
+
 
 
 .note-entry-description textarea {

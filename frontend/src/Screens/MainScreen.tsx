@@ -408,9 +408,9 @@ export function MainScreen() {
                         <span className="note-entry-text">
                             {entry.text}
                         </span>
-                    </button>
 
-                    {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
+                      {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
+                    </button>
                 </div>
 
 
@@ -445,7 +445,7 @@ export function MainScreen() {
                                     setEditingDescription(true)
                                 }}
                             >
-                                {entry.description || <i>"Click to add description..."</i>}
+                                {entry.description || <i className="enter-description-default">"Click to add description..."</i>}
                             </div>
                         )}    
                     </div>

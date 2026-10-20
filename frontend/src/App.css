@@ -270,12 +270,16 @@ body,
     min-width: 0;
     overflow-wrap: anywhere;
     font-weight: bold;
+    margin-right: auto;
 }
 
 .note-entry-date {
     white-space: nowrap;
     margin-left: auto;
     flex-shrink: 0;
+    text-align: right;
+    flex-direction: row;
+    align-self: flex-end;
 }
 
 
