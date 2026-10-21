@@ -8,9 +8,21 @@ from configparser import ConfigParser
 from pathlib import Path
 import os
 import API.TokenHandler as TokenHandler
+import Handlers.HashHandler as HashHandler
 
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "instance", "app.db")
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -113,6 +125,42 @@ database: Database = Database()
 
 
 
+
+
+
+
+
+
+
+def login(email: str, password: str) -> dict[str, str]:
+
+    database.cur.execute("""
+    SELECT password_hash, user_id FROM public.users
+    WHERE email = %s
+    """, (email,))
+
+    result = database.cur.fetchone()
+    
+    if result == None:
+        return {"Error": "Password was incorrect or user does not exist"}
+
+    if HashHandler.verifyHash(password, result[0]) == True:
+        token = TokenHandler.generateUserToken(result[1])
+        return {"Token": token}
+    
+    return {"Error": "Password was incorrect or user does not exist"}
+
+
+
+
+
+
+
+
+
+
+
+
 def deleteUser(uuid: UUID) -> bool:
 
     database.cur.execute("""
@@ -194,15 +242,19 @@ def createUser(data: dict[str, Any]) -> dict[str, str]:
     if 'email' not in data:
         return {"Error": "key \'email\' not found in data"}
     email = data['email']
+
+    if 'password' not in data:
+        return {"Error": "key \'password\' not found in data"}
+    password = data['password']
     
     profilePicture =  data['profile_picture'] if 'profile_picture' in data else ''
 
     try:
         database.cur.execute("""
-        INSERT INTO public.users (username, email, profile_picture)
-        VALUES (%s, %s, %s)
+        INSERT INTO public.users (username, email, password_hash, profile_picture)
+        VALUES (%s, %s, %s, %s)
         RETURNING user_id
-        """, (username, email, profilePicture))
+        """, (username, email, HashHandler.generateHash(password), profilePicture))
     except UniqueViolation:
         return {"Error": f"email '{email}' has already been registered"} # should be replaced by confirm via email to prevent fuzzing
     except Exception as e:

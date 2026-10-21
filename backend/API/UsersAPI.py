@@ -11,6 +11,31 @@ import API.TokenHandler as TokenHandler
 
 
 
+@app.route('/api/users/login', methods=['POST'])
+def loginUser():
+
+    data = request.get_json()
+    email = data["email"]
+    password = data["password"]
+    if email == None or password == None:
+        return {"Error": "missing email or password in parameters"}
+
+    result = DBHandler.login(email, password)
+
+    if "Error" in result:
+        return result, 400
+    
+    return result
+
+
+
+
+
+
+
+
+
+
 @app.route('/api/users', methods=['POST'])
 def createUser():
 
