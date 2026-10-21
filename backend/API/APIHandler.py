@@ -6,6 +6,6 @@ from flask import session
 
 
 
-import GlobalApp
+import API.GlobalApp, Handlers.DBHandler # Initialise App and Database
 
-import UsersAPI, BooksAPI, NotesAPI, EntriesAPI
+import API.UsersAPI, API.BooksAPI, API.NotesAPI, API.EntriesAPI

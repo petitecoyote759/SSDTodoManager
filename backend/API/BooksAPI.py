@@ -1,1 +1,1 @@
-from GlobalApp import app
+from API.GlobalApp import app

@@ -42,15 +42,13 @@ API endpoints (Flask):
 
 ## Requirements
 
-The frontend requires bootstrap to be installed via 
-```
-npm install bootstrap
-```
+Requires postgres
 
 
 
 
 ## Rest API:
+
 USERS: (delete/get/post/put)
     Delete user
     Get user info

@@ -8,7 +8,7 @@ import os, json
 def _getPrivateKey():
 
     sep = os.sep
-    with open(f"..{sep}.env") as file:
+    with open(f"{__file__}{sep}..{sep}..{sep}.env") as file:
         text = file.read()
     data = json.loads(text)
     return data["privateKey"]

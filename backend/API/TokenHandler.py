@@ -1,6 +1,6 @@
 import jwt, datetime
 from uuid import UUID
-import GlobalApp, Settings
+import API.GlobalApp as GlobalApp, Settings as Settings
 
 
 _signingKey: str = GlobalApp.private_key

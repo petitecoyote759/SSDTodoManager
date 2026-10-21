@@ -1,8 +1,8 @@
-from GlobalApp import app
+from API.GlobalApp import app
 from flask import request, abort
 from uuid import UUID
 import Handlers.DBHandler as DBHandler
-import TokenHandler
+import API.TokenHandler as TokenHandler
 
 
 
@@ -11,7 +11,7 @@ import TokenHandler
 
 
 
-@app.route('/api/users', method=['POST'])
+@app.route('/api/users', methods=['POST'])
 def createUser():
 
     data = request.get_json()
@@ -75,7 +75,7 @@ def getUserInfo(uuid: UUID):
 
 
 
-@app.route('/api/users/<uuid:uuid>', method=['PUT'])
+@app.route('/api/users/<uuid:uuid>', methods=['PUT'])
 def modifyUser(uuid: UUID):
 
     token: str | None = request.args["token"]
