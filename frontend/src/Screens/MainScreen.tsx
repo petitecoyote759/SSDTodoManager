@@ -34,11 +34,12 @@ export function MainScreen() {
 
     const [notes, setNotes] = useState<Note[]>([
     new Note(0, "Test Note", 0, 0, "#441144", undefined, 
-        [new Entry("Testing!", 2), new Entry("Testing 2 but high prio", 3, null, "This is a test description")]
+        [new Entry("Testing!", 2, undefined, undefined, EntryCompletion.Blocked), 
+          new Entry("Testing 2 but high prio", 3, null, "This is a test description", EntryCompletion.InProgress)]
     ),
 
     new Note(1, "Other Note", 300, 0, "#111177", undefined, 
-        [new Entry("Maybe some other stuff!", 1)]
+        [new Entry("Maybe some other stuff!", 1, undefined, undefined, EntryCompletion.Completed)]
     )
     ])
 
