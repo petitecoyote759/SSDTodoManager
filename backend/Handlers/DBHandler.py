@@ -152,9 +152,33 @@ def getUserInfo(uuid: UUID) -> dict[str, str] | None:
 
 
 
-def modifyUser(uuid: UUID, data: str) -> bool:
+def modifyUser(uuid: UUID, data: dict[str, str]) -> dict[str, str]:
 
-    return False
+    allowedFields = ["username", "email", "profile_picture"]
+
+    for allowedField in allowedFields:
+        if allowedField in data:
+
+            try:
+                # need to use f string as you cant parametarise the field
+                database.cur.execute(f"""
+                UPDATE public.users
+                SET {allowedField} = %s
+                WHERE user_id = %s
+                """, (data[allowedField], str(uuid)))
+            except UniqueViolation:
+                return {"Error": f"email '{data['email']}' has already been registered"}
+            except Exception as e:
+                print(f"Error in account creation, error: {e}")
+                return {"Error": f"unknown error in insert, message = '{type(e)}'"}
+
+    return {}
+            
+
+
+
+
+
 
 
 
