@@ -46,3 +46,31 @@ The frontend requires bootstrap to be installed via
 ```
 npm install bootstrap
 ```
+
+
+
+
+## Rest API:
+USERS: (delete/get/post/put)
+    Delete user
+    Get user info
+    Create user 
+    Modify user
+
+BOOKS: (delete/get/post/put)
+    Delete book
+    Get books
+    Create book
+    Modify book
+
+NOTES: (delete/get/post/put)
+    Delete note
+    Get notes
+    Create note
+    Modify note
+ 
+ENTRIES: (delete/get/post/put)
+    Delete entry
+    Get entries
+    Create entry
+    Modify entry
