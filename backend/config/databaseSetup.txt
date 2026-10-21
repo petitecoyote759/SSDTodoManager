@@ -1,12 +1,12 @@
 CREATE TABLE "books" (
-  "book_id" uuid UNIQUE,
+  "book_id" uuid UNIQUE DEFAULT gen_random_uuid(),
   "user_id" uuid,
   "name" varchar(255) NOT NULL,
   PRIMARY KEY ("book_id", "user_id")
 );
 
 CREATE TABLE "notes" (
-  "note_id" uuid UNIQUE,
+  "note_id" uuid UNIQUE DEFAULT gen_random_uuid(),
   "book_id" uuid,
   "name" varchar(255) NOT NULL,
   "colour" varchar(15) NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE "notes" (
 );
 
 CREATE TABLE "entries" (
-  "entry_id" uuid UNIQUE,
+  "entry_id" uuid UNIQUE DEFAULT gen_random_uuid(),
   "note_id" uuid,
   "text" varchar(255) NOT NULL,
   "completion" varchar(255) NOT NULL,
@@ -27,10 +27,11 @@ CREATE TABLE "entries" (
 );
 
 CREATE TABLE "users" (
-  "user_id" uuid PRIMARY KEY,
+  "user_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "username" varchar(255) NOT NULL,
+  "email" varchar(255) NOT NULL UNIQUE,
   "profile_picture" varchar(255),
-  "created_at" timestamp NOT NULL
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 
