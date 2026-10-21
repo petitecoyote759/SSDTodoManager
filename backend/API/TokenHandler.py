@@ -18,7 +18,6 @@ def getUuidFromJwt(token: str) -> UUID | dict[str, str]:
 
 def generateUserToken(uuid: UUID):
     # get sign key from env
-    # TODO: Generate an expiry time in unix format (5-15 mins)
 
     now = datetime.datetime.now()
 
