@@ -1,6 +1,7 @@
 import "./App.css";
+import { LoginScreen } from "./Screens/LoginScreen";
 import { MainScreen } from "./Screens/MainScreen"
-
+import { useState } from "react";
 
 
 
@@ -8,7 +9,7 @@ import { MainScreen } from "./Screens/MainScreen"
 
 export default function App() {
 
-  
+  const [loggingIn, setLoggingIn] = useState<boolean>(true)
 
 
 
@@ -19,8 +20,12 @@ export default function App() {
 
 
 
-
-  return (
-    <MainScreen/>
-  )
+  if (loggingIn) {
+    return (<LoginScreen/>)
+  }
+  else {
+    return (
+      <MainScreen/>
+    )
+  }
 }

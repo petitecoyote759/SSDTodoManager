@@ -36,7 +36,7 @@ def loginUser():
 
 
 
-@app.route('/api/users', methods=['POST'])
+@app.route('/api/users/signup', methods=['POST'])
 def createUser():
 
     data = request.get_json()
