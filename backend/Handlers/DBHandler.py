@@ -1,11 +1,13 @@
 from uuid import UUID
 from typing import Any
 import psycopg2
+from psycopg2.errors import UniqueViolation
 from psycopg2.extensions import connection, cursor
 from psycopg2.extras import register_uuid
 from configparser import ConfigParser
 from pathlib import Path
 import os
+import API.TokenHandler as TokenHandler
 
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "instance", "app.db")
@@ -82,7 +84,6 @@ class Database:
 
     def createDB(self):
 
-        sep = os.sep
         with open(Path(__file__).parent.parent / "config" / "databaseSetup.txt") as file:
             text = file.read()
 
@@ -114,7 +115,17 @@ database: Database = Database()
 
 def deleteUser(uuid: UUID) -> bool:
 
-    return False
+    database.cur.execute("""
+    DELETE FROM public.users
+    WHERE user_id = %s
+    """, (str(uuid),))
+
+    database.conn.commit()
+
+    if database.cur.rowcount == 0:
+        return False # didnt affect anything
+
+    return True
 
 
 
@@ -137,4 +148,37 @@ def createUser(data: dict[str, Any]) -> dict[str, str]:
     Returns a dictionary with either "Error" if the data was invalid, or "Token" if it was successful
     """
 
-    return {"Error": "Invalid data"}
+    if 'username' not in data:
+        return {"Error": "key \'username\' not found in data"}
+    username = data['username']
+
+    if 'email' not in data:
+        return {"Error": "key \'email\' not found in data"}
+    email = data['email']
+    
+    profilePicture =  data['profile_picture'] if 'profile_picture' in data else ''
+
+    try:
+        database.cur.execute("""
+        INSERT INTO public.users (username, email, profile_picture)
+        VALUES (%s, %s, %s)
+        RETURNING user_id
+        """, (username, email, profilePicture))
+    except UniqueViolation:
+        return {"Error": f"email '{email}' has already been registered"} # should be replaced by confirm via email to prevent fuzzing
+    except Exception as e:
+        print(f"Error in account creation, error: {e}")
+        return {"Error": f"unknown error in insert, message = '{type(e)}'"}
+
+    database.conn.commit()
+
+
+    # Create JWT
+    value = database.cur.fetchone()
+    if value == None:
+        print(f"Something went wrong with creation, data was \'{data}\'")
+        return {"Error": "Unkown issue"}
+
+    token = TokenHandler.generateUserToken(value[0])
+
+    return {"Token": token}
