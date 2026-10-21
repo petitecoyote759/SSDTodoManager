@@ -1,0 +1,1 @@
+from GlobalApp import app
