@@ -130,9 +130,24 @@ def deleteUser(uuid: UUID) -> bool:
 
 
 
-def getUserInfo(uuid: UUID) -> str | None:
+def getUserInfo(uuid: UUID) -> dict[str, str] | None:
 
-    return None
+    database.cur.execute("""
+    SELECT username, email, profile_picture, created_at FROM public.users
+    WHERE user_id = %s
+    """, (str(uuid),))
+
+    result = database.cur.fetchone()
+    if result == None:
+        return None
+
+    return {
+        "username": result[0],
+        "email": result[1],
+        "profile_picture": result[2],
+        "created_at": result[3]
+        }
+    
 
 
 
