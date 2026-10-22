@@ -16,4 +16,7 @@ def verifyHash(password: str, hash: str) -> bool:
     """
     Returns true if it is the correct password
     """
-    return ph.verify(hash, password)
+    try:
+        return ph.verify(hash, password)
+    except:
+        return False
