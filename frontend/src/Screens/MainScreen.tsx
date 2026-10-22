@@ -1,7 +1,10 @@
 import {Note, Entry, EntryCompletion} from "../Classes.tsx"
-import React, { useEffect, useState } from 'react'
+import React, { SetStateAction, useEffect, useState } from 'react'
 import {darkenColour} from "../DarkenColour"
 import "./MainScreen.css"
+import { Client } from '../Client'
+
+
 
 interface Item {
   id: number
@@ -9,12 +12,19 @@ interface Item {
   description: string
 }
 
+type MainScreenParams = {
+    client: Client, 
+    setClient: React.Dispatch<SetStateAction<Client | null>>
+}
+
+
+
 const API = 'http://localhost:5000/api/items'
 
 
 
 
-export function MainScreen() {
+export function MainScreen({ client, setClient }: MainScreenParams) {
 
     const [sidebarWidth, setSidebarWidth] = useState(250)
     const [isDragging, setIsDragging] = useState(false)

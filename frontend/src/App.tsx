@@ -1,7 +1,8 @@
 import "./App.css";
+import { useState } from "react";
+import { Client } from "./Client.ts"
 import { LoginScreen } from "./Screens/LoginScreen";
 import { MainScreen } from "./Screens/MainScreen"
-import { useState } from "react";
 
 
 
@@ -9,7 +10,7 @@ import { useState } from "react";
 
 export default function App() {
 
-  const [loggingIn, setLoggingIn] = useState<boolean>(true)
+  const [client, setClient] = useState<Client | null>(null)
 
 
 
@@ -19,13 +20,10 @@ export default function App() {
 
 
 
-
-  if (loggingIn) {
-    return (<LoginScreen/>)
+  if (client == null) {
+    return <LoginScreen setClient={setClient}/>
   }
   else {
-    return (
-      <MainScreen/>
-    )
+    return <MainScreen client={client} setClient={setClient}/>
   }
 }

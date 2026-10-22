@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { SetStateAction, useEffect, useState } from 'react'
 import "./LoginScreen.css"
+import { Client } from '../Client'
+
+
+
+type LoginScreenParams = {
+    setClient: React.Dispatch<SetStateAction<Client | null>>
+}
 
 
 
 
-
-
-export function LoginScreen() {
+export function LoginScreen({ setClient }: LoginScreenParams) {
 
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
@@ -14,8 +19,18 @@ export function LoginScreen() {
 
 
 
-    function handleSumbit() {
+    async function handleSumbit(event: Parameters<NonNullable<React.ComponentProps<"form">["onSubmit"]>>[0]) {
+        event.preventDefault()
 
+        const result = Client.createClient(email, password)
+        setLoading(true)
+
+        const client: Client | undefined | null = await result
+
+        if (client == null) { return; }
+
+        setClient(client)
+        setLoading(false)
     }
 
 

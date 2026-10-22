@@ -146,7 +146,7 @@ def login(email: str, password: str) -> dict[str, str]:
 
     if HashHandler.verifyHash(password, result[0]) == True:
         token = TokenHandler.generateUserToken(result[1])
-        return {"Token": token}
+        return {"Token": token, "uuid": result[1]}
     
     return {"Error": "Password was incorrect or user does not exist"}
 

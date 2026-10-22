@@ -58,7 +58,7 @@ def createUser():
 @app.route('/api/users/<uuid:uuid>', methods=['DELETE'])
 def deleteUser(uuid: UUID):
 
-    token: str | None = request.args["token"]
+    token: str | None = request.headers.get("Authorization")
     if token == None:
         return 'Invalid token', 400
 
@@ -80,7 +80,7 @@ def deleteUser(uuid: UUID):
 @app.route('/api/users/<uuid:uuid>', methods=['GET'])
 def getUserInfo(uuid: UUID):
 
-    token: str | None = request.args["token"]
+    token: str | None = request.headers.get("Authorization")
     if token == None:
         return 'Invalid token', 400
 
@@ -103,7 +103,7 @@ def getUserInfo(uuid: UUID):
 @app.route('/api/users/<uuid:uuid>', methods=['PUT'])
 def modifyUser(uuid: UUID):
 
-    token: str | None = request.args["token"]
+    token: str | None = request.headers.get("Authorization")
     if token == None:
         return 'Invalid token', 400
 
