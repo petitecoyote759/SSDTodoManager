@@ -1,6 +1,7 @@
 import jwt, datetime
 from uuid import UUID
 import API.GlobalApp as GlobalApp, Settings as Settings
+from typing import Any
 
 
 _signingKey: str = GlobalApp.private_key
@@ -42,11 +43,16 @@ def authenticateUser(uuid: UUID, token: str) -> bool:
     True if that user is who they claim to be
     """
 
-    decodedToken: dict
+    decodedToken: dict[str, Any]
+
     try:
         decodedToken = jwt.decode(token, _signingKey, algorithms="HS256")
     except jwt.exceptions.InvalidSignatureError:
         print("Invalid signature detected")
         return False # not valid
+    
+    expiryDate: datetime.datetime = decodedToken["expiryDate"]
+    if expiryDate < datetime.datetime.now():
+        return False
 
     return str(uuid) == decodedToken["uuid"]
