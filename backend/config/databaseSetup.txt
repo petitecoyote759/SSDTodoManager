@@ -21,6 +21,7 @@ CREATE TABLE "entries" (
   "note_id" uuid,
   "text" varchar(255) NOT NULL,
   "completion" varchar(255) NOT NULL,
+  "priority" smallint NOT NULL DEFAULT 0,
   "due_date" date,
   "description" varchar(255) NOT NULL,
   PRIMARY KEY ("entry_id", "note_id")

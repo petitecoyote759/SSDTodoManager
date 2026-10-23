@@ -353,6 +353,7 @@ def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
                                     'entry_id', e.entry_id,
                                     'note_id', e.note_id,
                                     'text', e.text,
+                                    'priority', e.priority,
                                     'completion', e.completion,
                                     'due_date', e.due_date,
                                     'description', e.description
@@ -373,9 +374,8 @@ def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
     """, (str(uuid),))
 
     result = database.cur.fetchall()
-    print(result)
 
-    return {}
+    return result[0][0]
 
 
 

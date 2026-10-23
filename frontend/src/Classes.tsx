@@ -16,39 +16,34 @@ export class Book {
 export class Note {
     constructor(
         id: number, name: string, positionX: number, positionY: number, 
-        primaryColour: string, entries: Entry[] = [], 
-        secondaryColour: string | null = null, tertiaryColour: string | null = null, white_text: boolean = true) {
+        primaryColour: string, entries: Entry[] = [], white_text: boolean = true) {
 
         this.name = name;
 
-        this.positionX = positionX; this.positionY = positionY
+        this.posx = positionX; this.posy = positionY
 
-        this.primaryColour = primaryColour
-        this.secondaryColour = secondaryColour === null ? darkenColour(primaryColour, 0.2) : secondaryColour
-        this.tertiaryColour = tertiaryColour === null ? darkenColour(primaryColour, 0.4) : tertiaryColour
+        this.colour = primaryColour
 
         this.white_text = white_text
 
 
         this.entries = entries
 
-        this.id = id
+        this.note_id = id
     }
 
-    positionX: number
-    positionY: number
+    posx: number
+    posy: number
     
     name: string
 
-    primaryColour: string
-    secondaryColour: string
-    tertiaryColour: string
+    colour: string
 
     white_text: boolean
 
     entries: Entry[]
 
-    id: number
+    note_id: number
 }
 
 

@@ -1,4 +1,4 @@
-import {Note, Entry, EntryCompletion} from "../Classes.tsx"
+import {Note, Entry, EntryCompletion, Book} from "../Classes.tsx"
 import React, { ChangeEvent, SetStateAction, useEffect, useState } from 'react'
 import {darkenColour} from "../DarkenColour"
 import "./MainScreen.css"
@@ -42,16 +42,10 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     const [openEntry, setOpenEntry] = useState<string | null>(null)
 
 
-    const [notes, setNotes] = useState<Note[]>([
-    new Note(0, "Test Note", 0, 0, "#441144", 
-        [new Entry("Testing!", 2, undefined, undefined, EntryCompletion.Blocked), 
-          new Entry("Testing 2 but high prio", 3, null, "This is a test description", EntryCompletion.InProgress)]
-    ),
+    const [openBook, setOpenBook] = useState<Book>(client.books[0])
 
-    new Note(1, "Other Note", 300, 0, "#111177", 
-        [new Entry("Maybe some other stuff!", 1, undefined, undefined, EntryCompletion.Completed)]
-    )
-    ])
+
+    const [notes, setNotes] = useState<Note[]>(openBook.notes)
 
     const [draggingNoteID, setDraggingNoteID] = useState<number | null>(null)
     const dragOffset = React.useRef({ x: 0, y: 0 })
@@ -74,7 +68,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     function saveNoteName(note: Note) {
     setNotes(previous => 
         previous.map(noteAlt => 
-        noteAlt.id === note.id ?
+        noteAlt.note_id === note.note_id ?
             {...noteAlt, name: editedNoteName.trim() || noteAlt.name } : noteAlt
         )
     )
@@ -87,10 +81,8 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     function changeNoteColour(noteId: number, colour: string) {
     setNotes(previous =>
         previous.map(note => 
-        note.id === noteId ? {...note, 
-            primaryColour: colour, 
-            secondaryColour: darkenColour(colour, 0.2), 
-            tertiaryColour: darkenColour(colour, 0.4)} : note
+        note.note_id === noteId ? {...note, 
+            colour: colour} : note
         )
     )
     }
@@ -123,7 +115,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
     setNotes(previous =>
         previous.map(noteAlt =>
-        noteAlt.id === note.id ?
+        noteAlt.note_id === note.note_id ?
         { ...noteAlt, entries: [...noteAlt.entries, newEntry] } : noteAlt
         )
     )
@@ -224,11 +216,11 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
         e.currentTarget.setPointerCapture(e.pointerId)
-        setDraggingNoteID(note.id)
+        setDraggingNoteID(note.note_id)
         }
 
         function dragNote(e: React.PointerEvent<HTMLDivElement>, note: Note) {
-        if (draggingNoteID != note.id) { return; }
+        if (draggingNoteID != note.note_id) { return; }
 
         const noteElement = e.currentTarget.parentElement
         const area = noteElement?.parentElement
@@ -246,7 +238,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             Math.min(bounds.height - height, e.clientY - bounds.top - dragOffset.current.y))
 
 
-        setNotes(previous => previous.map(noteAlt => noteAlt.id === note.id ? {...noteAlt, positionX, positionY} : noteAlt))
+        setNotes(previous => previous.map(noteAlt => noteAlt.note_id === note.note_id ? {...noteAlt, posx: positionX, posy: positionY} : noteAlt))
     }
 
 
@@ -261,7 +253,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
       setNotes((prevNotes: Note[]) => 
         prevNotes.map(note => {
-          if (note.id !== noteId) { return note; }
+          if (note.note_id !== noteId) { return note; }
 
           return {
             ...note,
@@ -310,288 +302,295 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
         onMouseDown={startResize}
       />
 
-
-      <main className="list-area">
-        
-
-
-
-        {notes.map(note => (
-          /*Notes*/
-          <div key={note.id}
-            className="note"
-            style={{
-              left: note.positionX,
-              top: note.positionY,
-              backgroundColor: note.tertiaryColour,
-              color: note.white_text ? "#FFF" : "#000",
-            }}>
-
-              {/*Note Header*/}
-            <div className="note-header"
-              style={{backgroundColor: note.primaryColour}}
-
-              onPointerDown={e => startNoteDrag(e, note)}
-              onPointerMove={e => dragNote(e, note)}
-              onPointerUp={() => setDraggingNoteID(null)}
-              onPointerCancel={() => setDraggingNoteID(null)}
-            > 
-
-              <button 
-                className="note-button note-header-edit-button"
-                onPointerDown={e => e.stopPropagation()}
-                onClick={() => {
-                  if (editingNoteId == note.id) { 
-                    setEditingNoteID(null) } else {
-                    setEditingNoteID(note.id)
-                    setEditedNoteName(note.name)
-                    }
-                }} 
-              >✎</button>
-            
-              {/*Either editing or just render the name*/}
-              {editingNoteId === note.id ? (
-                <>
-                  <input
-                    className="note-header-input"
-                    value={editedNoteName}
-                    onChange={e => setEditedNoteName(e.target.value)}
-                    onPointerDown={e => e.stopPropagation()}
-                    autoFocus
-                  />
-
-                  <button 
-                    type="button"
-                    className="note-button note-header-input-save"
-                    onPointerDown={e => e.stopPropagation()}
-                    onClick={() => {setEditingNoteID(null); saveNoteName(note)}}
-                    >
-                      Save
-                    </button>
-                </>
-              ) : (
-                <span className="note-header-text">{note.name}</span>
-              )}
-
-              <button
-                className="note-button note-header-invert-button"
-                onPointerDown={e => e.stopPropagation()}
-                onClick={() => 
-                  setNotes(previous =>
-                    previous.map(noteAlt => 
-                      noteAlt.id === note.id ? {...noteAlt, white_text: noteAlt.white_text = !noteAlt.white_text} 
-                      : noteAlt
-                    )
-                )}><span className="note-header-invert-symbol">☼</span>
-              </button>
-
-              <button
-                className="note-button note-header-copy-button"
-                onPointerDown={e => e.stopPropagation()}
-                onClick={() => copyNote(note)}
-                >
-                ⮺
-              </button>
-
-
-              <label
-                className="note-button note-colour-button"
-                title="Change note colour"
-                onPointerDown={e => e.stopPropagation()}
-              >
-                🎨
-                <input
-                  type="color"
-                  value={note.primaryColour}
-                  onChange={e =>
-                    changeNoteColour(note.id, e.target.value)
-                  }
-                  aria-label="Change not colour"
-                  />
-              </label>
-
-
-              
-          </div>
-
-          {/*Entries*/}
-          {note.entries
-            .sort((a, b) => compareDates(a.dueDate, b.dueDate))
-            .sort((a, b) => b.priority - a.priority).map((entry, index) => {
-
-            function addPriorityHeader() {
-
-              if (index == 0 || note.entries[index - 1].priority != entry.priority) {
-              return (<span className="note-entry-priority">{(() => {
-            
-
-              switch (entry.priority) {
-                case 0:
-                  return "Low"
-                case 1:
-                  return "Medium"
-                case 2:
-                  return "High"
-                case 3: 
-                  return "Critical"
-                default:
-                  return "Error"
-              }
-              })()}</span>)
-              }
-            }
-        
-            
-            return (
-            <div>
-              {addPriorityHeader()}
-
-
-
-                <div 
-                    className={`note-entry ${entry.uuid === openEntry ? "note-entry-open" : ""}`} 
-                    style={{backgroundColor: entry.uuid === openEntry ? "rgba(255, 255, 255, 0.2)" : note.secondaryColour}}
-                >
-                  <div className="completion-wrapper">
-                    <select
-                      className="note-entry-completion"
-                      onChange={(e) => {handleCompletionChange(note.id, entry.uuid, e)}} 
-                      defaultValue={entry.completion}>
-                      <option value={EntryCompletion.NotStarted} title="Not Started">🔴</option>
-                      <option value={EntryCompletion.InProgress} title="In Progress">🟡</option>
-                      <option value={EntryCompletion.Completed} title="Completed">🟢</option>
-                      <option value={EntryCompletion.Blocked} title="Blocked">🟣</option>
-                    </select>
-
-                    <span className="completion-tooltip">
-                      {entry.completion === EntryCompletion.NotStarted && "Not Started"}
-                      {entry.completion === EntryCompletion.InProgress && "In Progress"}
-                      {entry.completion === EntryCompletion.Completed && "Completed"}
-                      {entry.completion === EntryCompletion.Blocked && "Blocked"}
-                    </span>
-                  </div>
-
-                    <button
-                        className="note-entry-button"
-                        onPointerDown={e => e.stopPropagation()}
-                        onClick={() => 
-                            entry.uuid == openEntry ? setOpenEntry(null) : setOpenEntry(entry.uuid)
-                        }    
-                    >
-                        <span className="note-entry-text">
-                            {entry.text}
-                        </span>
-
-                      {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
-                    </button>
-                </div>
-
-
-
-
-                {entry.uuid === openEntry && (
-                    <div className="note-entry-description">
-                        {editingDescription ? (
-                            <textarea
-                                autoFocus
-                                value={editedDescription}
-                                onChange={e => setEditedDescription(e.target.value)}
-                                onFocus={e => {
-                                    const length = e.currentTarget.value.length
-                                    e.currentTarget.setSelectionRange(length, length)
-                                }}
-                                onKeyDown={e => {
-                                    if (e.key === "Enter" && !e.shiftKey) {
-                                        e.preventDefault()
-                                        e.stopPropagation()
-                                        saveDescription(entry, editedDescription)
-                                    }
-                                }}
-                                onBlur={() => {
-                                    saveDescription(entry, editedDescription)
-                                }}    
-                            />
-                        ) : (
-                            <div
-                                onClick={() => {
-                                    setEditedDescription(entry.description)
-                                    setEditingDescription(true)
-                                }}
-                            >
-                                {entry.description || <i className="enter-description-default">"Click to add description..."</i>}
-                            </div>
-                        )}    
-                    </div>
-                )}
-
-
-
-
-
-            </div>
-            )
-            })}
-
-
-
-          {/*New Entry Form*/}
-          {openEntryFormID == note.id && (
-          <form className="entry-form" 
-            onSubmit={(e) => addItem(note, e)}>
-              {/*Priority selector*/}
-              <div className="entry-form-section">
-                <label htmlFor={`priority-${note.id}`}>Priority</label>
-                <select 
-                  id={`priority-${note.id}`}
-                  value={entryPriority}
-                  onChange={e => setEntryPriority(Number(e.target.value))}
-                >
-                  <option value={0}>0 - Low</option>
-                  <option value={1}>1 - Medium</option>
-                  <option value={2}>2 - High</option>
-                  <option value={3}>3 - Critical</option>
-                </select>
-              </div>
-
-              {/*Entry Text*/}
-              <div className="entry-form-section">
-                <label htmlFor={`text-${note.id}`}>Entry</label>
-                <textarea
-                  id={`text-${note.id}`}
-                  value={entryText}
-                  onChange={e => setEntryText(e.target.value)}
-                  placeholder="New entry..."
-                  rows={2}
-                />
-              </div>
-
-              {/*Due Date*/}
-              <div className="entry-form-section">
-                <label htmlFor={`date-${note.id}`}>Due Date</label>
-                <input
-                  id={`date-${note.id}`}
-                  type="date"
-                  value ={entryDueDate}
-                  onChange={e => setEntryDueDate(e.target.value)}
-                />
-              </div>
-
-            <button type="submit" className="entry-submit">Add</button>
-          </form>
-          )}
-
-
-
-          {/*Close form button*/}
-          <button type="button" 
-            className="toggle-entry-form"
-            onClick={() => openEntryFormID == note.id ? setOpenEntryFormID(null) : setOpenEntryFormID(note.id)}>
-            {openEntryFormID === note.id ? '⮝' : '⮟'}
-          </button>
+      <div className="main-content">
+        <div className="top-bar">
+          Test
         </div>
 
-        ))}
-      </main>
+        <main className="list-area">
+          
+
+
+
+          {notes.map(note => (
+            /*Notes*/
+            <div key={note.note_id}
+              className="note"
+              style={{
+                left: note.posx,
+                top: note.posy,
+                background: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), ${note.colour}`,
+                color: note.white_text ? "#FFF" : "#000",
+              }}>
+
+                {/*Note Header*/}
+              <div className="note-header"
+                style={{backgroundColor: note.colour}}
+
+                onPointerDown={e => startNoteDrag(e, note)}
+                onPointerMove={e => dragNote(e, note)}
+                onPointerUp={() => setDraggingNoteID(null)}
+                onPointerCancel={() => setDraggingNoteID(null)}
+              > 
+
+                <button 
+                  className="note-button note-header-edit-button"
+                  onPointerDown={e => e.stopPropagation()}
+                  onClick={() => {
+                    if (editingNoteId == note.note_id) { 
+                      setEditingNoteID(null) } else {
+                      setEditingNoteID(note.note_id)
+                      setEditedNoteName(note.name)
+                      }
+                  }} 
+                >✎</button>
+              
+                {/*Either editing or just render the name*/}
+                {editingNoteId === note.note_id ? (
+                  <>
+                    <input
+                      className="note-header-input"
+                      value={editedNoteName}
+                      onChange={e => setEditedNoteName(e.target.value)}
+                      onPointerDown={e => e.stopPropagation()}
+                      autoFocus
+                    />
+
+                    <button 
+                      type="button"
+                      className="note-button note-header-input-save"
+                      onPointerDown={e => e.stopPropagation()}
+                      onClick={() => {setEditingNoteID(null); saveNoteName(note)}}
+                      >
+                        Save
+                      </button>
+                  </>
+                ) : (
+                  <span className="note-header-text">{note.name}</span>
+                )}
+
+                <button
+                  className="note-button note-header-invert-button"
+                  onPointerDown={e => e.stopPropagation()}
+                  onClick={() => 
+                    setNotes(previous =>
+                      previous.map(noteAlt => 
+                        noteAlt.note_id === note.note_id ? {...noteAlt, white_text: noteAlt.white_text = !noteAlt.white_text} 
+                        : noteAlt
+                      )
+                  )}><span className="note-header-invert-symbol">☼</span>
+                </button>
+
+                <button
+                  className="note-button note-header-copy-button"
+                  onPointerDown={e => e.stopPropagation()}
+                  onClick={() => copyNote(note)}
+                  >
+                  ⮺
+                </button>
+
+
+                <label
+                  className="note-button note-colour-button"
+                  title="Change note colour"
+                  onPointerDown={e => e.stopPropagation()}
+                >
+                  🎨
+                  <input
+                    type="color"
+                    value={note.colour}
+                    onChange={e =>
+                      changeNoteColour(note.note_id, e.target.value)
+                    }
+                    aria-label="Change not colour"
+                    />
+                </label>
+
+
+                
+            </div>
+
+            {/*Entries*/}
+            {note.entries
+              .sort((a, b) => compareDates(a.dueDate, b.dueDate))
+              .sort((a, b) => b.priority - a.priority).map((entry, index) => {
+
+              function addPriorityHeader() {
+
+                if (index == 0 || note.entries[index - 1].priority != entry.priority) {
+                return (<span className="note-entry-priority">{(() => {
+              
+
+                switch (entry.priority) {
+                  case 0:
+                    return "Low"
+                  case 1:
+                    return "Medium"
+                  case 2:
+                    return "High"
+                  case 3: 
+                    return "Critical"
+                  default:
+                    return "Error"
+                }
+                })()}</span>)
+                }
+              }
+          
+              
+              return (
+              <div>
+                {addPriorityHeader()}
+
+
+
+                  <div 
+                      className={`note-entry ${entry.uuid === openEntry ? "note-entry-open" : ""}`} 
+                      style={{background: entry.uuid === openEntry 
+                        ? "rgba(255, 255, 255, 0.4)"
+                        : `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), ${note.colour}`}}
+                  >
+                    <div className="completion-wrapper">
+                      <select
+                        className="note-entry-completion"
+                        onChange={(e) => {handleCompletionChange(note.note_id, entry.uuid, e)}} 
+                        defaultValue={entry.completion}>
+                        <option value={EntryCompletion.NotStarted} title="Not Started">🔴</option>
+                        <option value={EntryCompletion.InProgress} title="In Progress">🟡</option>
+                        <option value={EntryCompletion.Completed} title="Completed">🟢</option>
+                        <option value={EntryCompletion.Blocked} title="Blocked">🟣</option>
+                      </select>
+
+                      <span className="completion-tooltip">
+                        {entry.completion === EntryCompletion.NotStarted && "Not Started"}
+                        {entry.completion === EntryCompletion.InProgress && "In Progress"}
+                        {entry.completion === EntryCompletion.Completed && "Completed"}
+                        {entry.completion === EntryCompletion.Blocked && "Blocked"}
+                      </span>
+                    </div>
+
+                      <button
+                          className="note-entry-button"
+                          onPointerDown={e => e.stopPropagation()}
+                          onClick={() => 
+                              entry.uuid == openEntry ? setOpenEntry(null) : setOpenEntry(entry.uuid)
+                          }    
+                      >
+                          <span className="note-entry-text">
+                              {entry.text}
+                          </span>
+
+                        {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
+                      </button>
+                  </div>
+
+
+
+
+                  {entry.uuid === openEntry && (
+                      <div className="note-entry-description">
+                          {editingDescription ? (
+                              <textarea
+                                  autoFocus
+                                  value={editedDescription}
+                                  onChange={e => setEditedDescription(e.target.value)}
+                                  onFocus={e => {
+                                      const length = e.currentTarget.value.length
+                                      e.currentTarget.setSelectionRange(length, length)
+                                  }}
+                                  onKeyDown={e => {
+                                      if (e.key === "Enter" && !e.shiftKey) {
+                                          e.preventDefault()
+                                          e.stopPropagation()
+                                          saveDescription(entry, editedDescription)
+                                      }
+                                  }}
+                                  onBlur={() => {
+                                      saveDescription(entry, editedDescription)
+                                  }}    
+                              />
+                          ) : (
+                              <div
+                                  onClick={() => {
+                                      setEditedDescription(entry.description)
+                                      setEditingDescription(true)
+                                  }}
+                              >
+                                  {entry.description || <i className="enter-description-default">"Click to add description..."</i>}
+                              </div>
+                          )}    
+                      </div>
+                  )}
+
+
+
+
+
+              </div>
+              )
+              })}
+
+
+
+            {/*New Entry Form*/}
+            {openEntryFormID == note.note_id && (
+            <form className="entry-form" 
+              onSubmit={(e) => addItem(note, e)}>
+                {/*Priority selector*/}
+                <div className="entry-form-section">
+                  <label htmlFor={`priority-${note.note_id}`}>Priority</label>
+                  <select 
+                    id={`priority-${note.note_id}`}
+                    value={entryPriority}
+                    onChange={e => setEntryPriority(Number(e.target.value))}
+                  >
+                    <option value={0}>0 - Low</option>
+                    <option value={1}>1 - Medium</option>
+                    <option value={2}>2 - High</option>
+                    <option value={3}>3 - Critical</option>
+                  </select>
+                </div>
+
+                {/*Entry Text*/}
+                <div className="entry-form-section">
+                  <label htmlFor={`text-${note.note_id}`}>Entry</label>
+                  <textarea
+                    id={`text-${note.note_id}`}
+                    value={entryText}
+                    onChange={e => setEntryText(e.target.value)}
+                    placeholder="New entry..."
+                    rows={2}
+                  />
+                </div>
+
+                {/*Due Date*/}
+                <div className="entry-form-section">
+                  <label htmlFor={`date-${note.note_id}`}>Due Date</label>
+                  <input
+                    id={`date-${note.note_id}`}
+                    type="date"
+                    value ={entryDueDate}
+                    onChange={e => setEntryDueDate(e.target.value)}
+                  />
+                </div>
+
+              <button type="submit" className="entry-submit">Add</button>
+            </form>
+            )}
+
+
+
+            {/*Close form button*/}
+            <button type="button" 
+              className="toggle-entry-form"
+              onClick={() => openEntryFormID == note.note_id ? setOpenEntryFormID(null) : setOpenEntryFormID(note.note_id)}>
+              {openEntryFormID === note.note_id ? '⮝' : '⮟'}
+            </button>
+          </div>
+
+          ))}
+        </main>
+      </div>
     </div>
     )
 }

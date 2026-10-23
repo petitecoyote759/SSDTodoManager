@@ -36,8 +36,8 @@ print("\n\nCLEAR\n\n")
 #})
 #print(result)
 
-result = DBHandler.getBooksRecursive(UUID("af9238bf-8088-4c07-9cdb-11be7f617a8e"))
-print(result)
+#result = DBHandler.getBooksRecursive(uuid)
+#print(result)
 
 #result = DBHandler.getNotes(UUID("44be5192-8464-456c-adde-3ed670248149"))
 #print(result)
@@ -49,4 +49,4 @@ print(result)
 
 
 
-#API.GlobalApp.app.run(host='0.0.0.0', port=5000, debug=True)
+API.GlobalApp.app.run(host='0.0.0.0', port=5000, debug=True)

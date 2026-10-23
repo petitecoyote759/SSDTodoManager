@@ -1,4 +1,4 @@
-import { login, getUserData } from "./APIHandler"
+import { login, getUserData, getUserBooks } from "./APIHandler"
 import { Book, Note, Entry } from "./Classes"
 
 
@@ -52,6 +52,8 @@ export class Client {
 
 
         const client: Client = new Client(uuid, token, username, profilePicture)
+
+        client.books = await getUserBooks(uuid, token)
 
         return client
     }

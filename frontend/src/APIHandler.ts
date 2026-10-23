@@ -1,4 +1,4 @@
-
+import { Book } from "./Classes";
 
 
 const url = "http://127.0.0.1:5000"
@@ -70,4 +70,34 @@ export async function getUserData(uuid: string, token: string) {
     const created_at = data.created_at
 
     return [username, email, profile_picture, created_at]
+}
+
+
+
+
+export async function getUserBooks(uuid: string, token: string) {
+
+    const response = await fetch(`${url}/api/users/${uuid}/books`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token,
+            "recursive": "true"
+        }
+    });
+
+
+    if (!response.ok) {
+        console.error(
+            `Something went wrong getting user data. Error: ${response.status}`,
+            await response.text()
+        );
+        return null
+    }
+
+    const json = await response.json()
+    console.log(`JSON = ${JSON.stringify(json["books"])}`)
+    const data: Book[] = json["books"]
+
+    return data
 }

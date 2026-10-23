@@ -4,6 +4,42 @@
 
 
 
+
+.top-bar {
+    background-color: rgb(102, 102, 102);
+    height: 40px;
+    width: 100%;
+    display: flex;
+    font-size: 25px;
+    padding-left: 8px;
+}
+
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .note-entry-button {
     display: flex;
     flex: 1;
