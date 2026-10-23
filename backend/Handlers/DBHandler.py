@@ -65,6 +65,7 @@ class Database:
             config = loadConfig()
             self.conn: connection = psycopg2.connect(**config)
             self.cur: cursor = self.conn.cursor()
+            self.conn.rollback()
         except Exception as e:
             print(f"something went really wrong, error : {e}")
             exit()
@@ -256,10 +257,12 @@ def createUser(data: dict[str, Any]) -> dict[str, str]:
         RETURNING user_id
         """, (username, email, HashHandler.generateHash(password), profilePicture))
     except UniqueViolation:
+        database.conn.rollback()
         return {"Error": f"email '{email}' has already been registered"} # should be replaced by confirm via email to prevent fuzzing
     except Exception as e:
+        database.conn.rollback()
         print(f"Error in account creation, error: {e}")
-        return {"Error": f"unknown error in insert, message = '{type(e)}'"}
+        return {"Error": f"unknown error in insert, type = '{type(e)}'"}
 
     database.conn.commit()
 
