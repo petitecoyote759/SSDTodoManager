@@ -1,5 +1,5 @@
 import {Note, Entry, EntryCompletion} from "../Classes.tsx"
-import React, { SetStateAction, useEffect, useState } from 'react'
+import React, { ChangeEvent, SetStateAction, useEffect, useState } from 'react'
 import {darkenColour} from "../DarkenColour"
 import "./MainScreen.css"
 import { Client } from '../Client'
@@ -250,6 +250,38 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
+
+
+
+    function handleCompletionChange(noteId: number, entryId: string, event: ChangeEvent<HTMLSelectElement>) {
+      const newValue: EntryCompletion = Number(event.target.value) as EntryCompletion
+
+
+      setNotes((prevNotes: Note[]) => 
+        prevNotes.map(note => {
+          if (note.id !== noteId) { return note; }
+
+          return {
+            ...note,
+            entries: note.entries.map(entry => 
+              entry.uuid === entryId ? { ...entry, completion: newValue } : entry
+            )
+          }
+        }))
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     return (
         <div className="app">
       <aside className="sidebar" style={{width : sidebarWidth}}>
@@ -408,7 +440,18 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                     className={`note-entry ${entry.uuid === openEntry ? "note-entry-open" : ""}`} 
                     style={{backgroundColor: entry.uuid === openEntry ? "rgba(255, 255, 255, 0.2)" : note.secondaryColour}}
                 >
-                    
+                    <select
+                      className="note-entry-completion"
+                      onChange={(e) => {handleCompletionChange(note.id, entry.uuid, e)}} 
+                      defaultValue={entry.completion}>
+                      <option value={EntryCompletion.NotStarted}>🔴</option>
+                      <option value={EntryCompletion.InProgress}>🟡</option>
+                      <option value={EntryCompletion.Completed}>🟢</option>
+                      <option value={EntryCompletion.Blocked}>🟣</option>
+                    </select>
+
+
+
                     <button
                         className="note-entry-button"
                         onPointerDown={e => e.stopPropagation()}
@@ -416,20 +459,6 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                             entry.uuid == openEntry ? setOpenEntry(null) : setOpenEntry(entry.uuid)
                         }    
                     >
-                        <span className="note-entry-completion">
-                          {(() => { 
-                            switch (entry.completion) {
-                              case EntryCompletion.NotStarted:
-                                return "🔴"
-                              case EntryCompletion.InProgress:
-                                return "🟡"
-                              case EntryCompletion.Completed:
-                                return "🟢"
-                              case EntryCompletion.Blocked:
-                                return "🟣"
-                            }
-                          })()}
-                        </span>
                         <span className="note-entry-text">
                             {entry.text}
                         </span>
