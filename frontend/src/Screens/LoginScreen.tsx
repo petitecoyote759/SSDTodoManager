@@ -24,10 +24,14 @@ export function LoginScreen({ setClient }: LoginScreenParams) {
 
         const result = Client.createClient(email, password)
         setLoading(true)
-
+        
         const client: Client | undefined | null = await result
-
-        if (client == null) { return; }
+        console.log(`Client type ${typeof client}`)
+        if (client == null) 
+        {
+            console.log(`Unsuccessful login.`) 
+            setLoading(false); return; 
+        }
 
         setClient(client)
         setLoading(false)

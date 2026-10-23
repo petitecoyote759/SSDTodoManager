@@ -43,12 +43,12 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
     const [notes, setNotes] = useState<Note[]>([
-    new Note(0, "Test Note", 0, 0, "#441144", undefined, 
+    new Note(0, "Test Note", 0, 0, "#441144", 
         [new Entry("Testing!", 2, undefined, undefined, EntryCompletion.Blocked), 
           new Entry("Testing 2 but high prio", 3, null, "This is a test description", EntryCompletion.InProgress)]
     ),
 
-    new Note(1, "Other Note", 300, 0, "#111177", undefined, 
+    new Note(1, "Other Note", 300, 0, "#111177", 
         [new Entry("Maybe some other stuff!", 1, undefined, undefined, EntryCompletion.Completed)]
     )
     ])
@@ -96,7 +96,9 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     }
 
 
-
+    const copyNote = async (note: Note) => {
+      await navigator.clipboard.writeText(JSON.stringify(note))
+    }
 
 
     const [openEntryFormID, setOpenEntryFormID] = useState<number | null>(null)
@@ -380,7 +382,17 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                       noteAlt.id === note.id ? {...noteAlt, textColour: noteAlt.textColour === "white" ? "black" : "white"} 
                       : noteAlt
                     )
-                )}><span className="note-header-invert-symbol">☼</span></button>
+                )}><span className="note-header-invert-symbol">☼</span>
+              </button>
+
+              <button
+                className="note-button note-header-copy-button"
+                onPointerDown={e => e.stopPropagation()}
+                onClick={() => copyNote(note)}
+                >
+                ⮺
+              </button>
+
 
               <label
                 className="note-button note-colour-button"
@@ -440,16 +452,24 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                     className={`note-entry ${entry.uuid === openEntry ? "note-entry-open" : ""}`} 
                     style={{backgroundColor: entry.uuid === openEntry ? "rgba(255, 255, 255, 0.2)" : note.secondaryColour}}
                 >
+                  <div className="completion-wrapper">
                     <select
                       className="note-entry-completion"
                       onChange={(e) => {handleCompletionChange(note.id, entry.uuid, e)}} 
                       defaultValue={entry.completion}>
-                      <option value={EntryCompletion.NotStarted}>🔴</option>
-                      <option value={EntryCompletion.InProgress}>🟡</option>
-                      <option value={EntryCompletion.Completed}>🟢</option>
-                      <option value={EntryCompletion.Blocked}>🟣</option>
+                      <option value={EntryCompletion.NotStarted} title="Not Started">🔴</option>
+                      <option value={EntryCompletion.InProgress} title="In Progress">🟡</option>
+                      <option value={EntryCompletion.Completed} title="Completed">🟢</option>
+                      <option value={EntryCompletion.Blocked} title="Blocked">🟣</option>
                     </select>
- 
+
+                    <span className="completion-tooltip">
+                      {entry.completion === EntryCompletion.NotStarted && "Not Started"}
+                      {entry.completion === EntryCompletion.InProgress && "In Progress"}
+                      {entry.completion === EntryCompletion.Completed && "Completed"}
+                      {entry.completion === EntryCompletion.Blocked && "Blocked"}
+                    </span>
+                  </div>
 
                     <button
                         className="note-entry-button"

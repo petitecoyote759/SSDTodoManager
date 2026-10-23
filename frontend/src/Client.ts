@@ -29,6 +29,7 @@ export class Client {
         
         
         var result = await login(email, password)
+        
         if (result == null) { return null; }
 
         const [uuid, token] = result

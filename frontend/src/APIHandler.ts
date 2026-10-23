@@ -11,13 +11,20 @@ export async function login(email: string, password: string): Promise<[string, s
 
     const loginData = { "email": email, "password": password }
 
-    const response = await fetch(`${url}/api/users/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(loginData)
-    });
+    var response: Response;
+    try {
+        response = await fetch(`${url}/api/users/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(loginData)
+        });
+    }
+    catch (error) {
+        console.error(`Something went wrong during login. Error: ${error}`)
+        return null
+    }
 
     if (!response.ok) {
         console.error(

@@ -16,7 +16,7 @@ export class Book {
 export class Note {
     constructor(
         id: number, name: string, positionX: number, positionY: number, 
-        primaryColour: string, sortType: string = "ALPH", entries: Entry[] = [], 
+        primaryColour: string, entries: Entry[] = [], 
         secondaryColour: string | null = null, tertiaryColour: string | null = null, textColour: string = "white") {
 
         this.name = name;
@@ -29,7 +29,6 @@ export class Note {
 
         this.textColour = textColour
 
-        this.sortType = sortType
 
         this.entries = entries
 
@@ -46,8 +45,6 @@ export class Note {
     tertiaryColour: string
 
     textColour: string
-
-    sortType: string
 
     entries: Entry[]
 
