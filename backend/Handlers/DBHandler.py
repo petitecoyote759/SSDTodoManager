@@ -143,13 +143,13 @@ def login(email: str, password: str) -> dict[str, str]:
     result = database.cur.fetchone()
     
     if result == None:
-        return {"Error": "Password was incorrect or user does not exist"}
+        return {"error": "Password was incorrect or user does not exist"}
 
     if HashHandler.verifyHash(password, result[0]) == True:
         token = TokenHandler.generateUserToken(result[1])
-        return {"Token": token, "uuid": result[1]}
+        return {"token": token, "uuid": result[1]}
     
-    return {"Error": "Password was incorrect or user does not exist"}
+    return {"error": "Password was incorrect or user does not exist"}
 
 
 
@@ -216,10 +216,10 @@ def modifyUser(uuid: UUID, data: dict[str, str]) -> dict[str, str]:
                 WHERE user_id = %s
                 """, (data[allowedField], str(uuid)))
             except UniqueViolation:
-                return {"Error": f"email '{data['email']}' has already been registered"}
+                return {"error": f"email '{data['email']}' has already been registered"}
             except Exception as e:
-                print(f"Error in account creation, error: {e}")
-                return {"Error": f"unknown error in insert, message = '{type(e)}'"}
+                print(f"error in account creation, error: {e}")
+                return {"error": f"unknown error in insert, message = '{type(e)}'"}
 
     return {}
             
@@ -233,19 +233,19 @@ def modifyUser(uuid: UUID, data: dict[str, str]) -> dict[str, str]:
 
 def createUser(data: dict[str, Any]) -> dict[str, str]:
     """
-    Returns a dictionary with either "Error" if the data was invalid, or "Token" if it was successful
+    Returns a dictionary with either "error" if the data was invalid, or "Token" if it was successful
     """
 
     if 'username' not in data:
-        return {"Error": "key \'username\' not found in data"}
+        return {"error": "key \'username\' not found in data"}
     username = data['username']
 
     if 'email' not in data:
-        return {"Error": "key \'email\' not found in data"}
+        return {"error": "key \'email\' not found in data"}
     email = data['email']
 
     if 'password' not in data:
-        return {"Error": "key \'password\' not found in data"}
+        return {"error": "key \'password\' not found in data"}
     password = data['password']
     
     profilePicture =  data['profile_picture'] if 'profile_picture' in data else ''
@@ -258,11 +258,11 @@ def createUser(data: dict[str, Any]) -> dict[str, str]:
         """, (username, email, HashHandler.generateHash(password), profilePicture))
     except UniqueViolation:
         database.conn.rollback()
-        return {"Error": f"email '{email}' has already been registered"} # should be replaced by confirm via email to prevent fuzzing
+        return {"error": f"email '{email}' has already been registered"} # should be replaced by confirm via email to prevent fuzzing
     except Exception as e:
         database.conn.rollback()
-        print(f"Error in account creation, error: {e}")
-        return {"Error": f"unknown error in insert, type = '{type(e)}'"}
+        print(f"error in account creation, error: {e}")
+        return {"error": f"unknown error in insert, type = '{type(e)}'"}
 
     database.conn.commit()
 
@@ -271,8 +271,106 @@ def createUser(data: dict[str, Any]) -> dict[str, str]:
     value = database.cur.fetchone()
     if value == None:
         print(f"Something went wrong with creation, data was \'{data}\'")
-        return {"Error": "Unkown issue"}
+        return {"error": "Unkown issue"}
 
     token = TokenHandler.generateUserToken(value[0])
 
-    return {"Token": token}
+    return {"token": token}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# << Books >> #
+
+def createBook(uuid: UUID, name: str) -> dict[str, Any]:
+    
+    database.cur.execute("""
+    INSERT INTO public.books (name, user_id)
+    VALUES (%s, %s)
+    RETURNING book_id
+    """, (name, str(uuid)))
+    database.conn.commit()
+    result = database.cur.fetchone()
+
+    if result == None:
+        return {"error": "Unknown error"}
+
+    return {"book_id": result[0]}
+
+
+
+
+def getBooks(uuid: UUID) -> dict[str, str]:
+
+    database.cur.execute("""
+    SELECT book_id, name FROM public.books
+    WHERE user_id = %s
+    """, (str(uuid),))
+
+    result: list[tuple[str, str]] = database.cur.fetchall()
+    print(result)
+
+    outputDict: dict[str, str] = {}
+    for book in result:
+        outputDict[book[0]] = book[1] # uuid as key, name as value
+
+    return outputDict
+
+
+
+def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
+
+    database.cur.execute("""
+    SELECT json_build_object(
+        'book_id', b.book_id
+        'user_id', b.user_id,
+        'name', b.name,
+        'notes', COALESCE (
+            SELECT json_agg(
+                json_build_object(
+                    'note_id', n.note_id,
+                    'book_id', n.book_id,
+                    'name', n.name,
+                    'colour', n.colour,
+                    'white_text', n.white_text,
+                    'posx', n.posx,
+                    'posy', n.posy,
+                    'entries', COALESCE(
+                        SELECT json_agg(
+                            json_build_object(
+                                'entry_id', e.entry_id,
+                                'note_id', e.note_id,
+                                'text', e.text,
+                                'completion', e.completion,
+                                'due_date', e.due_date,
+                                'description', e.description
+                            )
+                        )
+                        FROM public.entries e
+                        WHERE e.note_id = n.note_id
+                    )
+                )
+            )
+            FROM public.notes n
+            WHERE n.book_id = b.book_id
+        )                 
+    )
+    FROM public.books b
+    WHERE b.book_id = %s; 
+    """)
+
+    result = database.cur.fetchall()
+    print(result)
+
+    return {}

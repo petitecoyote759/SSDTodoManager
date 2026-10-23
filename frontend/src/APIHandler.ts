@@ -28,7 +28,7 @@ export async function login(email: string, password: string): Promise<[string, s
     }
 
     const data = await response.json()
-    const token = data.Token
+    const token = data.token
     const uuid = data.uuid
 
     return [uuid, token]

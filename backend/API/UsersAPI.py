@@ -18,11 +18,11 @@ def loginUser():
     email = data["email"]
     password = data["password"]
     if email == None or password == None:
-        return {"Error": "missing email or password in parameters"}
+        return {"error": "missing email or password in parameters"}
 
     result = DBHandler.login(email, password)
 
-    if "Error" in result:
+    if "error" in result:
         return result, 400
     
     return result
@@ -43,8 +43,8 @@ def createUser():
 
     result = DBHandler.createUser(data)
 
-    if "Error" in result:
-        return f"Error during user creation. Message : \"{result["Error"]}\"", 400
+    if "error" in result:
+        return f"error during user creation. Message : \"{result["error"]}\"", 400
 
     return result["Token"], 201
 
