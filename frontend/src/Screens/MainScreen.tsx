@@ -449,8 +449,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                       <option value={EntryCompletion.Completed}>🟢</option>
                       <option value={EntryCompletion.Blocked}>🟣</option>
                     </select>
-
-
+ 
 
                     <button
                         className="note-entry-button"

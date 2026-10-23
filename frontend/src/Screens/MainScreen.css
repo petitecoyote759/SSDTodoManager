@@ -6,11 +6,11 @@
 
 .note-entry-button {
     display: flex;
+    flex: 1;
     background-color: rgba(0, 0, 0, 0);
     border: none;
     color: inherit;
-    width: 100%;
-    min-width: 100%;
+    flex-direction: row;
     text-align: left;
 }
 
@@ -20,6 +20,7 @@
 
 
 .note-entry-completion {
+    display: flex;
     padding-right: 4px;
     background-color: rgba(0, 0, 0, 0);
     border: none;
