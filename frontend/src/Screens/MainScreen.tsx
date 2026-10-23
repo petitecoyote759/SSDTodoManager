@@ -324,7 +324,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
               left: note.positionX,
               top: note.positionY,
               backgroundColor: note.tertiaryColour,
-              color: note.textColour,
+              color: note.white_text ? "#FFF" : "#000",
             }}>
 
               {/*Note Header*/}
@@ -379,7 +379,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                 onClick={() => 
                   setNotes(previous =>
                     previous.map(noteAlt => 
-                      noteAlt.id === note.id ? {...noteAlt, textColour: noteAlt.textColour === "white" ? "black" : "white"} 
+                      noteAlt.id === note.id ? {...noteAlt, white_text: noteAlt.white_text = !noteAlt.white_text} 
                       : noteAlt
                     )
                 )}><span className="note-header-invert-symbol">☼</span>

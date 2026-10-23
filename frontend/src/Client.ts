@@ -1,4 +1,5 @@
 import { login, getUserData } from "./APIHandler"
+import { Book, Note, Entry } from "./Classes"
 
 
 
@@ -10,6 +11,7 @@ export class Client {
         this.token = token
         this.username = username
         this.profilePicture = profilePicture
+        this.books = []
     }
 
 
@@ -22,6 +24,10 @@ export class Client {
     getToken() {
         return this.token;
     }
+
+
+
+    books: Book[]
 
 
 

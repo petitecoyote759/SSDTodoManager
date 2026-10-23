@@ -17,7 +17,7 @@ export class Note {
     constructor(
         id: number, name: string, positionX: number, positionY: number, 
         primaryColour: string, entries: Entry[] = [], 
-        secondaryColour: string | null = null, tertiaryColour: string | null = null, textColour: string = "white") {
+        secondaryColour: string | null = null, tertiaryColour: string | null = null, white_text: boolean = true) {
 
         this.name = name;
 
@@ -27,7 +27,7 @@ export class Note {
         this.secondaryColour = secondaryColour === null ? darkenColour(primaryColour, 0.2) : secondaryColour
         this.tertiaryColour = tertiaryColour === null ? darkenColour(primaryColour, 0.4) : tertiaryColour
 
-        this.textColour = textColour
+        this.white_text = white_text
 
 
         this.entries = entries
@@ -44,7 +44,7 @@ export class Note {
     secondaryColour: string
     tertiaryColour: string
 
-    textColour: string
+    white_text: boolean
 
     entries: Entry[]
 
