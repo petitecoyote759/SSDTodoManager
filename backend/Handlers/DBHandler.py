@@ -332,44 +332,48 @@ def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
 
     database.cur.execute("""
     SELECT json_build_object(
-        'book_id', b.book_id,
-        'user_id', b.user_id,
-        'name', b.name,
-        'notes', COALESCE ((
-            SELECT json_agg(
-                json_build_object(
-                    'note_id', n.note_id,
-                    'book_id', n.book_id,
-                    'name', n.name,
-                    'colour', n.colour,
-                    'white_text', n.white_text,
-                    'posx', n.posx,
-                    'posy', n.posy,
-                    'entries', COALESCE((
-                        SELECT json_agg(
-                            json_build_object(
-                                'entry_id', e.entry_id,
-                                'note_id', e.note_id,
-                                'text', e.text,
-                                'completion', e.completion,
-                                'due_date', e.due_date,
-                                'description', e.description
+        'books', COALESCE(( 
+            SELECT json_agg(json_build_object(
+            'book_id', b.book_id,
+            'user_id', b.user_id,
+            'name', b.name,
+            'notes', COALESCE ((
+                SELECT json_agg(
+                    json_build_object(
+                        'note_id', n.note_id,
+                        'book_id', n.book_id,
+                        'name', n.name,
+                        'colour', n.colour,
+                        'white_text', n.white_text,
+                        'posx', n.posx,
+                        'posy', n.posy,
+                        'entries', COALESCE((
+                            SELECT json_agg(
+                                json_build_object(
+                                    'entry_id', e.entry_id,
+                                    'note_id', e.note_id,
+                                    'text', e.text,
+                                    'completion', e.completion,
+                                    'due_date', e.due_date,
+                                    'description', e.description
+                                )
                             )
-                        )
-                        FROM public.entries e
-                        WHERE e.note_id = n.note_id
-                    ), '[]'::json)
+                            FROM public.entries e
+                            WHERE e.note_id = n.note_id
+                        ), '[]'::json)
+                    )
                 )
-            )
-            FROM public.notes n
-            WHERE n.book_id = b.book_id
-        ), '[]'::json)                 
-    )
+                FROM public.notes n
+                WHERE n.book_id = b.book_id
+            ), '[]'::json)                 
+        )
+    ))))
     FROM public.books b
-    WHERE b.book_id = %s; 
+    WHERE b.user_id = %s; 
     """, (str(uuid),))
 
     result = database.cur.fetchall()
+    print(result)
 
     return {}
 
