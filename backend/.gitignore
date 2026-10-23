@@ -2,3 +2,4 @@ instance/*.db
 .env
 .venv/
 __pycache__/
+backend/config/database.ini
