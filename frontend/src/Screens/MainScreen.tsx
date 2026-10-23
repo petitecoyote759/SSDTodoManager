@@ -452,7 +452,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
           
               
               return (
-              <div>
+              <div key={entry.entry_id}>
                 {addPriorityHeader()}
 
 
@@ -466,8 +466,9 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                     <div className="completion-wrapper">
                       <select
                         className="note-entry-completion"
+                        value={entry.completion}
                         onChange={(e) => {handleCompletionChange(note.note_id, entry.entry_id, e)}} 
-                        defaultValue={entry.completion}>
+                      >
                         <option value={EntryCompletion.NotStarted} title="Not Started">🔴</option>
                         <option value={EntryCompletion.InProgress} title="In Progress">🟡</option>
                         <option value={EntryCompletion.Completed} title="Completed">🟢</option>
