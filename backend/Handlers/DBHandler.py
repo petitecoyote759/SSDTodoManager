@@ -382,6 +382,7 @@ def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
 
 def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
 
+    # << ADDING >> #
     # Books Updating
     database.cur.execute("""
     INSERT INTO public.books (book_id, user_id, name)
@@ -479,6 +480,76 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
     """, (Json(data), str(uuid)))
 
     database.conn.commit()
+
+
+
+
+
+
+    # << DELETING >> #
+
+    # Entries
+    database.cur.execute("""
+    DELETE FROM public.entries AS existing
+    USING public.notes AS n, public.books AS b
+    WHERE existing.note_id = n.note_id
+        AND n.book_id = b.book_id
+        AND b.user_id = %s
+        -- Search for entries that dont exist in json
+        AND NOT EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(
+                %s::jsonb->'books'
+            ) AS jb
+            CROSS JOIN LATERAL jsonb_array_elements(
+                COALESCE(jb->'notes', '[]'::jsonb)
+            ) AS jn
+            CROSS JOIN LATERAL jsonb_array_elements(
+                COALESCE(jn->'entries', '[]'::jsonb)
+            ) AS je
+            WHERE (je->>'entry_id')::uuid = existing.entry_id
+                -- Ensure they are able to
+                AND (jb->>'user_id')::uuid = %s
+        )
+    """, (str(uuid), Json(data), str(uuid)))
+
+    # Notes
+    database.cur.execute("""
+    DELETE FROM public.notes AS existing
+    USING public.books AS b
+    WHERE existing.book_id = b.book_id
+        AND b.user_id = %s
+        -- Search for entries that dont exist in json
+        AND NOT EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(
+                %s::jsonb->'books'
+            ) AS jb
+            CROSS JOIN LATERAL jsonb_array_elements(
+                COALESCE(jb->'notes', '[]'::jsonb)
+            ) AS jn
+            WHERE (jn->>'note_id')::uuid = existing.note_id
+                -- Ensure they are able to
+                AND (jb->>'user_id')::uuid = %s
+        )
+    """, (str(uuid), Json(data), str(uuid)))
+
+
+    # Books
+    database.cur.execute("""
+    DELETE FROM public.books AS existing
+    WHERE existing.user_id = %s
+        -- Search for entries that dont exist in json
+        AND NOT EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(
+                %s::jsonb->'books'
+            ) AS jb
+            WHERE (jb->>'book_id')::uuid = existing.book_id
+                -- Ensure they are able to
+                AND (jb->>'user_id')::uuid = %s
+        )
+    """, (str(uuid), Json(data), str(uuid)))
 
 
 

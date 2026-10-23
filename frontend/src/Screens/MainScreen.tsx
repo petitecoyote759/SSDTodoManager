@@ -532,7 +532,44 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                               >
                                   {entry.description || <i className="enter-description-default">"Click to add description..."</i>}
                               </div>
-                          )}    
+                          )}
+
+                          <div className="note-entry-description-buttons">
+                            <button
+                              className="note-entry-delete"
+                              onPointerDown={e => e.stopPropagation()}
+                              onClick={() => {
+                                const confirmed = window.confirm("Are you sure you want to delete this entry?")
+
+                                if (confirmed == false) { return; }
+
+                                setNotes(previous =>
+                                  previous.map(otherNote =>
+                                    otherNote.note_id === note.note_id
+                                      ? {
+                                        ...otherNote,
+                                        entries: otherNote.entries.filter(
+                                          otherEntry => otherEntry.entry_id !== entry.entry_id
+                                        )
+                                      }
+                                    : otherNote
+                                  )
+                                )
+
+                                if (openEntry === entry.entry_id) {
+                                  setOpenEntry(null)
+                                }
+                              }}
+                            >
+                            Delete  
+                            </button>  
+
+                            <button
+                              className="note-entry-edit"
+                            >
+                              Edit
+                            </button>
+                          </div>    
                       </div>
                   )}
 

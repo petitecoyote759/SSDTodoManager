@@ -99,6 +99,30 @@
 
 
 
+.note-entry-description-buttons {
+    display: flex;
+    flex-direction: row;
+    color: inherit;
+}
+
+.note-entry-delete, .note-entry-edit {
+    background-color: rgba(0, 0, 0, 0.2);
+    width: 50%;
+    margin-top: 8px;
+    border: none;
+    color: inherit;
+}
+.note-entry-delete:hover, .note-entry-edit:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: inherit;
+}
+
+
+
+
+
+
+
 .completion-wrapper {
     position: relative;
     display: inline-block;
