@@ -217,7 +217,7 @@
 .note {
     position: absolute;
     width: 400px;
-    padding: 0 4px 12px;
+    padding: 0 0px 12px;
     border-radius: 12px;
     cursor: pointer;
     user-select: none;
