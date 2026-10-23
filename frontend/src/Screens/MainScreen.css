@@ -6,7 +6,8 @@
 
 
 .top-bar {
-    background-color: rgb(102, 102, 102);
+    background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), #6c458b;
+    border-bottom: 2px solid black;
     height: 40px;
     width: 100%;
     display: flex;
@@ -209,7 +210,8 @@
     flex: 1;
     overflow: auto;
     /*background-color: #777;*/
-    background-color: #1a161c;
+    background: #1c1124;
+    background: linear-gradient(0deg, rgba(28, 17, 36, 1) 0%, rgba(118, 72, 163, 1) 100%);
 }
 
 .note {
