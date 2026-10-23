@@ -10,7 +10,7 @@
     flex-direction: column;
     height: 100%;
     background: #1c1124;
-    background: linear-gradient(0deg, rgba(28, 17, 36, 1) 0%, rgba(118, 72, 163, 1) 100%);
+    background: linear-gradient(0deg, rgba(28, 17, 36, 1) 0%, rgba(88, 52, 123, 1) 100%);
 }
 .login-area {
     width: 400px;

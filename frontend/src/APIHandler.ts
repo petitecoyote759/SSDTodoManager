@@ -101,3 +101,18 @@ export async function getUserBooks(uuid: string, token: string) {
 
     return data
 }
+
+
+
+export async function saveBooks(uuid: string, token: string, books: Record<string, Book[]>) {
+    console.log(`Books : ${JSON.stringify(books)}`)
+    const response = fetch(`${url}/api/users/${uuid}/books`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token,
+            "recursive": "true"
+        },
+        body: JSON.stringify(books)
+    });
+}

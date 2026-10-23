@@ -108,3 +108,25 @@ def modifyBook(uuid: UUID, buid: UUID):
     
     return 'Failed', 400
 
+
+
+
+
+
+@app.route('/api/users/<uuid:uuid>/books', methods=['PUT'])
+def modifyBooks(uuid: UUID):
+
+    auth: tuple[str, int] = TokenHandler.checkAuthorisation(uuid)
+    if auth[1] != 200:
+        return auth
+
+
+    data = request.get_json()
+    print(data)
+    if data.get("books") == None:
+        return 'Missing parameter books', 400
+
+    result = DBHandler.setBooksRecursive(uuid, data)
+
+    return 'Successful', 200
+    

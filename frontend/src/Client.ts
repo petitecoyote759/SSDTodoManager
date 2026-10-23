@@ -1,4 +1,4 @@
-import { login, getUserData, getUserBooks } from "./APIHandler"
+import { login, getUserData, getUserBooks, saveBooks } from "./APIHandler"
 import { Book, Note, Entry } from "./Classes"
 
 
@@ -56,5 +56,11 @@ export class Client {
         client.books = await getUserBooks(uuid, token)
 
         return client
+    }
+
+
+
+    async save() {
+        saveBooks(this.uuid, this.getToken(), {"books": this.books})
     }
 }

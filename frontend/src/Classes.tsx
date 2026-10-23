@@ -2,12 +2,14 @@ import {darkenColour} from "./DarkenColour"
 
 
 export class Book {
-    constructor(name: string, notes: Note[] = []) {
+    constructor(name: string, book_id: string, notes: Note[] = []) {
         this.name = name
         this.notes = notes
+        this.book_id = book_id
     }
 
     name: string
+    book_id: string
     notes: Note[]
 }
 
@@ -57,17 +59,17 @@ export class Entry {
 
         this.text = text
         this.priority = priority
-        this.dueDate = dueDate
+        this.due_date = dueDate
         this.description = description
-        this.uuid = crypto.randomUUID()
+        this.entry_id = crypto.randomUUID()
         this.completion = completion
     }
 
-    uuid: string
+    entry_id: string
     text: string
     description: string
     priority: number
-    dueDate: Date | null
+    due_date: Date | null
     completion: EntryCompletion
 }
 

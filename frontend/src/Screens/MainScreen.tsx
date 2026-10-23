@@ -258,7 +258,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
           return {
             ...note,
             entries: note.entries.map(entry => 
-              entry.uuid === entryId ? { ...entry, completion: newValue } : entry
+              entry.entry_id === entryId ? { ...entry, completion: newValue } : entry
             )
           }
         }))
@@ -305,6 +305,19 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
       <div className="main-content">
         <div className="top-bar">
           Test
+          <button
+          className="save-button"
+          onPointerDown={e => {e.stopPropagation()}}
+          onClick={() => {
+            client.books = client.books.map(book => 
+              book === openBook
+                ? { ...book, notes: notes}
+                : book
+            )
+
+            client.save()
+          }}
+          >Save</button>
         </div>
 
         <main className="list-area">
@@ -412,7 +425,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
             {/*Entries*/}
             {note.entries
-              .sort((a, b) => compareDates(a.dueDate, b.dueDate))
+              .sort((a, b) => compareDates(a.due_date, b.due_date))
               .sort((a, b) => b.priority - a.priority).map((entry, index) => {
 
               function addPriorityHeader() {
@@ -445,15 +458,15 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
                   <div 
-                      className={`note-entry ${entry.uuid === openEntry ? "note-entry-open" : ""}`} 
-                      style={{background: entry.uuid === openEntry 
+                      className={`note-entry ${entry.entry_id === openEntry ? "note-entry-open" : ""}`} 
+                      style={{background: entry.entry_id === openEntry 
                         ? "rgba(255, 255, 255, 0.4)"
                         : `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), ${note.colour}`}}
                   >
                     <div className="completion-wrapper">
                       <select
                         className="note-entry-completion"
-                        onChange={(e) => {handleCompletionChange(note.note_id, entry.uuid, e)}} 
+                        onChange={(e) => {handleCompletionChange(note.note_id, entry.entry_id, e)}} 
                         defaultValue={entry.completion}>
                         <option value={EntryCompletion.NotStarted} title="Not Started">🔴</option>
                         <option value={EntryCompletion.InProgress} title="In Progress">🟡</option>
@@ -473,21 +486,21 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                           className="note-entry-button"
                           onPointerDown={e => e.stopPropagation()}
                           onClick={() => 
-                              entry.uuid == openEntry ? setOpenEntry(null) : setOpenEntry(entry.uuid)
+                              entry.entry_id == openEntry ? setOpenEntry(null) : setOpenEntry(entry.entry_id)
                           }    
                       >
                           <span className="note-entry-text">
                               {entry.text}
                           </span>
 
-                        {entry.dueDate != null && (<span className="note-entry-date">{`${entry.dueDate?.toLocaleDateString()}`}</span>)}
+                        {entry.due_date != null && (<span className="note-entry-date">{`${entry.due_date?.toLocaleDateString()}`}</span>)}
                       </button>
                   </div>
 
 
 
 
-                  {entry.uuid === openEntry && (
+                  {entry.entry_id === openEntry && (
                       <div className="note-entry-description">
                           {editingDescription ? (
                               <textarea

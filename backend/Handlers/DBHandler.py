@@ -3,7 +3,7 @@ from typing import Any
 import psycopg2
 from psycopg2.errors import UniqueViolation
 from psycopg2.extensions import connection, cursor
-from psycopg2.extras import register_uuid
+from psycopg2.extras import register_uuid, Json
 from configparser import ConfigParser
 from pathlib import Path
 import os
@@ -376,6 +376,118 @@ def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
     result = database.cur.fetchall()
 
     return result[0][0]
+
+
+
+
+def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
+
+    # Books Updating
+    database.cur.execute("""
+    INSERT INTO public.books (book_id, user_id, name)
+    SELECT
+        -- Put data into books table
+        (b->>'book_id')::uuid,
+        (b->>'user_id')::uuid,
+        (b->>'name')
+    -- From json["books"]
+    FROM jsonb_array_elements(
+        %s::jsonb->'books'
+    ) as b
+    -- Ensure this is actually a file the user should access
+    WHERE (b->>'user_id')::uuid = %s
+    -- If already exists
+    ON CONFLICT (book_id) DO UPDATE SET
+        name=EXCLUDED.name
+    """, (Json(data), str(uuid)))
+
+    database.conn.commit()
+
+
+    # Notes Updating
+    database.cur.execute("""
+    INSERT INTO public.notes (note_id, book_id, name, colour, white_text, posx, posy)
+    SELECT
+        -- Put data into notes table
+        (n->>'note_id')::uuid,
+        (b->>'book_id')::uuid,
+        (n->>'name'),
+        (n->>'colour'),
+        (n->>'white_text')::boolean,
+        (n->>'posx')::double precision,
+        (n->>'posy')::double precision
+    -- Get books from json["books"]
+    FROM jsonb_array_elements(
+        %s::jsonb->'books'    
+    ) as b
+    -- Get notes from book["notes"]
+    CROSS JOIN LATERAL
+        jsonb_array_elements(
+            COALESCE(b->'notes', '[]'::jsonb)
+        ) AS n
+    -- Ensure this is actually a file the user should access
+    WHERE (b->>'user_id')::uuid = %s
+    -- If already exists
+    ON CONFLICT (note_id) DO UPDATE SET
+        book_id = EXCLUDED.book_id,
+        name = EXCLUDED.name,
+        colour = EXCLUDED.colour,
+        white_text = EXCLUDED.white_text,
+        posx = EXCLUDED.posx,
+        posy = EXCLUDED.posy
+    """, (Json(data), str(uuid)))
+
+    database.conn.commit()
+
+
+    # Entries Updating
+    database.cur.execute("""
+    INSERT INTO public.entries (entry_id, note_id, text, priority, completion, due_date, description)
+    SELECT 
+        -- Put data into table
+        (e->>'entry_id')::uuid,
+        (n->>'note_id')::uuid, -- frontend entry doesnt have note_id
+        (e->>'text'),
+        (e->>'priority')::smallint,
+        (e->>'completion'),
+        (e->>'due_date')::date,
+        (e->>'description')
+    -- Get books from json["books"]
+    FROM jsonb_array_elements(
+        %s::jsonb->'books'
+    ) as b
+    -- Get notes from book["notes"]
+    CROSS JOIN LATERAL
+        jsonb_array_elements(
+            COALESCE(b->'notes', '[]'::jsonb)
+        ) as n
+    -- Get entries from note["entries"]
+    CROSS JOIN LATERAL
+        jsonb_array_elements(
+            COALESCE(n->'entries', '[]'::jsonb)
+        ) as e
+    -- Ensure this is actually a file the user should access
+    WHERE (b->>'user_id')::uuid = %s
+    -- If already exists
+    ON CONFLICT (entry_id) DO UPDATE SET
+        note_id = EXCLUDED.note_id,
+        text = EXCLUDED.text,
+        priority = EXCLUDED.priority,
+        completion = EXCLUDED.completion,
+        due_date = EXCLUDED.due_date,
+        description = EXCLUDED.description
+    """, (Json(data), str(uuid)))
+
+    database.conn.commit()
+
+
+
+
+
+
+
+
+
 
 
 
