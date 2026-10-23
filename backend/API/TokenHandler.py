@@ -51,8 +51,8 @@ def authenticateUser(uuid: UUID, token: str) -> bool:
         print("Invalid signature detected")
         return False # not valid
     
-    expiryDate: datetime.datetime = decodedToken["expiryDate"]
-    if expiryDate < datetime.datetime.now():
+    expiryDate: datetime.datetime = datetime.datetime.fromisoformat(decodedToken["expiryDate"])
+    if expiryDate < datetime.datetime.now().astimezone():
         return False
 
     return str(uuid) == decodedToken["uuid"]
