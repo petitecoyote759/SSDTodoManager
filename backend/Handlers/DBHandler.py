@@ -319,7 +319,6 @@ def getBooks(uuid: UUID) -> dict[str, str]:
     """, (str(uuid),))
 
     result: list[tuple[str, str]] = database.cur.fetchall()
-    print(result)
 
     outputDict: dict[str, str] = {}
     for book in result:
@@ -333,10 +332,10 @@ def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
 
     database.cur.execute("""
     SELECT json_build_object(
-        'book_id', b.book_id
+        'book_id', b.book_id,
         'user_id', b.user_id,
         'name', b.name,
-        'notes', COALESCE (
+        'notes', COALESCE ((
             SELECT json_agg(
                 json_build_object(
                     'note_id', n.note_id,
@@ -346,7 +345,7 @@ def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
                     'white_text', n.white_text,
                     'posx', n.posx,
                     'posy', n.posy,
-                    'entries', COALESCE(
+                    'entries', COALESCE((
                         SELECT json_agg(
                             json_build_object(
                                 'entry_id', e.entry_id,
@@ -359,18 +358,127 @@ def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
                         )
                         FROM public.entries e
                         WHERE e.note_id = n.note_id
-                    )
+                    ), '[]'::json)
                 )
             )
             FROM public.notes n
             WHERE n.book_id = b.book_id
-        )                 
+        ), '[]'::json)                 
     )
     FROM public.books b
     WHERE b.book_id = %s; 
-    """)
+    """, (str(uuid),))
 
     result = database.cur.fetchall()
-    print(result)
 
     return {}
+
+
+
+def deleteBook(buid: UUID):
+    """
+    Returns true if successful
+    """
+
+    database.cur.execute("""
+    DELETE FROM public.books
+    WHERE book_id = %s
+    """,(buid,))
+
+    database.conn.commit()
+
+    return database.cur.rowcount == 1
+
+
+def modifyBook(buid: UUID, name: str):
+
+    database.cur.execute("""
+    UPDATE public.books
+    SET name = %s
+    WHERE book_id = %s
+    """, (name, buid))
+
+    database.conn.commit()
+
+    return database.cur.rowcount == 1
+
+
+
+
+
+
+# << Notes >> #
+
+
+
+def createNote(buid: UUID, variables: dict[str, Any]) -> None | UUID:
+    # {"name": str, "colour": str, "white_text": bool, "posx": float, "posy": float}
+
+    database.cur.execute("""
+    INSERT INTO public.notes (book_id, name, colour, white_text, posx, posy)
+    VALUES (%s, %s, %s, %s, %s, %s)
+    RETURNING note_id
+    """, (str(buid), variables["name"], variables["colour"], variables["white_text"], variables["posx"], variables["posy"]))
+
+    database.conn.commit()
+
+    result = database.cur.fetchone()
+    if result == None:
+        return None
+
+    return UUID(result[0])
+
+
+
+def getNotes(buid: UUID) -> dict[str, tuple[str, str, bool, float, float]]:
+    """
+    Returns a dictionary, with the uuid of the note as the key, and the value is a tuple of
+    [name, colour, white_text, posx,  posy] with the types
+    [str,  str,    bool,       float, float]
+    """
+
+    database.cur.execute("""
+    SELECT note_id, name, colour, white_text, posx, posy FROM public.notes
+    WHERE book_id = %s
+    """, (str(buid),))
+
+    result: list[tuple[str, str, str, bool, float, float]] = database.cur.fetchall()
+
+    outputDict: dict[str, tuple[str, str, bool, float, float]] = {}
+    for note in result:
+        outputDict[note[0]] = (note[1], note[2], note[3], note[4], note[5])
+
+    return outputDict
+
+
+
+
+def deleteNote(nuid: UUID):
+
+    database.cur.execute("""
+    DELETE FROM public.notes 
+    WHERE note_id = %s
+    """, (str(nuid),))
+
+    database.conn.commit()
+
+    return database.cur.rowcount == 1
+
+
+
+def modifyNote(nuid: UUID, values: dict[str, Any]):
+
+    allowedValues: dict[str, type] = {"name": str, "colour": str, "white_text": bool, "posx": float, "posy": float}
+
+    for allowedValue in allowedValues:
+        if allowedValue not in values:
+            continue
+
+        database.cur.execute(f"""
+        UPDATE public.notes
+        SET {allowedValue} = %s
+        WHERE note_id = %s
+        """, (values[allowedValue], str(nuid)))
+
+        database.conn.commit()
+

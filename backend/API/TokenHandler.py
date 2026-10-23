@@ -2,9 +2,30 @@ import jwt, datetime
 from uuid import UUID
 import API.GlobalApp as GlobalApp, Settings as Settings
 from typing import Any
+from flask import request
 
 
 _signingKey: str = GlobalApp.private_key
+
+
+
+
+def checkAuthorisation(uuid: UUID) -> tuple[str, int]:
+    """Returns ['Success', 200] if authorized, or ['error message', code]"""
+
+    token: str | None = request.headers.get("Authorization")
+    if token == None:
+        return 'Invalid token', 400
+
+    if authenticateUser(uuid, token) == False: # not authorised
+        return 'User does not exist or you are not authorised', 401
+
+    return 'Success', 200
+
+
+
+
+
 
 
 def getUuidFromJwt(token: str) -> UUID | dict[str, str]:

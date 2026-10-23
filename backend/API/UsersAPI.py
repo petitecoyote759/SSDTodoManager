@@ -58,12 +58,10 @@ def createUser():
 @app.route('/api/users/<uuid:uuid>', methods=['DELETE'])
 def deleteUser(uuid: UUID):
 
-    token: str | None = request.headers.get("Authorization")
-    if token == None:
-        return 'Invalid token', 400
-
-    if TokenHandler.authenticateUser(uuid, token) == False: # not authorised
-        return 'User does not exist or you are not authorised', 401
+    
+    auth: tuple[str, int] = TokenHandler.checkAuthorisation(uuid)
+    if auth[1] != 200:
+        return auth
 
     result: bool = DBHandler.deleteUser(uuid)
 
@@ -80,12 +78,10 @@ def deleteUser(uuid: UUID):
 @app.route('/api/users/<uuid:uuid>', methods=['GET'])
 def getUserInfo(uuid: UUID):
 
-    token: str | None = request.headers.get("Authorization")
-    if token == None:
-        return 'Invalid token', 400
-
-    if TokenHandler.authenticateUser(uuid, token) == False: # not authorised
-        return 'User does not exist or you are not authorised', 401
+    
+    auth: tuple[str, int] = TokenHandler.checkAuthorisation(uuid)
+    if auth[1] != 200:
+        return auth
 
     result = DBHandler.getUserInfo(uuid)
 
@@ -103,14 +99,12 @@ def getUserInfo(uuid: UUID):
 @app.route('/api/users/<uuid:uuid>', methods=['PUT'])
 def modifyUser(uuid: UUID):
 
-    token: str | None = request.headers.get("Authorization")
-    if token == None:
-        return 'Invalid token', 400
+    
+    auth: tuple[str, int] = TokenHandler.checkAuthorisation(uuid)
+    if auth[1] != 200:
+        return auth
 
     data = request.get_json()
-
-    if TokenHandler.authenticateUser(uuid, token) == False: # not authorised
-        return 'User does not exist or you are not authorised', 401
 
     result = DBHandler.modifyUser(uuid, data)
 

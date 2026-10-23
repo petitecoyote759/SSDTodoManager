@@ -17,11 +17,34 @@ if type(result) == dict:
 uuid: UUID = result
 print(uuid)
 
-#result = DBHandler.createBook(uuid, "testBook3")
+#result = DBHandler.createBook(uuid, "testBook")
 #print(result)
 
-#result = DBHandler.getBooksRecursive(uuid)
+result = DBHandler.getBooks(uuid)
+print(result)
+
+print("\n\nCLEAR\n\n")
+
+
+
+#result = DBHandler.createNote(UUID("44be5192-8464-456c-adde-3ed670248149"), {
+#    "name": "other note",
+#    "colour": "#12e2f3",
+#    "white_text": False,
+#    "posx": 73.1,
+#    "posy": 11.2,
+#})
 #print(result)
+
+#result = DBHandler.getBooksRecursive(UUID("44be5192-8464-456c-adde-3ed670248149"))
+#print(result)
+
+#result = DBHandler.getNotes(UUID("44be5192-8464-456c-adde-3ed670248149"))
+#print(result)
+
+
+
+#DBHandler.modifyNote(UUID("4f6c9c9e-182b-49e8-959a-258ae70ebf9d"), {"name": "changedName"})
 
 
 
