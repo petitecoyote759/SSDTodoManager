@@ -2,13 +2,13 @@
 // Docs: https://dbml.dbdiagram.io/docs
 
 Table books {
-  book_id uuid [primary key]
+  book_id uuid [primary key, unique, default: 'gen_random_uuid()']
   user_id uuid [primary key]
   name varchar(255) [not null]
 }
 
 Table notes {
-  note_id uuid [primary key]
+  note_id uuid [primary key, unique, default: 'gen_random_uuid()']
   book_id uuid [primary key]
   name varchar(255) [not null]
   colour varchar(15) [not null]
@@ -18,7 +18,7 @@ Table notes {
 }
 
 Table entries {
-  entry_id uuid [primary key]
+  entry_id uuid [primary key, unique, default: 'gen_random_uuid()']
   note_id uuid [primary key]
   text varchar(255) [not null]
   completion varchar(255) [not null]
@@ -31,10 +31,12 @@ Table entries {
 
 
 Table users {
-  user_id uuid [primary key]
+  user_id uuid [primary key, unique, default: 'gen_random_uuid()']
   username varchar(255) [not null]
+  password_hash varchar(255) [not null]
+  email varchar(255) [not null, unique]
   profile_picture varchar(255)
-  created_at timestamp [not null]
+  created_at timestamp [not null, default: 'CURRENT_TIMESTAMP']
 }
 
 
