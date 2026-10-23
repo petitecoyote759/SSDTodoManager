@@ -25,6 +25,21 @@
 
 
 
+.save-button {
+    margin-left: auto;
+    background-color: #4d2d66;
+    border: none;
+    border-left: 2px solid black; 
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+
+
+
 
 
 
