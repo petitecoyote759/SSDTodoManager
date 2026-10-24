@@ -402,7 +402,6 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
         name=EXCLUDED.name
     """, (Json(data), str(uuid)))
 
-    database.conn.commit()
 
 
     # Notes Updating
@@ -437,8 +436,6 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
         posx = EXCLUDED.posx,
         posy = EXCLUDED.posy
     """, (Json(data), str(uuid)))
-
-    database.conn.commit()
 
 
     # Entries Updating
@@ -479,7 +476,6 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
         description = EXCLUDED.description
     """, (Json(data), str(uuid)))
 
-    database.conn.commit()
 
 
 
@@ -550,6 +546,8 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
                 AND (jb->>'user_id')::uuid = %s
         )
     """, (str(uuid), Json(data), str(uuid)))
+    
+    database.conn.commit()
 
 
 
