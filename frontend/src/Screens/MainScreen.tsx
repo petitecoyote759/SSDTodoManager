@@ -104,14 +104,28 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
+    
+    // Source - https://stackoverflow.com/a/44134328
+    // Posted by Juraj, modified by community. See post 'Timeline' for change history
+    // Retrieved 2026-10-24, License - CC BY-SA 4.0
+    function hslToHex(h: number, s: number, l: number): string {
+      l /= 100;
+      const a = s * Math.min(l, 1 - l) / 100;
+      const f = (n: number) => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+      };
+      return `#${f(0)}${f(8)}${f(4)}`;
+    }
 
     function createNote() {
-      const r = Math.floor(Math.random() * 100) + 100
-      const g = Math.floor(Math.random() * 100) + 100
-      const b = Math.floor(Math.random() * 100) + 100 
+      const h = Math.floor(Math.random() * 360)
+      const s = Math.floor(Math.random() * 70) + 20
+      const l = Math.floor(Math.random() * 70) + 20 
 
       setNotes(prev => [...prev, 
-        new Note(crypto.randomUUID(), "note", 0, 0, `rgb(${r}, ${g}, ${b})`)]
+        new Note(crypto.randomUUID(), "note", 0, 0, hslToHex(h, s, l))]
       )
     }
 
