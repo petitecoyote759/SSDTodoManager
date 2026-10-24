@@ -1,4 +1,4 @@
-import { Book } from "./Classes";
+import { Book, Note, Entry, EntryCompletion } from "./Classes";
 
 
 const url = "http://127.0.0.1:5000"
@@ -97,9 +97,38 @@ export async function getUserBooks(uuid: string, token: string) {
 
     const json = await response.json()
     console.log(`JSON = ${JSON.stringify(json["books"])}`)
-    const data: Book[] = json["books"]
 
-    return data
+    return (json.books ?? []).map((bookData: any) => 
+        new Book(
+            bookData.name,
+            bookData.book_id,
+            (bookData.notes ?? []).map((noteData: any) => 
+                new Note(noteData.note_id,
+                    noteData.name,
+                    noteData.posx,
+                    noteData.posy,
+                    noteData.colour,
+                    (noteData.entries ?? []).map((entryData: any) =>
+                        Object.assign(
+                            new Entry(
+                                entryData.text,
+                                entryData.priority,
+                                entryData.due_date
+                                    ? new Date(entryData.due_date)
+                                    : null,
+                                entryData.description,
+                                entryData.completion
+                            ),
+                            {
+                                entry_id: entryData.entry_id
+                            }
+                        )
+                    ),
+                    noteData.white_text
+                )
+            )
+        )
+    )   
 }
 
 
