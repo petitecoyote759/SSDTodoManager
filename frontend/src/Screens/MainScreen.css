@@ -72,6 +72,17 @@
     letter-spacing: 1px;
 }
 
+.add-note-button {
+    background-color: #2d6643;
+    border: none;
+    border-left: 2px solid black; 
+    width: 50px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
 
 

@@ -105,6 +105,15 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
+    function createNote() {
+      const r = Math.floor(Math.random() * 100) + 100
+      const g = Math.floor(Math.random() * 100) + 100
+      const b = Math.floor(Math.random() * 100) + 100 
+
+      setNotes(prev => [...prev, 
+        new Note(crypto.randomUUID(), "note", 0, 0, `rgb(${r}, ${g}, ${b})`)]
+      )
+    }
 
 
 
@@ -350,7 +359,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
       <div className="main-content">
         <div className="top-bar">
-          Test
+          Search...
           <button
           className="save-button"
           onPointerDown={e => {e.stopPropagation()}}
@@ -364,6 +373,16 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             client.save()
           }}
           >Save</button>
+
+          <button
+            className="add-note-button"
+            onPointerDown={e => {e.stopPropagation()}}
+            onClick = {() => {
+              createNote()
+            }}
+          >
+            +
+          </button>
         </div>
 
         <main className="list-area">
