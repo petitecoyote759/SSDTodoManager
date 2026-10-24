@@ -476,10 +476,10 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                       </select>
 
                       <span className="completion-tooltip">
-                        {entry.completion === EntryCompletion.NotStarted && "Not Started"}
-                        {entry.completion === EntryCompletion.InProgress && "In Progress"}
-                        {entry.completion === EntryCompletion.Completed && "Completed"}
-                        {entry.completion === EntryCompletion.Blocked && "Blocked"}
+                        {entry.completion == EntryCompletion.NotStarted && "Not Started"}
+                        {entry.completion == EntryCompletion.InProgress && "In Progress"}
+                        {entry.completion == EntryCompletion.Completed && "Completed"}
+                        {entry.completion == EntryCompletion.Blocked && "Blocked"}
                       </span>
                     </div>
 
