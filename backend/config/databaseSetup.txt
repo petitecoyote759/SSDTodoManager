@@ -9,7 +9,7 @@ CREATE TABLE "notes" (
   "note_id" uuid UNIQUE DEFAULT gen_random_uuid(),
   "book_id" uuid,
   "name" varchar(255) NOT NULL,
-  "colour" varchar(15) NOT NULL,
+  "colour" varchar(31) NOT NULL,
   "white_text" boolean NOT NULL,
   "posx" float NOT NULL,
   "posy" float NOT NULL,
