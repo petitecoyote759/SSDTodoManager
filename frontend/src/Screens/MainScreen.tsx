@@ -63,6 +63,52 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
+    const [contextMenu, setContextMenu] = useState<{noteId: string, x: number, y: number} | null>(null) 
+
+    function handleNoteContextMenu(e: React.MouseEvent<HTMLDivElement>, note: Note) {
+      e.preventDefault()
+
+      setContextMenu({
+        noteId: note.note_id,
+        x: e.clientX,
+        y: e.clientY
+      })
+    }
+
+    function deleteNote(noteId: string) {
+      const confirmed = window.confirm("Are you sure you want to delete this note?")
+
+      if (confirmed == false) { return; }
+
+      // Include all notes but the one selected
+      setNotes(prev => 
+        prev.filter(note => note.note_id !== noteId)
+      )
+
+      setContextMenu(null)
+    }
+
+    useEffect(() => {
+      function handleClickOutside() {
+        setContextMenu(null)
+      }
+
+      document.addEventListener("click", handleClickOutside)
+
+      return () => {
+        document.removeEventListener("click", handleClickOutside)
+      }
+    })
+
+
+
+
+
+
+
+
+
+
 
 
     function saveNoteName(note: Note) {
@@ -277,30 +323,30 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
     return (
-        <div className="app">
-      <aside className="sidebar" style={{width : sidebarWidth}}>
-        {/*Books Bar*/}
-        <div className="bookBar">
-          <div className="bookBar-title">
-            <h1 className="books-title">Books</h1>
+      <div className="app">
+        <aside className="sidebar" style={{width : sidebarWidth}}>
+          {/*Books Bar*/}
+          <div className="bookBar">
+            <div className="bookBar-title">
+              <h1 className="books-title">Books</h1>
+            </div>
+            {/*Books go here*/}
           </div>
-          {/*Books go here*/}
-        </div>
 
 
         
 
-        {/*User Profile*/}
-        <div className="user-profile">
-          Here is the user
-          {/*Add onclick stuff to show info*/}
-        </div>
-      </aside>
+          {/*User Profile*/}
+          <div className="user-profile">
+            Here is the user
+            {/*Add onclick stuff to show info*/}
+          </div>
+        </aside>
 
-      <div 
-        className={`resize-handle ${isDragging ? 'dragging': ''}`}
-        onMouseDown={startResize}
-      />
+        <div 
+          className={`resize-handle ${isDragging ? 'dragging': ''}`}
+          onMouseDown={startResize}
+        />
 
       <div className="main-content">
         <div className="top-bar">
@@ -329,6 +375,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             /*Notes*/
             <div key={note.note_id}
               className="note"
+              onContextMenu={e => handleNoteContextMenu(e, note)}
               style={{
                 left: note.posx,
                 top: note.posy,
@@ -642,6 +689,41 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
           ))}
         </main>
       </div>
+
+
+      {/*Right Click Menu*/}
+      {contextMenu && (() => {
+        const note = notes.find(n => n.note_id === contextMenu.noteId)
+
+        if (note == null) { return null; }
+
+        return (
+          <div 
+            className="note-context-menu"
+            style={{
+              left: contextMenu.x,
+              top: contextMenu.y
+            }}
+            onClick={e => e.stopPropagation()}
+            onPointerDown={e => e.stopPropagation()}
+            onContextMenu={e => e.preventDefault()}
+          >
+            <button
+              type="button"
+              onClick={() => deleteNote(note.note_id)}
+            >
+              Delete note
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {copyNote(note); setContextMenu(null)}}
+            >
+              Copy note
+            </button>
+          </div>
+        )
+      })()}
     </div>
     )
 }
