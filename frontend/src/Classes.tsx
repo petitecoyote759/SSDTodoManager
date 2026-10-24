@@ -17,7 +17,7 @@ export class Book {
 
 export class Note {
     constructor(
-        id: number, name: string, positionX: number, positionY: number, 
+        id: string, name: string, positionX: number, positionY: number, 
         primaryColour: string, entries: Entry[] = [], white_text: boolean = true) {
 
         this.name = name;
@@ -45,7 +45,7 @@ export class Note {
 
     entries: Entry[]
 
-    note_id: number
+    note_id: string
 }
 
 

@@ -35,7 +35,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     const [items, setItems] = useState<Item[]>([])
 
 
-    const [editingNoteId, setEditingNoteID] = useState<number | null>(null)
+    const [editingNoteId, setEditingNoteID] = useState<string | null>(null)
     const [editedNoteName, setEditedNoteName] = useState("")
 
 
@@ -47,7 +47,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
     const [notes, setNotes] = useState<Note[]>(openBook.notes)
 
-    const [draggingNoteID, setDraggingNoteID] = useState<number | null>(null)
+    const [draggingNoteID, setDraggingNoteID] = useState<string | null>(null)
     const dragOffset = React.useRef({ x: 0, y: 0 })
 
 
@@ -78,7 +78,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
-    function changeNoteColour(noteId: number, colour: string) {
+    function changeNoteColour(noteId: string, colour: string) {
     setNotes(previous =>
         previous.map(note => 
         note.note_id === noteId ? {...note, 
@@ -93,7 +93,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     }
 
 
-    const [openEntryFormID, setOpenEntryFormID] = useState<number | null>(null)
+    const [openEntryFormID, setOpenEntryFormID] = useState<string | null>(null)
     const [entryText, setEntryText] = useState('')
     const [entryPriority, setEntryPriority] = useState<number>(0)
     const [entryDueDate, setEntryDueDate] = useState('')
@@ -247,7 +247,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
-    function handleCompletionChange(noteId: number, entryId: string, event: ChangeEvent<HTMLSelectElement>) {
+    function handleCompletionChange(noteId: string, entryId: string, event: ChangeEvent<HTMLSelectElement>) {
       const newValue: EntryCompletion = Number(event.target.value) as EntryCompletion
 
 
