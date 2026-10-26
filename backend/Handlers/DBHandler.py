@@ -392,18 +392,18 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
     SELECT
         -- Put data into books table
         (b->>'book_id')::uuid,
-        (b->>'user_id')::uuid,
+        %s::uuid,
         (b->>'name')
     -- From json["books"]
     FROM jsonb_array_elements(
         %s::jsonb->'books'
     ) as b
-    -- Ensure this is actually a file the user should access
-    WHERE (b->>'user_id')::uuid = %s
     -- If already exists
     ON CONFLICT (book_id) DO UPDATE SET
         name=EXCLUDED.name
-    """, (Json(data), str(uuid)))
+    """, (str(uuid), Json(data)))
+    
+    database.conn.commit()
 
 
 
@@ -428,8 +428,6 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
         jsonb_array_elements(
             COALESCE(b->'notes', '[]'::jsonb)
         ) AS n
-    -- Ensure this is actually a file the user should access
-    WHERE (b->>'user_id')::uuid = %s
     -- If already exists
     ON CONFLICT (note_id) DO UPDATE SET
         book_id = EXCLUDED.book_id,
@@ -438,7 +436,9 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
         white_text = EXCLUDED.white_text,
         posx = EXCLUDED.posx,
         posy = EXCLUDED.posy
-    """, (Json(data), str(uuid)))
+    """, (Json(data),))
+    
+    database.conn.commit()
 
 
     # Entries Updating
@@ -450,7 +450,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
         (n->>'note_id')::uuid, -- frontend entry doesnt have note_id
         (e->>'text'),
         (e->>'priority')::smallint,
-        (e->>'completion'),
+        (e->>'completion')::smallint,
         (e->>'due_date')::date,
         (e->>'description')
     -- Get books from json["books"]
@@ -467,8 +467,6 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
         jsonb_array_elements(
             COALESCE(n->'entries', '[]'::jsonb)
         ) as e
-    -- Ensure this is actually a file the user should access
-    WHERE (b->>'user_id')::uuid = %s
     -- If already exists
     ON CONFLICT (entry_id) DO UPDATE SET
         note_id = EXCLUDED.note_id,
@@ -477,7 +475,9 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
         completion = EXCLUDED.completion,
         due_date = EXCLUDED.due_date,
         description = EXCLUDED.description
-    """, (Json(data), str(uuid)))
+    """, (Json(data),))
+    
+    database.conn.commit()
 
 
 
@@ -507,10 +507,10 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
                 COALESCE(jn->'entries', '[]'::jsonb)
             ) AS je
             WHERE (je->>'entry_id')::uuid = existing.entry_id
-                -- Ensure they are able to
-                AND (jb->>'user_id')::uuid = %s
         )
-    """, (str(uuid), Json(data), str(uuid)))
+    """, (str(uuid), Json(data)))
+    
+    database.conn.commit()
 
     # Notes
     database.cur.execute("""
@@ -528,10 +528,10 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
                 COALESCE(jb->'notes', '[]'::jsonb)
             ) AS jn
             WHERE (jn->>'note_id')::uuid = existing.note_id
-                -- Ensure they are able to
-                AND (jb->>'user_id')::uuid = %s
         )
-    """, (str(uuid), Json(data), str(uuid)))
+    """, (str(uuid), Json(data)))
+    
+    database.conn.commit()
 
 
     # Books
@@ -545,10 +545,8 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
                 %s::jsonb->'books'
             ) AS jb
             WHERE (jb->>'book_id')::uuid = existing.book_id
-                -- Ensure they are able to
-                AND (jb->>'user_id')::uuid = %s
         )
-    """, (str(uuid), Json(data), str(uuid)))
+    """, (str(uuid), Json(data)))
     
     database.conn.commit()
 
