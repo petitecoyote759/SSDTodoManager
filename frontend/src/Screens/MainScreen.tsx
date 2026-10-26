@@ -42,7 +42,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     const [openEntry, setOpenEntry] = useState<string | null>(null)
 
 
-    const [openBook, setOpenBook] = useState<Book>(client.books[0])
+    const [openBook, setOpenBook] = useState<Book>(client.books.length == 0 ? new Book("<<DEFAULT_BOOK>>", "") : client.books[0])
 
 
     const [notes, setNotes] = useState<Note[]>(openBook.notes)

@@ -61,6 +61,6 @@ export class Client {
 
 
     async save() {
-        saveBooks(this.uuid, this.getToken(), {"books": this.books})
+        saveBooks(this.uuid, this.getToken(), {"books": this.books.filter(book => book.name !== "<<DEFAULT_BOOK>>" && book.book_id !== "")})
     }
 }

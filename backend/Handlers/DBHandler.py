@@ -375,6 +375,9 @@ def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
 
     result = database.cur.fetchall()
 
+    if (result[0][0]["books"] == None):
+        return {"books": []}
+
     return result[0][0]
 
 
