@@ -38,6 +38,8 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     const [editingNoteId, setEditingNoteID] = useState<string | null>(null)
     const [editedNoteName, setEditedNoteName] = useState("")
 
+    const [bookFormOpen, setBookFormOpen] = useState<boolean>(false)
+
 
     const [openEntry, setOpenEntry] = useState<string | null>(null)
 
@@ -201,6 +203,28 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
+
+    const [bookFormName, setBookFormName] = useState<string>("")
+    function createBook(name: string, e: Parameters<NonNullable<React.ComponentProps<"form">["onSubmit"]>>[0]) {
+      e.preventDefault()
+      if (name == "") { return; }
+
+      const book: Book = new Book(name, crypto.randomUUID())
+      client.books.push(book)
+      if (openBook.book_id == "") 
+      { 
+        setOpenBook(book) 
+      }
+
+      setBookFormOpen(false)
+    }
+
+
+
+
+
+
+
     // << Resizing Sidebar >> //
     function startResize(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
@@ -353,7 +377,49 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             <div className="bookBar-title">
               <h1 className="books-title">Books</h1>
             </div>
+            <div className="bookBar-tools">
+              <div className="bookBar-search">
+                <textarea 
+                  placeholder="search books..."
+                  onKeyDown={e => {
+                    if (e.key == "Enter") {
+                      e.preventDefault()
+                      e.currentTarget.blur()
+                    }
+                  }}  
+                >
+                </textarea>
+              </div>
+            </div>
+            {bookFormOpen && (() =>
+              <div className="create-book-form-wrapper">
+                <h3 className="create-book-form-title">Create Book</h3>
+
+                <form 
+                  className="create-book-form"
+                  onSubmit={(e) => createBook(bookFormName, e)}
+                >
+                  <div className="book-form-section">
+                    <textarea
+                      id={`book-name`}
+                      value={bookFormName}
+                      onChange={e => setBookFormName(e.target.value)}
+                      placeholder="book name..."
+                    />
+                  </div>
+                  <button type="submit" className="book-form-submit">Create</button>
+                </form>
+              </div>
+            )()}
+            <button className="bookBar-create-open"
+              onPointerDown={e => e.stopPropagation()}
+              onClick={e => setBookFormOpen(!bookFormOpen)}
+            >
+              {bookFormOpen === true ? '⮝' : '⮟'}
+            </button>
             {/*Books go here*/}
+
+            
           </div>
 
 
@@ -399,6 +465,9 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
           </button>
         </div>
 
+
+        {/* Main area only open if there is a book */}
+        {openBook.book_id != "" && (() => 
         <main className="list-area">
           
 
@@ -721,6 +790,18 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
           ))}
         </main>
+        )()}
+
+
+        {/*  */}
+        {openBook.book_id == "" && (() =>
+        <main className="no-books-area">
+          <div className="no-books-text">
+            Click on a book or create a new one to start!
+          </div>
+        </main>
+        )()}
+
       </div>
 
 

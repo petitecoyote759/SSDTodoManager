@@ -92,6 +92,43 @@
 
 
 
+.no-books-area {
+
+}
+
+
+.no-books-text {
+    width: 200px;
+    height: 100px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    position: absolute;
+    background: #693c73;
+    background: linear-gradient(0deg, rgba(105, 60, 115, 1) 0%, rgba(169, 97, 232, 1) 100%);
+
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    margin: auto;
+
+    color: #f4f4f5;
+    border: 1px solid #34353f;
+    box-shadow: 0 24px 70px rgb(0 0 0 / 30%);
+    font-family: inherit;
+
+    border-radius: 16px;
+    padding: 16px;
+
+    text-align: center;
+}
+
+
 
 
 
@@ -284,6 +321,147 @@
 .books-title {
     display: flex;
 }
+
+
+.bookBar-tools {
+    display: flex;
+    flex-direction: column;
+    height: 30px;
+    width: 100%;
+
+}
+.bookBar-search {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    overflow: hidden;
+
+    background-color: #1c1124;
+    border: none;
+
+    margin: 0;
+    padding: 0;
+}
+.bookBar-search textarea {
+    display: block;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    resize: none;
+    margin: 0;
+
+    overflow: auto;
+    scrollbar-width: none;
+
+    background-color: #1c1124;
+    border: none;
+    color: white;
+
+    padding-left: 4px;
+}
+
+.bookBar-search textarea::-webkit-scrollbar {
+    display: none
+}
+
+.bookBar-create-open {
+    flex: 1;
+    width: 100%;
+    height: 24px;
+    box-sizing: border-box;
+    
+    background-color: #2e2338;
+    border: none;
+    color: white;
+    font-size: 15px;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+
+
+
+
+
+
+.create-book-form-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+.create-book-form-title {
+    color: white;
+    text-align: center;
+    font-weight: 500;
+    font-size: 20px;
+    padding-top: 4px;
+}
+
+
+
+.create-book-form {
+    display: flex;
+    flex-direction: row;
+    height: 32px;
+    background: #331e42;
+}
+.book-form-section {
+    min-width: 0;
+    flex: 1;
+    height: 100%;
+    border-top: 1px solid black;
+    background: inherit;
+}
+.book-form-section textarea {
+    display: block;
+    box-sizing: border-box;
+    resize: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+
+    overflow: auto;
+    scrollbar-width: none;
+
+    border: none;
+    border-right: 1px solid black;
+
+    padding-top: 2px;
+    padding-left: 4px;
+
+    background: #1f1924;
+    color: white;
+    background: inherit;
+}
+.book-form-submit {
+    align-self: flex-end;
+    width: 64px;
+    height: 100%;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    
+    border: none;
+    border-left: 1px solid black;
+
+    background: #1f1924;
+    color: white;
+    border-top: 1px solid black;
+    background: inherit;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
