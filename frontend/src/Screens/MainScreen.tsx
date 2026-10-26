@@ -442,7 +442,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             )()}
             <button className="bookBar-create-open"
               onPointerDown={e => e.stopPropagation()}
-              onClick={e => setBookFormOpen(!bookFormOpen)}
+              onClick={e => {setBookFormOpen(!bookFormOpen); setBookFormName("")}}
             >
               {bookFormOpen === true ? '⮝' : '⮟'}
             </button>
