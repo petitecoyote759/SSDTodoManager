@@ -451,7 +451,16 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             
             {/*Books go here*/}
             {client.books
-              .filter((b) => b.name.toLocaleLowerCase().includes(bookSearch.toLocaleLowerCase()) && b.book_id != "")
+              .filter((b) => { 
+                if (b.book_id == "") return false 
+                
+                try {
+                  const regex = new RegExp(bookSearch, "i")
+                  return regex.test(b.name)
+                } catch {
+                  return false
+                }
+              })
               .map((book, index) => (
                 <div key={book.book_id} className="book">
                   <button
