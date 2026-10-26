@@ -35,6 +35,9 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     const [items, setItems] = useState<Item[]>([])
 
 
+    const [bookSearch, setBookSearch] = useState<string>("")
+
+
 
     const [changesMade, setChangesMade] = useState<boolean>(false)
 
@@ -412,6 +415,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                       e.currentTarget.blur()
                     }
                   }}  
+                  onChange={e => setBookSearch(e.target.value)}
                 >
                 </textarea>
               </div>
@@ -442,17 +446,19 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             >
               {bookFormOpen === true ? '⮝' : '⮟'}
             </button>
-            {/*Books go here*/}
 
-            {/*Entries*/}
+
+            
+            {/*Books go here*/}
             {client.books
-              .filter((b) => b.name.includes("") && b.book_id != "")
+              .filter((b) => b.name.toLocaleLowerCase().includes(bookSearch.toLocaleLowerCase()) && b.book_id != "")
               .map((book, index) => (
                 <div key={book.book_id} className="book">
                   <button
                     className="book-button"
                     onPointerDown={e => e.stopPropagation()}
                     onClick={e => { e.preventDefault(); setOpenBook(book); }}
+                    value={bookSearch}
                   >
                     {book.name}
                   </button>
