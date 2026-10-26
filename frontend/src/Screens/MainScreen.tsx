@@ -599,6 +599,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                   )}><span className="note-header-invert-symbol">☼</span>
                 </button>
 
+                {/*
                 <button
                   className="note-button note-header-copy-button"
                   onPointerDown={e => e.stopPropagation()}
@@ -606,7 +607,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                   >
                   ⮺
                 </button>
-
+                */}
 
                 <label
                   className="note-button note-colour-button"
