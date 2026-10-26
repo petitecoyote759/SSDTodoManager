@@ -71,6 +71,10 @@
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+.save-button:disabled {
+    background-color: #333;
+}
+
 
 .add-note-button {
     background-color: #2d6643;

@@ -35,6 +35,10 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     const [items, setItems] = useState<Item[]>([])
 
 
+
+    const [changesMade, setChangesMade] = useState<boolean>(false)
+
+
     const [editingNoteId, setEditingNoteID] = useState<string | null>(null)
     const [editedNoteName, setEditedNoteName] = useState("")
 
@@ -83,7 +87,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
       if (confirmed == false) { return; }
 
       // Include all notes but the one selected
-      setNotes(prev => 
+      updateNotes(prev => 
         prev.filter(note => note.note_id !== noteId)
       )
 
@@ -126,7 +130,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
       const s = Math.floor(Math.random() * 70) + 20
       const l = Math.floor(Math.random() * 70) + 20 
 
-      setNotes(prev => [...prev, 
+      updateNotes(prev => [...prev, 
         new Note(crypto.randomUUID(), "note", 0, 0, hslToHex(h, s, l))]
       )
     }
@@ -137,7 +141,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
     function saveNoteName(note: Note) {
-    setNotes(previous => 
+    updateNotes(previous => 
         previous.map(noteAlt => 
         noteAlt.note_id === note.note_id ?
             {...noteAlt, name: editedNoteName.trim() || noteAlt.name } : noteAlt
@@ -167,7 +171,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
     function changeNoteColour(noteId: string, colour: string) {
-    setNotes(previous =>
+    updateNotes(previous =>
         previous.map(note => 
         note.note_id === noteId ? {...note, 
             colour: colour} : note
@@ -201,7 +205,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
         dueDate
     )
 
-    setNotes(previous =>
+    updateNotes(previous =>
         previous.map(noteAlt =>
         noteAlt.note_id === note.note_id ?
         { ...noteAlt, entries: [...noteAlt.entries, newEntry] } : noteAlt
@@ -274,7 +278,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
     function saveDescription(entry: Entry, description: string) {
-        setNotes(previous => 
+        updateNotes(previous => 
             previous.map(noteAlt => ({
                 ...noteAlt,
                 entries: noteAlt.entries.map(entryAlt =>
@@ -348,7 +352,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             Math.min(bounds.height - height, e.clientY - bounds.top - dragOffset.current.y))
 
 
-        setNotes(previous => previous.map(noteAlt => noteAlt.note_id === note.note_id ? {...noteAlt, posx: positionX, posy: positionY} : noteAlt))
+        updateNotes(previous => previous.map(noteAlt => noteAlt.note_id === note.note_id ? {...noteAlt, posx: positionX, posy: positionY} : noteAlt))
     }
 
 
@@ -361,7 +365,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
       const newValue: EntryCompletion = Number(event.target.value) as EntryCompletion
 
 
-      setNotes((prevNotes: Note[]) => 
+      updateNotes((prevNotes: Note[]) => 
         prevNotes.map(note => {
           if (note.note_id !== noteId) { return note; }
 
@@ -381,8 +385,12 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
-
-
+    function updateNotes(
+      updater: (previous: Note[]) => Note[]
+    ) {
+      setNotes(updater)
+      setChangesMade(true)
+    }
 
 
 
@@ -472,8 +480,9 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
         <div className="top-bar">
           Search...
           <button
-          className="save-button"
+          className={`save-button`}
           onPointerDown={e => {e.stopPropagation()}}
+          disabled={!changesMade}
           onClick={() => {
             client.books = client.books.map(book => 
               book === openBook
@@ -482,6 +491,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             )
 
             client.save()
+            setChangesMade(false)
           }}
           >Save</button>
 
@@ -566,7 +576,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                   className="note-button note-header-invert-button"
                   onPointerDown={e => e.stopPropagation()}
                   onClick={() => 
-                    setNotes(previous =>
+                    updateNotes(previous =>
                       previous.map(noteAlt => 
                         noteAlt.note_id === note.note_id ? {...noteAlt, white_text: noteAlt.white_text = !noteAlt.white_text} 
                         : noteAlt
@@ -723,7 +733,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
                                 if (confirmed == false) { return; }
 
-                                setNotes(previous =>
+                                updateNotes(previous =>
                                   previous.map(otherNote =>
                                     otherNote.note_id === note.note_id
                                       ? {
