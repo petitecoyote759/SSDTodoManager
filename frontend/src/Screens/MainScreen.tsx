@@ -149,6 +149,23 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
+    useEffect(() => {
+      const book: Book | undefined = client.books.find((v) => v.book_id == openBook.book_id)
+      if (book != null) {
+        book.notes = notes
+      }
+    }, [notes])
+
+    useEffect(() => {
+      setNotes(openBook.notes)
+    }, [openBook])
+
+
+
+
+
+
+
     function changeNoteColour(noteId: string, colour: string) {
     setNotes(previous =>
         previous.map(note => 
@@ -419,7 +436,21 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             </button>
             {/*Books go here*/}
 
-            
+            {/*Entries*/}
+            {client.books
+              .filter((b) => b.name.includes("") && b.book_id != "")
+              .map((book, index) => (
+                <div key={book.book_id} className="book">
+                  <button
+                    className="book-button"
+                    onPointerDown={e => e.stopPropagation()}
+                    onClick={e => { e.preventDefault(); setOpenBook(book); }}
+                  >
+                    {book.name}
+                  </button>
+                </div>
+              ))
+            }
           </div>
 
 
