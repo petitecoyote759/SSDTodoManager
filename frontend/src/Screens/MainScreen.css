@@ -688,6 +688,24 @@
     font-weight: bold;
     margin-right: auto;
 }
+.note-entry-text-editing {
+    display: block;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    resize: none;
+    margin: 0;
+
+    overflow: hidden;
+    white-space: nowrap;
+    scrollbar-width: none;
+
+    background-color: #1c1124;
+    border: none;
+    color: white;
+
+    padding-left: 4px;
+}
 
 .note-entry-date {
     white-space: nowrap;

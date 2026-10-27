@@ -32,6 +32,9 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     const [editingDescription, setEditingDescription] = useState<boolean>(false)
     const [editedDescription, setEditedDescription] = useState<string>("")
 
+    const [editingEntryId, setEditingEntryId] = useState<string | null>(null)
+    const [editingEntryName, setEditingEntryName] = useState<string>("")
+
     const [items, setItems] = useState<Item[]>([])
 
 
@@ -693,12 +696,30 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                           className="note-entry-button"
                           onPointerDown={e => e.stopPropagation()}
                           onClick={() => 
-                              entry.entry_id == openEntry ? setOpenEntry(null) : setOpenEntry(entry.entry_id)
+                              entry.entry_id == openEntry && editingEntryId == null ? setOpenEntry(null) : setOpenEntry(entry.entry_id)
                           }    
                       >
+                        {(editingEntryId != entry.entry_id && (
                           <span className="note-entry-text">
                               {entry.text}
-                          </span>
+                          </span>))
+                        }
+                        {
+                          (editingEntryId == entry.entry_id && (
+                            <input
+                              className="note-entry-text-editing"
+                              onKeyDown={e => {
+                                if (e.key == "Enter") {
+                                  e.preventDefault()
+                                  e.currentTarget.blur()
+                                }
+                              }}  
+                              value={editingEntryName}
+                              defaultValue={entry.text}
+                              onChange={e => setEditingEntryName(e.target.value)}
+                            />
+                          ))
+                        }
 
                         {entry.due_date != null && (<span className="note-entry-date">{`${entry.due_date?.toLocaleDateString()}`}</span>)}
                       </button>
@@ -772,8 +793,30 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
                             <button
                               className="note-entry-edit"
+                              onPointerDown={e => e.stopPropagation()}
+                              onClick={e => {
+                                if (entry.entry_id == editingEntryId) { // save
+                                  updateNotes(prev =>
+                                    prev.map(prevNote => 
+                                      prevNote.note_id == note.note_id ? {
+                                        ...prevNote,
+                                        entries: prevNote.entries.map(prevEntry =>
+                                          prevEntry.entry_id == entry.entry_id ? 
+                                          { ...prevEntry, text: editingEntryName.trim()}
+                                          : prevEntry
+                                        )
+                                      } : prevNote
+                                    )
+                                  )
+                                  setEditingEntryId(null)
+                                }
+                                else { // edit
+                                  setEditingEntryId(entry.entry_id) 
+                                  setEditingEntryName(entry.text)
+                                }
+                              }}
                             >
-                              Edit
+                              {entry.entry_id == editingEntryId ? "Save" : "Edit"}
                             </button>
                           </div>    
                       </div>
