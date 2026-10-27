@@ -1,48 +1,76 @@
 // Use DBML to define your database structure
 // Docs: https://dbml.dbdiagram.io/docs
 
+
+Table users {
+  user_id uuid [primary key, default: `gen_random_uuid()`]
+  username varchar(255) [not null]
+  password_hash varchar(255) [not null]
+  email varchar(255) [not null, unique]
+  profile_picture varchar(255)
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+}
+
 Table books {
-  book_id uuid [primary key, unique, default: 'gen_random_uuid()']
-  user_id uuid [primary key]
+  book_id uuid [primary key, default: `gen_random_uuid()`]
+  user_id uuid [not null]
   name varchar(255) [not null]
 }
 
 Table notes {
-  note_id uuid [primary key, unique, default: 'gen_random_uuid()']
-  book_id uuid [primary key]
+  note_id uuid [primary key, default: `gen_random_uuid()`]
+  book_id uuid [not null]
   name varchar(255) [not null]
-  colour varchar(15) [not null]
+  colour varchar(31) [not null]
   white_text boolean [not null]
   posx float [not null]
   posy float [not null]
 }
 
 Table entries {
-  entry_id uuid [primary key, unique, default: 'gen_random_uuid()']
-  note_id uuid [primary key]
+  entry_id uuid [primary key, default: `gen_random_uuid()`]
+  note_id uuid [not null]
   text varchar(255) [not null]
-  completion varchar(255) [not null]
+  completion smallint [not null, default: 0]
   priority smallint [not null]
   due_date date
-  description varchar(255) [not null]
+  description text [not null]
+}
+
+
+
+Table users_tags {
+  tag_id uuid [primary key, default: `gen_random_uuid()`]
+  user_id uuid [not null]
+
+  colour varchar(31) [not null]
+  name varchar(255) [not null]
+
+  indexes {
+    (user_id, name) [unique]
+  }
+}
+
+Table applied_tags {
+  tag_id uuid [not null]
+  entry_id uuid [not null]
+
+  indexes {
+    (tag_id, entry_id) [pk]
+  }
 }
 
 
 
 
 
-Table users {
-  user_id uuid [primary key, unique, default: 'gen_random_uuid()']
-  username varchar(255) [not null]
-  password_hash varchar(255) [not null]
-  email varchar(255) [not null, unique]
-  profile_picture varchar(255)
-  created_at timestamp [not null, default: 'CURRENT_TIMESTAMP']
-}
 
 
+Ref: users.user_id < books.user_id
+Ref: books.book_id < notes.book_id
+Ref: notes.note_id < entries.note_id
 
+Ref: users.user_id < users_tags.user_id
 
-Ref: users.user_id <? books.user_id
-Ref: books.book_id <? notes.book_id
-Ref: notes.note_id <? entries.note_id
+Ref: users_tags.tag_id < applied_tags.tag_id
+Ref: entries.entry_id < applied_tags.entry_id

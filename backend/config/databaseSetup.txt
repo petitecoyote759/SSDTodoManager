@@ -1,45 +1,61 @@
+CREATE TABLE "users" (
+  "user_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
+  "username" varchar(255) NOT NULL,
+  "password_hash" varchar(255) NOT NULL,
+  "email" varchar(255) UNIQUE NOT NULL,
+  "profile_picture" varchar(255),
+  "created_at" timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+);
+
 CREATE TABLE "books" (
-  "book_id" uuid UNIQUE DEFAULT gen_random_uuid(),
-  "user_id" uuid,
-  "name" varchar(255) NOT NULL,
-  PRIMARY KEY ("book_id", "user_id")
+  "book_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
+  "user_id" uuid NOT NULL,
+  "name" varchar(255) NOT NULL
 );
 
 CREATE TABLE "notes" (
-  "note_id" uuid UNIQUE DEFAULT gen_random_uuid(),
-  "book_id" uuid,
+  "note_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
+  "book_id" uuid NOT NULL,
   "name" varchar(255) NOT NULL,
   "colour" varchar(31) NOT NULL,
   "white_text" boolean NOT NULL,
   "posx" float NOT NULL,
-  "posy" float NOT NULL,
-  PRIMARY KEY ("note_id", "book_id")
+  "posy" float NOT NULL
 );
 
 CREATE TABLE "entries" (
-  "entry_id" uuid UNIQUE DEFAULT gen_random_uuid(),
-  "note_id" uuid,
+  "entry_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
+  "note_id" uuid NOT NULL,
   "text" varchar(255) NOT NULL,
-  "completion" varchar(255) NOT NULL,
-  "priority" smallint NOT NULL DEFAULT 0,
+  "completion" smallint NOT NULL DEFAULT 0,
+  "priority" smallint NOT NULL,
   "due_date" date,
-  "description" varchar(255) NOT NULL,
-  PRIMARY KEY ("entry_id", "note_id")
+  "description" text NOT NULL
 );
 
-CREATE TABLE "users" (
-  "user_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  "username" varchar(255) NOT NULL,
-  "email" varchar(255) NOT NULL UNIQUE,
-  "password_hash" varchar(255) NOT NULL,
-  "profile_picture" varchar(255),
-  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE "users_tags" (
+  "tag_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
+  "user_id" uuid NOT NULL,
+  "colour" varchar(31) NOT NULL,
+  "name" varchar(255) NOT NULL
 );
 
+CREATE TABLE "applied_tags" (
+  "tag_id" uuid NOT NULL,
+  "entry_id" uuid NOT NULL,
+  PRIMARY KEY ("tag_id", "entry_id")
+);
 
+CREATE UNIQUE INDEX ON "users_tags" ("user_id", "name");
 
 ALTER TABLE "books" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "notes" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("book_id") DEFERRABLE INITIALLY IMMEDIATE;
+
 ALTER TABLE "entries" ADD FOREIGN KEY ("note_id") REFERENCES "notes" ("note_id") DEFERRABLE INITIALLY IMMEDIATE;
 
+ALTER TABLE "users_tags" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "applied_tags" ADD FOREIGN KEY ("tag_id") REFERENCES "users_tags" ("tag_id") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "applied_tags" ADD FOREIGN KEY ("entry_id") REFERENCES "entries" ("entry_id") DEFERRABLE INITIALLY IMMEDIATE;
