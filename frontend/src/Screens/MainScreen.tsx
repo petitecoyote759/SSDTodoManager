@@ -34,9 +34,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
     const [editingEntryId, setEditingEntryId] = useState<string | null>(null)
     const [editingEntryName, setEditingEntryName] = useState<string>("")
-
-    const [items, setItems] = useState<Item[]>([])
-
+    const [tagMenuOpen, setTagMenuOpen] = useState<boolean>(false)
 
     const [bookSearch, setBookSearch] = useState<string>("")
 
