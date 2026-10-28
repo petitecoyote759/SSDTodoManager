@@ -46,8 +46,6 @@ CREATE TABLE "applied_tags" (
   PRIMARY KEY ("tag_id", "entry_id")
 );
 
-CREATE UNIQUE INDEX ON "users_tags" ("user_id", "name");
-
 ALTER TABLE "books" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "notes" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("book_id") DEFERRABLE INITIALLY IMMEDIATE;

@@ -45,10 +45,6 @@ Table users_tags {
 
   colour varchar(31) [not null]
   name varchar(255) [not null]
-
-  indexes {
-    (user_id, name) [unique]
-  }
 }
 
 Table applied_tags {
