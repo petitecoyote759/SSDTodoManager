@@ -744,7 +744,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                                     borderRadius: "50%",
                                     backgroundColor: tag.colour
                                   }}/>
-                                tag.name
+                                {tag.name}
                               </div>
                             )
                           })}
