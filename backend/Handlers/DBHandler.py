@@ -496,21 +496,23 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
     # Tags updating
     database.cur.execute("""
     INSERT INTO public.users_tags (tag_id, user_id, name, colour)
-    SELECT DISTINCT
-        (t->>'tag_id')::uuid,
+    SELECT DISTINCT ON ((t->>'tag_id')::uuid)
+        (t->>'tag_id')::uuid AS tag_id,
         %s::uuid,
         t->>'name',
         t->>'colour'
     FROM jsonb_array_elements(%s::jsonb->'books') AS b
     CROSS JOIN LATERAL jsonb_array_elements(
         COALESCE(b->'notes', '[]'::jsonb)
-    ) as n
+    ) AS n
     CROSS JOIN LATERAL jsonb_array_elements(
         COALESCE(n->'entries', '[]'::jsonb)
-    ) as e
+    ) AS e
     CROSS JOIN LATERAL jsonb_array_elements(
         COALESCE(e->'tags', '[]'::jsonb)
-    ) as t
+    ) AS t
+    ORDER BY
+        (t->>'tag_id')::uuid
     ON CONFLICT (tag_id) DO UPDATE SET
         name = EXCLUDED.name,
         colour = EXCLUDED.colour
