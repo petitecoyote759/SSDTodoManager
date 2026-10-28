@@ -740,9 +740,38 @@
     text-transform: uppercase;
     border: none;
 }
-.tag-circle {
+
+.tag-colour-picker {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.tag-colour-picker .tag-circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.25);
     flex-shrink: 0;
 }
+
+.tag-colour-picker input[type="color"] {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+}
+
+
+
+
 
 
 .new-tag-button {
@@ -756,7 +785,7 @@
 .new-tag-button:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
-.tag:not(.new-tag-button):hover {
+.tag:not(.new-tag-button):not(:has(.tag-colour-picker:hover)):hover {
     background-color: rgba(255, 0, 0, 0.4);
 }
 

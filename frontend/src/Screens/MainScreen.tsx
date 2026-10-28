@@ -236,6 +236,30 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
+    function changeTagColour(tagId: string, colour: string) {
+      client.tags = client.tags.map(tag =>
+        tag.tag_id == tagId 
+        ? { ...tag, colour: colour }
+        : tag
+      )
+
+      updateNotes(prev => 
+        prev.map(note => ({
+          ...note,
+          entries: note.entries.map(entry => ({
+            ...entry,
+            tags: entry.tags.map(tag => 
+              tag.tag_id == tagId ? { ...tag, colour: colour }
+              : tag
+            )
+          }))
+        }))
+      )
+    }
+
+
+
+
 
 
     // << Resizing Sidebar >> //
@@ -817,19 +841,33 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                         >
                           {entry.tags.sort((a, b) => a.name < b.name ? -1 : 1).map((tag: Tag, index) => {
                             return (
-                              <button className="tag"
+                              <button 
+                                className="tag"
+                                key={tag.tag_id}
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => removeTagFromEntry(entry.entry_id, tag.tag_id)}
                               >
-                                <div
-                                  className="tag-circle"
-                                  style={{
-                                    width: "10px",
-                                    height: "10px",
-                                    borderRadius: "50%",
-                                    backgroundColor: tag.colour
-                                  }}/>
-                                {tag.name}
+                                <label
+                                  className="tag-colour-picker"
+                                  title="Change tag colour"
+                                  onPointerDown={e => e.stopPropagation()}
+                                  onClick={e => e.stopPropagation()}
+                                >
+                                  <span
+                                    className="tag-circle"
+                                    style={{ backgroundColor: tag.colour }}
+                                  />
+
+                                  <input
+                                    type="color"
+                                    value={tag.colour}
+                                    aria-label={`Change colour of ${tag.name}`}
+                                    onChange={e => changeTagColour(tag.tag_id, e.target.value)}
+                                    onClick={e => e.stopPropagation()}
+                                  />
+                                </label>
+
+                                <span>{tag.name}</span>
                               </button>
                             )
                           })}
