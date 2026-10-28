@@ -180,3 +180,15 @@ export async function saveBooks(uuid: string, token: string, books: Record<strin
         body: JSON.stringify(books)
     });
 }
+
+
+export async function saveTags(uuid: string, token: string, tags: Record<string, Tag[]>) {
+    const response = fetch(`${url}/api/users/${uuid}/tags`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token
+        },
+        body: JSON.stringify(tags)
+    });
+}

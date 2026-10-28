@@ -796,3 +796,60 @@ def getTags(uuid: UUID):
     data = database.cur.fetchall()
     # skip tag[1] as that is user id
     return {'tags': [{"name": tag[3], "colour": tag[2], "tag_id": tag[0]} for tag in data]}
+
+
+
+def updateTags(uuid: UUID, tags: dict[str, Any]):
+
+    print(tags)
+    # Adding is done by updating books, but will also happen here
+    database.cur.execute("""
+    INSERT INTO public.users_tags (tag_id, user_id, colour, name)
+    SELECT 
+        (t->>'tag_id')::uuid,
+        %s::uuid,
+        t->>'colour',
+        t->>'name'
+    FROM jsonb_array_elements(%s::jsonb->'tags') AS t
+    ON CONFLICT (tag_id) DO UPDATE SET
+        colour = EXCLUDED.colour,
+        name = EXCLUDED.name
+    WHERE users_tags.user_id = EXCLUDED.user_id
+    """, (str(uuid), Json(tags)))
+
+    database.conn.commit()
+
+
+    # Deleting
+
+    # Still applied Tags
+    database.cur.execute("""
+    DELETE FROM public.applied_tags AS at
+    USING public.users_tags AS ut
+    WHERE at.tag_id = ut.tag_id
+        AND ut.user_id = %s
+        AND NOT EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(
+                %s::jsonb->'tags'
+            ) as jt
+            WHERE (jt->>'tag_id')::uuid = ut.tag_id
+        )
+    """, (str(uuid), Json(tags)))
+
+    database.conn.commit()
+
+    # Users Tags
+    database.cur.execute("""
+    DELETE FROM public.users_tags AS users_tags
+    WHERE users_tags.user_id = %s
+        AND NOT EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(
+                %s::jsonb->'tags'
+            ) as jt
+            WHERE (jt->>'tag_id')::uuid = users_tags.tag_id
+        )
+    """, (str(uuid), Json(tags)))
+
+    database.conn.commit()

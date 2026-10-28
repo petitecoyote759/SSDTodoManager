@@ -1,4 +1,4 @@
-import { login, getUserData, getUserBooks, saveBooks, getUsersTags } from "./APIHandler"
+import { login, getUserData, getUserBooks, saveBooks, getUsersTags, saveTags } from "./APIHandler"
 import { Book, Note, Entry, Tag } from "./Classes"
 
 
@@ -65,6 +65,7 @@ export class Client {
 
 
     async save() {
-        saveBooks(this.uuid, this.getToken(), {"books": this.books.filter(book => book.name !== "<<DEFAULT_BOOK>>" && book.book_id !== "")})
+        await saveTags(this.uuid, this.getToken(), {"tags": this.tags})
+        await saveBooks(this.uuid, this.getToken(), {"books": this.books.filter(book => book.name !== "<<DEFAULT_BOOK>>" && book.book_id !== "")})
     }
 }

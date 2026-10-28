@@ -122,7 +122,6 @@ def modifyBooks(uuid: UUID):
 
 
     data = request.get_json()
-    print(data)
     if data.get("books") == None:
         return 'Missing parameter books', 400
 
