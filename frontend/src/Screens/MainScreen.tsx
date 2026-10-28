@@ -63,16 +63,6 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     const dragOffset = React.useRef({ x: 0, y: 0 })
 
 
-    useEffect(() => { loadItems() }, [])
-
-    async function loadItems() {
-    const res = await fetch(API)
-    const j = await res.json()
-    setItems(j)
-    }
-
-
-
 
 
     const [contextMenu, setContextMenu] = useState<{noteId: string, x: number, y: number} | null>(null) 
