@@ -748,6 +748,13 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                               </div>
                             )
                           })}
+                          {editingEntryId == entry.entry_id && (
+                            <div className="tag">
+                              <button className="new-tag-button">
+                                + New Tag
+                              </button>
+                            </div>
+                          )}
                         </div>
 
                           {editingDescription ? (
