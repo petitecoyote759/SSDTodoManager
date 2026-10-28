@@ -700,7 +700,7 @@
     white-space: nowrap;
     scrollbar-width: none;
 
-    background-color: #1c1124;
+    background-color: rgba(0, 0, 0, 0.5);
     border: none;
     color: white;
 
