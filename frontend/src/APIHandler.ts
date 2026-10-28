@@ -1,4 +1,4 @@
-import { Book, Note, Entry, EntryCompletion } from "./Classes";
+import { Book, Note, Entry, EntryCompletion, Tag } from "./Classes";
 
 
 const url = "http://127.0.0.1:5000"
@@ -117,7 +117,10 @@ export async function getUserBooks(uuid: string, token: string) {
                                     ? new Date(entryData.due_date)
                                     : null,
                                 entryData.description,
-                                entryData.completion
+                                entryData.completion,
+                                (entryData.tags ?? []).map((tagsData: any) =>
+                                    new Tag(tagsData.colour, tagsData.name)
+                                )
                             ),
                             {
                                 entry_id: entryData.entry_id

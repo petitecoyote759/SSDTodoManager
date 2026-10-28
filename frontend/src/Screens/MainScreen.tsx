@@ -1,4 +1,4 @@
-import {Note, Entry, EntryCompletion, Book} from "../Classes.tsx"
+import {Note, Entry, EntryCompletion, Book, Tag} from "../Classes.tsx"
 import React, { ChangeEvent, SetStateAction, useEffect, useState } from 'react'
 import {darkenColour} from "../DarkenColour"
 import "./MainScreen.css"
@@ -730,6 +730,26 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
                   {entry.entry_id === openEntry && (
                       <div className="note-entry-description">
+                        <div
+                          className="note-entry-tags"
+                        >
+                          {entry.tags.map((tag: Tag, index) => {
+                            return (
+                              <div className="tag">
+                                <div
+                                  className="tag-circle"
+                                  style={{
+                                    width: "10px",
+                                    height: "10px",
+                                    borderRadius: "50%",
+                                    backgroundColor: tag.colour
+                                  }}/>
+                                tag.name
+                              </div>
+                            )
+                          })}
+                        </div>
+
                           {editingDescription ? (
                               <textarea
                                   autoFocus

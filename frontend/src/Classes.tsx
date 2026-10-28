@@ -55,7 +55,7 @@ export class Entry {
     constructor(
         text: string, priority: number, 
         dueDate: Date | null = null, description: string = "", 
-        completion: EntryCompletion = EntryCompletion.NotStarted) {
+        completion: EntryCompletion = EntryCompletion.NotStarted, tags: Tag[] = []) {
 
         this.text = text
         this.priority = priority
@@ -63,6 +63,7 @@ export class Entry {
         this.description = description
         this.entry_id = crypto.randomUUID()
         this.completion = completion
+        this.tags = tags
     }
 
     entry_id: string
@@ -71,6 +72,7 @@ export class Entry {
     priority: number
     due_date: Date | null
     completion: EntryCompletion
+    tags: Tag[]
 }
 
 export enum EntryCompletion {
@@ -82,5 +84,15 @@ export enum EntryCompletion {
 
 
 
+export class Tag {
+    constructor(colour: string, name: string) {
+        this.colour = colour
+        this.name = name
+        this.tag_id = crypto.randomUUID()
+    }
 
+    colour: string
+    name: string
+    tag_id: string
+}
 

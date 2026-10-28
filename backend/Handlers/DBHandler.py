@@ -356,7 +356,20 @@ def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
                                     'priority', e.priority,
                                     'completion', e.completion,
                                     'due_date', e.due_date,
-                                    'description', e.description
+                                    'description', e.description,
+                                    'tags', COALESCE((
+                                        SELECT json_agg(
+                                            json_build_object(
+                                                'colour', ut.colour,
+                                                'name', ut.name,
+                                                'tag_id', ut.tag_id
+                                            )
+                                        )
+                                        FROM public.applied_tags AS at
+                                        JOIN public.users_tags AS ut
+                                            ON ut.tag_id = at.tag_id
+                                        WHERE at.entry_id = e.entry_id 
+                                    ), '[]'::json)
                                 )
                             )
                             FROM public.entries e
@@ -480,12 +493,106 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
     database.conn.commit()
 
 
+    # Tags updating
+    database.cur.execute("""
+    INSERT INTO public.users_tags (tag_id, user_id, name, colour)
+    SELECT DISTINCT
+        (t->>'tag_id')::uuid,
+        %s::uuid,
+        t->>'name',
+        t->>'colour'
+    FROM jsonb_array_elements(%s::jsonb->'books') AS b
+    CROSS JOIN LATERAL jsonb_array_elements(
+        COALESCE(b->'notes', '[]'::jsonb)
+    ) as n
+    CROSS JOIN LATERAL jsonb_array_elements(
+        COALESCE(n->'entries', '[]'::jsonb)
+    ) as e
+    CROSS JOIN LATERAL jsonb_array_elements(
+        COALESCE(e->'tags', '[]'::jsonb)
+    ) as t
+    ON CONFLICT (tag_id) DO UPDATE SET 
+        name = EXCLUDED.name,
+        colour = EXCLUDED.colour
+    WHERE users_tags.user_id = EXCLUDED.user_id
+    """, (str(uuid), Json(data)))
+
+    database.conn.commit()
+
+    database.cur.execute("""
+    INSERT INTO public.applied_tags (entry_id, tag_id)
+    SELECT DISTINCT 
+        (e->>'entry_id')::uuid,
+        ut.tag_id
+    FROM jsonb_array_elements(%s::jsonb->'books') AS b
+    -- Get tags from json
+    CROSS JOIN LATERAL jsonb_array_elements(
+        COALESCE(b->'notes', '[]'::jsonb)
+    ) as n
+    CROSS JOIN LATERAL jsonb_array_elements(
+        COALESCE(n->'entries', '[]'::jsonb)
+    ) as e
+    CROSS JOIN LATERAL jsonb_array_elements(
+        COALESCE(e->'tags', '[]'::jsonb)
+    ) as t
+    -- Ensure that the user_id is correct
+    JOIN public.users_tags AS ut
+        ON ut.tag_id = (t->>'tag_id')::uuid
+        AND ut.user_id = %s::uuid
+    JOIN public.entries AS existing_e
+        ON existing_e.entry_id = (e->>'entry_id')::uuid
+    JOIN public.notes AS existing_n
+        ON existing_n.note_id = existing_e.note_id
+    JOIN public.books AS existing_b
+        ON existing_b.book_id = existing_n.book_id
+        AND existing_b.user_id = %s::uuid
+    ON CONFLICT (tag_id, entry_id) DO NOTHING
+    """, (Json(data), str(uuid), str(uuid)))
+
+    database.conn.commit()
+
+
 
 
 
 
 
     # << DELETING >> #
+
+
+    
+
+    database.cur.execute("""
+    DELETE FROM public.applied_tags AS at
+    USING public.entries AS e,
+        public.notes AS n,
+        public.books AS b
+    WHERE at.entry_id = e.entry_id
+        AND e.note_id = n.note_id
+        AND n.book_id = b.book_id
+        AND b.user_id = %s::uuid
+        AND NOT EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(
+                %s::jsonb->'books'
+            ) as jb
+            CROSS JOIN LATERAL jsonb_array_elements(
+                COALESCE(jb->'notes', '[]'::jsonb)
+            ) as jn
+            CROSS JOIN LATERAL jsonb_array_elements(
+                COALESCE(jn->'entries', '[]'::jsonb)
+            ) as je
+            CROSS JOIN LATERAL jsonb_array_elements(
+                COALESCE(je->'tags', '[]'::jsonb)
+            ) as jt
+            WHERE (je->>'entry_id')::uuid = e.entry_id
+                AND (jt->>'tag_id')::uuid = at.tag_id
+        )
+    """, (str(uuid), Json(data)))
+
+    database.conn.commit()
+
+
 
     # Entries
     database.cur.execute("""
@@ -549,6 +656,14 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
     """, (str(uuid), Json(data)))
     
     database.conn.commit()
+
+
+
+
+
+
+
+
 
 
 
