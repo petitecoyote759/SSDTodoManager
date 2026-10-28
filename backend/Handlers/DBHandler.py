@@ -511,7 +511,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
     CROSS JOIN LATERAL jsonb_array_elements(
         COALESCE(e->'tags', '[]'::jsonb)
     ) as t
-    ON CONFLICT (tag_id) DO UPDATE SET 
+    ON CONFLICT (tag_id) DO UPDATE SET
         name = EXCLUDED.name,
         colour = EXCLUDED.colour
     WHERE users_tags.user_id = EXCLUDED.user_id

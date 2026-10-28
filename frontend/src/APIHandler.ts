@@ -119,7 +119,7 @@ export async function getUserBooks(uuid: string, token: string) {
                                 entryData.description,
                                 entryData.completion,
                                 (entryData.tags ?? []).map((tagsData: any) =>
-                                    new Tag(tagsData.colour, tagsData.name)
+                                    new Tag(tagsData.colour, tagsData.name, tagsData.tag_id)
                                 )
                             ),
                             {

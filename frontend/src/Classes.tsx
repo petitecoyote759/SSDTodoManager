@@ -85,10 +85,10 @@ export enum EntryCompletion {
 
 
 export class Tag {
-    constructor(colour: string, name: string) {
+    constructor(colour: string, name: string, tag_id: string | null = null) {
         this.colour = colour
         this.name = name
-        this.tag_id = crypto.randomUUID()
+        this.tag_id = tag_id ?? crypto.randomUUID()
     }
 
     colour: string
