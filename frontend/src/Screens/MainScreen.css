@@ -768,7 +768,6 @@
 
 
 
-
 .tag-menu-wrapper {
     position: relative;
     display: inline-block;
@@ -800,6 +799,47 @@
     font-weight: bold;
     color: white
 }
+
+
+
+
+.tag-menu-option-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.tag-menu-option-wrapper .tag-menu-option {
+    flex: 1;
+    min-width: 0;
+}
+
+.tag-menu-option-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tag-menu-delete {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    margin-left: 4px;
+
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    color: #ff8080;
+
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.tag-menu-delete:hover {
+    background: rgba(255, 0, 0, 0.25);
+    color: white
+}
+
 
 .tag-menu-option {
     display: flex;

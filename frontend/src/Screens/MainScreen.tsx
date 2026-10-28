@@ -356,6 +356,29 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
       applyTagToEntry(entryId, newTag)
     }
 
+    function deleteTag(tagId: string) {
+      const tag: Tag | undefined = client.tags.find(cTag => cTag.tag_id == tagId) 
+      if (tag == undefined) { return; }
+
+      const confirmed = window.confirm(
+        `Are you sure you want to delete the tag '${tag.name}'`
+      )
+
+      if (confirmed == false) { return; }
+
+      client.tags = client.tags.filter(cTag => cTag.tag_id != tagId)
+
+      updateNotes(prev =>
+        prev.map(note => ({
+          ...note,
+          entries: note.entries.map(entry => ({
+            ...entry,
+            tags: entry.tags.filter(eTag => eTag.tag_id != tagId)
+          }))
+        }))
+      )
+    }
+
 
 
 
@@ -838,22 +861,41 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                                   {/*Existing Tags*/}
                                   {client.tags.filter(tag => !entry.tags.some(existing => existing.tag_id == tag.tag_id)).map((tag, index) => {
                                     return (
-                                      <button
-                                        key={`${tag.name}-${index}`}
-                                        className="tag-menu-option"
-                                        onClick={() => applyTagToEntry(entry.entry_id, tag)}
-                                      >
-                                        <span
-                                          className="tag-circle"
-                                          style={{
-                                            width: "10px",
-                                            height: "10px",
-                                            borderRadius: "50%",
-                                            backgroundColor: tag.colour,
-                                            flexShrink: 0
+                                      <div key={tag.tag_id} className="tag-menu-option-wrapper">
+                                        <button
+                                          key={`${tag.name}-${index}`}
+                                          className="tag-menu-option"
+                                          onClick={() => applyTagToEntry(entry.entry_id, tag)}
+                                        >
+                                          <span
+                                            className="tag-circle"
+                                            style={{
+                                              width: "10px",
+                                              height: "10px",
+                                              borderRadius: "50%",
+                                              backgroundColor: tag.colour,
+                                              flexShrink: 0
+                                            }}
+                                          /><span>{tag.name}</span>
+
+
+                                        </button>
+
+                                        
+
+                                        <button
+                                          className="tag-menu-delete"
+                                          onPointerDown={e => e.stopPropagation()}
+                                          title={`Delete ${tag.name}`}
+                                          aria-label={`Delete ${tag.name}`}
+                                          onClick={e => {
+                                            e.stopPropagation()
+                                            deleteTag(tag.tag_id)
                                           }}
-                                        /><span>{tag.name}</span>
-                                      </button>
+                                        >
+                                          x
+                                        </button>
+                                      </div>
                                     )
                                   })}
 
