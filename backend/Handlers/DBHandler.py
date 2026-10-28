@@ -795,4 +795,4 @@ def getTags(uuid: UUID):
 
     data = database.cur.fetchall()
     # skip tag[1] as that is user id
-    return {'tags': [{"name": tag[0], "colour": tag[2], "tag_id": tag[3]} for tag in data]}
+    return {'tags': [{"name": tag[3], "colour": tag[2], "tag_id": tag[0]} for tag in data]}

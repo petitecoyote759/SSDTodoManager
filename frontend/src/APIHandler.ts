@@ -158,7 +158,6 @@ export async function getUsersTags(uuid: string, token: string) {
 
 
     const values = await response.json();
-
     return (
         values.tags.map((tagData: any) => new Tag(tagData.colour, tagData.name, tagData.tag_id))
     )

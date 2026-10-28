@@ -34,7 +34,11 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
     const [editingEntryId, setEditingEntryId] = useState<string | null>(null)
     const [editingEntryName, setEditingEntryName] = useState<string>("")
-    const [tagMenuOpen, setTagMenuOpen] = useState<boolean>(false)
+
+    const [tagMenuEntryId, setTagMenuEntryId] = useState<string | null>(null)
+    const [creatingTag, setCreatingTag] = useState<boolean>(false)
+    const [newTagName, setNewTagName] = useState<string>("")
+
 
     const [bookSearch, setBookSearch] = useState<string>("")
 
@@ -211,12 +215,6 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     setEntryDueDate('')
     }
 
-    async function deleteItem(id: number) {
-    await fetch(`${API}/${id}`, {method: 'DELETE'})
-    await loadItems()
-    }
-
-
 
 
     const [bookFormName, setBookFormName] = useState<string>("")
@@ -284,6 +282,80 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
         )
         setEditingDescription(false)
     }
+
+
+
+
+
+
+
+    function removeTagFromEntry(entryId: string, tagId: string) {
+      updateNotes(prev =>
+        prev.map(note => ({
+          ...note,
+          entries : note.entries.map(entry => {
+            if (entry.entry_id !== entryId) {
+              return entry
+            }
+            
+            return {
+              ...entry,
+              tags: entry.tags.filter(tag => tag.tag_id != tagId)
+            }
+          })
+        }))
+      )
+    }
+
+    function applyTagToEntry(entryId: string, tag: Tag) {
+      updateNotes(prev => 
+        prev.map(note => ({
+          ...note,
+          entries: note.entries.map(entry => {
+            if (entry.entry_id !== entryId) {
+              return entry
+            }
+
+            if (entry.tags.some(existing => existing.name == tag.name)) {
+              // one already exists
+              return entry
+            }
+
+            return {
+              ...entry,
+              tags: [...entry.tags, tag]
+            }
+          })
+        }))
+      )
+
+      setTagMenuEntryId(null)
+      setCreatingTag(false)
+      setNewTagName("")
+    }
+    function createTag(entryId: string) {
+      const name = newTagName.trim()
+
+      if (name == "") { return; }
+
+      const existingTag = client.tags.find(
+        tag => tag.name.toLowerCase() == name.toLowerCase()
+      )
+
+      if (existingTag) {
+        applyTagToEntry(entryId, existingTag)
+        return;
+      }
+
+      const colour = '#FFF'
+
+      const newTag = new Tag(colour, name)
+
+      client.tags.push(newTag)
+
+      applyTagToEntry(entryId, newTag)
+    }
+
 
 
 
@@ -703,7 +775,6 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                                 }
                               }}  
                               value={editingEntryName}
-                              defaultValue={entry.text}
                               onChange={e => setEditingEntryName(e.target.value)}
                             />
                           ))
@@ -721,9 +792,12 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                         <div
                           className="note-entry-tags"
                         >
-                          {entry.tags.map((tag: Tag, index) => {
+                          {entry.tags.sort((a, b) => a.name < b.name ? -1 : 1).map((tag: Tag, index) => {
                             return (
-                              <div className="tag">
+                              <button className="tag"
+                                onPointerDown={e => e.stopPropagation()}
+                                onClick={() => removeTagFromEntry(entry.entry_id, tag.tag_id)}
+                              >
                                 <div
                                   className="tag-circle"
                                   style={{
@@ -733,14 +807,94 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                                     backgroundColor: tag.colour
                                   }}/>
                                 {tag.name}
-                              </div>
+                              </button>
                             )
                           })}
                           {editingEntryId == entry.entry_id && (
-                            <div className="tag">
-                              <button className="new-tag-button">
+                            <div 
+                              className="tag-menu-wrapper"
+                              onPointerDown={e => e.stopPropagation()}
+                              onClick={e => e.stopPropagation()}
+                            >
+                              <button 
+                                className="tag new-tag-button"
+                                onClick={() => {
+                                  setTagMenuEntryId(
+                                    tagMenuEntryId == entry.entry_id ? null : entry.entry_id
+                                  )
+                                  setCreatingTag(false)
+                                  setNewTagName("")
+                                }}
+                              >
                                 + New Tag
                               </button>
+
+                              {tagMenuEntryId == entry.entry_id && (
+                                <div className="tag-menu">
+                                  <div className="tag-menu-title">
+                                    Select a tag
+                                  </div>
+
+                                  {/*Existing Tags*/}
+                                  {client.tags.filter(tag => !entry.tags.some(existing => existing.tag_id == tag.tag_id)).map((tag, index) => {
+                                    return (
+                                      <button
+                                        key={`${tag.name}-${index}`}
+                                        className="tag-menu-option"
+                                        onClick={() => applyTagToEntry(entry.entry_id, tag)}
+                                      >
+                                        <span
+                                          className="tag-circle"
+                                          style={{
+                                            width: "10px",
+                                            height: "10px",
+                                            borderRadius: "50%",
+                                            backgroundColor: tag.colour,
+                                            flexShrink: 0
+                                          }}
+                                        /><span>{tag.name}</span>
+                                      </button>
+                                    )
+                                  })}
+
+                                  <div className="tag-menu-divider"/>
+
+                                  {!creatingTag ? (
+                                    <button
+                                      className="tag-menu-option tag-menu-create"
+                                      onClick={() => setCreatingTag(true)}
+                                    >
+                                      <span>+</span>
+                                      <span>Create new tag</span>
+                                    </button>
+                                  ) : (
+                                    <form
+                                      className="tag-create-form"
+                                      onSubmit={e => {
+                                        e.preventDefault()
+                                        createTag(entry.entry_id)
+                                      }}
+                                    >
+                                      <input
+                                        autoFocus
+                                        type="text"
+                                        value={newTagName}
+                                        onChange={e => setNewTagName(e.target.value)}
+                                        placeholder="tag name..."
+                                        maxLength={40}
+                                        onKeyDown={e => {
+                                          if (e.key == "Escape") {
+                                            e.preventDefault()
+                                            e.stopPropagation()
+                                            setCreatingTag(false)
+                                            setNewTagName("")
+                                          }
+                                        }}
+                                      />
+                                    </form>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -918,6 +1072,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
         )()}
 
       </div>
+
 
 
       {/*Right Click Menu*/}
