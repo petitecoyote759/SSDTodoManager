@@ -783,3 +783,16 @@ def modifyNote(nuid: UUID, values: dict[str, Any]):
 
         database.conn.commit()
 
+
+
+
+def getTags(uuid: UUID):
+
+    database.cur.execute("""
+    SELECT * FROM public.users_tags
+    WHERE user_id = %s
+    """, (str(uuid),))
+
+    data = database.cur.fetchall()
+    # skip tag[1] as that is user id
+    return {'tags': [{"name": tag[0], "colour": tag[2], "tag_id": tag[3]} for tag in data]}

@@ -1,5 +1,5 @@
-import { login, getUserData, getUserBooks, saveBooks } from "./APIHandler"
-import { Book, Note, Entry } from "./Classes"
+import { login, getUserData, getUserBooks, saveBooks, getUsersTags } from "./APIHandler"
+import { Book, Note, Entry, Tag } from "./Classes"
 
 
 
@@ -12,6 +12,7 @@ export class Client {
         this.username = username
         this.profilePicture = profilePicture
         this.books = []
+        this.tags = []
     }
 
 
@@ -28,7 +29,7 @@ export class Client {
 
 
     books: Book[]
-
+    tags: Tag[]
 
 
     static async createClient(email: string, password: string) {
@@ -38,7 +39,7 @@ export class Client {
         
         if (result == null) { return null; }
 
-        const [uuid, token] = result
+        var [uuid, token] = result
         console.log(`Logged in as ${uuid}`)
 
 
@@ -52,8 +53,11 @@ export class Client {
 
 
         const client: Client = new Client(uuid, token, username, profilePicture)
+        token = ""
 
-        client.books = await getUserBooks(uuid, token)
+        client.books = await getUserBooks(uuid, client.getToken())
+
+        client.tags = await getUsersTags(uuid, client.getToken())
 
         return client
     }

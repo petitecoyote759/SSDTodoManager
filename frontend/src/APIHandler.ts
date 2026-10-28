@@ -136,6 +136,39 @@ export async function getUserBooks(uuid: string, token: string) {
 
 
 
+
+export async function getUsersTags(uuid: string, token: string) {
+
+    const response = await fetch(`${url}/api/users/${uuid}/tags`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token
+        }
+    })
+    
+
+    if (!response.ok) {
+        console.error(
+            `Something went wrong getting user tags. Error: ${response.status}`,
+            await response.text()
+        );
+        return null
+    }
+
+
+    const values = await response.json();
+
+    return (
+        values.tags.map((tagData: any) => new Tag(tagData.colour, tagData.name, tagData.tag_id))
+    )
+}
+
+
+
+
+
+
 export async function saveBooks(uuid: string, token: string, books: Record<string, Book[]>) {
     console.log(`Books : ${JSON.stringify(books)}`)
     const response = fetch(`${url}/api/users/${uuid}/books`, {
