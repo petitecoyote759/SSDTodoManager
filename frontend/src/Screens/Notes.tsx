@@ -449,7 +449,7 @@ export function NoteJSX({note, updateNotes, setContextMenu, client, searchFunc}:
               className={`note`}
               onContextMenu={e => handleNoteContextMenu(e, note)}
               style={{
-                left: note.posx,
+                right: note.posx,
                 top: note.posy,
                 background: searchFunc == null ? `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), ${note.colour}`
                                                 : `rgb(50, 50, 50)`,
