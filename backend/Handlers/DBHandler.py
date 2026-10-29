@@ -111,8 +111,6 @@ class Database:
 
         try:
             self.cur.execute(query, values)
-
-            self.conn.commit()
         except Exception as e:
             print(f"Error raised in query: {e}")
             return -1
@@ -269,7 +267,7 @@ def createUser(data: dict[str, Any]) -> dict[str, str]:
     profilePicture =  data['profile_picture'] if 'profile_picture' in data else ''
 
     try:
-        database.executeQuery("""
+        database.cur.execute("""
         INSERT INTO public.users (username, email, password_hash, profile_picture)
         VALUES (%s, %s, %s, %s)
         RETURNING user_id
