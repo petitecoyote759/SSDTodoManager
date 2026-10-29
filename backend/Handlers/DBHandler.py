@@ -105,6 +105,24 @@ class Database:
         self.conn.commit()
 
 
+
+    
+    def executeQuery(self, query: str, values: Any) -> int:
+
+        try:
+            self.cur.execute(query, values)
+
+            self.conn.commit()
+        except Exception as e:
+            print(f"Error raised in query: {e}")
+            return -1
+        
+
+        return self.cur.rowcount
+
+
+
+
     def __delete__(self):
 
         del(self.cur)
@@ -135,7 +153,7 @@ database: Database = Database()
 
 def login(email: str, password: str) -> dict[str, str]:
 
-    database.cur.execute("""
+    database.executeQuery("""
     SELECT password_hash, user_id FROM public.users
     WHERE email = %s
     """, (email,))
@@ -164,7 +182,7 @@ def login(email: str, password: str) -> dict[str, str]:
 
 def deleteUser(uuid: UUID) -> bool:
 
-    database.cur.execute("""
+    database.executeQuery("""
     DELETE FROM public.users
     WHERE user_id = %s
     """, (str(uuid),))
@@ -181,7 +199,7 @@ def deleteUser(uuid: UUID) -> bool:
 
 def getUserInfo(uuid: UUID) -> dict[str, str] | None:
 
-    database.cur.execute("""
+    database.executeQuery("""
     SELECT username, email, profile_picture, created_at FROM public.users
     WHERE user_id = %s
     """, (str(uuid),))
@@ -210,7 +228,7 @@ def modifyUser(uuid: UUID, data: dict[str, str]) -> dict[str, str]:
 
             try:
                 # need to use f string as you cant parametarise the field
-                database.cur.execute(f"""
+                database.executeQuery(f"""
                 UPDATE public.users
                 SET {allowedField} = %s
                 WHERE user_id = %s
@@ -251,7 +269,7 @@ def createUser(data: dict[str, Any]) -> dict[str, str]:
     profilePicture =  data['profile_picture'] if 'profile_picture' in data else ''
 
     try:
-        database.cur.execute("""
+        database.executeQuery("""
         INSERT INTO public.users (username, email, password_hash, profile_picture)
         VALUES (%s, %s, %s, %s)
         RETURNING user_id
@@ -295,7 +313,7 @@ def createUser(data: dict[str, Any]) -> dict[str, str]:
 
 def createBook(uuid: UUID, name: str) -> dict[str, Any]:
     
-    database.cur.execute("""
+    database.executeQuery("""
     INSERT INTO public.books (name, user_id)
     VALUES (%s, %s)
     RETURNING book_id
@@ -313,7 +331,7 @@ def createBook(uuid: UUID, name: str) -> dict[str, Any]:
 
 def getBooks(uuid: UUID) -> dict[str, str]:
 
-    database.cur.execute("""
+    database.executeQuery("""
     SELECT book_id, name FROM public.books
     WHERE user_id = %s
     """, (str(uuid),))
@@ -330,7 +348,7 @@ def getBooks(uuid: UUID) -> dict[str, str]:
 
 def getBooksRecursive(uuid: UUID) -> dict[str, Any]:
 
-    database.cur.execute("""
+    database.executeQuery("""
     SELECT json_build_object(
         'books', COALESCE(( 
             SELECT json_agg(json_build_object(
@@ -400,7 +418,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
 
     # << ADDING >> #
     # Books Updating
-    database.cur.execute("""
+    database.executeQuery("""
     INSERT INTO public.books (book_id, user_id, name)
     SELECT
         -- Put data into books table
@@ -421,7 +439,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
 
 
     # Notes Updating
-    database.cur.execute("""
+    database.executeQuery("""
     INSERT INTO public.notes (note_id, book_id, name, colour, white_text, posx, posy)
     SELECT
         -- Put data into notes table
@@ -455,7 +473,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
 
 
     # Entries Updating
-    database.cur.execute("""
+    database.executeQuery("""
     INSERT INTO public.entries (entry_id, note_id, text, priority, completion, due_date, description)
     SELECT 
         -- Put data into table
@@ -494,7 +512,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
 
 
     # Tags updating
-    database.cur.execute("""
+    database.executeQuery("""
     INSERT INTO public.users_tags (tag_id, user_id, name, colour)
     SELECT DISTINCT ON ((t->>'tag_id')::uuid)
         (t->>'tag_id')::uuid AS tag_id,
@@ -521,7 +539,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
 
     database.conn.commit()
 
-    database.cur.execute("""
+    database.executeQuery("""
     INSERT INTO public.applied_tags (entry_id, tag_id)
     SELECT DISTINCT 
         (e->>'entry_id')::uuid,
@@ -564,7 +582,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
 
     
 
-    database.cur.execute("""
+    database.executeQuery("""
     DELETE FROM public.applied_tags AS at
     USING public.entries AS e,
         public.notes AS n,
@@ -597,7 +615,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
 
 
     # Entries
-    database.cur.execute("""
+    database.executeQuery("""
     DELETE FROM public.entries AS existing
     USING public.notes AS n, public.books AS b
     WHERE existing.note_id = n.note_id
@@ -622,7 +640,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
     database.conn.commit()
 
     # Notes
-    database.cur.execute("""
+    database.executeQuery("""
     DELETE FROM public.notes AS existing
     USING public.books AS b
     WHERE existing.book_id = b.book_id
@@ -644,7 +662,7 @@ def setBooksRecursive(uuid: UUID, data: dict[str, Any]):
 
 
     # Books
-    database.cur.execute("""
+    database.executeQuery("""
     DELETE FROM public.books AS existing
     WHERE existing.user_id = %s
         -- Search for entries that dont exist in json
@@ -683,7 +701,7 @@ def deleteBook(buid: UUID):
     Returns true if successful
     """
 
-    database.cur.execute("""
+    database.executeQuery("""
     DELETE FROM public.books
     WHERE book_id = %s
     """,(buid,))
@@ -695,7 +713,7 @@ def deleteBook(buid: UUID):
 
 def modifyBook(buid: UUID, name: str):
 
-    database.cur.execute("""
+    database.executeQuery("""
     UPDATE public.books
     SET name = %s
     WHERE book_id = %s
@@ -717,7 +735,7 @@ def modifyBook(buid: UUID, name: str):
 def createNote(buid: UUID, variables: dict[str, Any]) -> None | UUID:
     # {"name": str, "colour": str, "white_text": bool, "posx": float, "posy": float}
 
-    database.cur.execute("""
+    database.executeQuery("""
     INSERT INTO public.notes (book_id, name, colour, white_text, posx, posy)
     VALUES (%s, %s, %s, %s, %s, %s)
     RETURNING note_id
@@ -740,7 +758,7 @@ def getNotes(buid: UUID) -> dict[str, tuple[str, str, bool, float, float]]:
     [str,  str,    bool,       float, float]
     """
 
-    database.cur.execute("""
+    database.executeQuery("""
     SELECT note_id, name, colour, white_text, posx, posy FROM public.notes
     WHERE book_id = %s
     """, (str(buid),))
@@ -758,7 +776,7 @@ def getNotes(buid: UUID) -> dict[str, tuple[str, str, bool, float, float]]:
 
 def deleteNote(nuid: UUID):
 
-    database.cur.execute("""
+    database.executeQuery("""
     DELETE FROM public.notes 
     WHERE note_id = %s
     """, (str(nuid),))
@@ -777,7 +795,7 @@ def modifyNote(nuid: UUID, values: dict[str, Any]):
         if allowedValue not in values:
             continue
 
-        database.cur.execute(f"""
+        database.executeQuery(f"""
         UPDATE public.notes
         SET {allowedValue} = %s
         WHERE note_id = %s
@@ -790,7 +808,7 @@ def modifyNote(nuid: UUID, values: dict[str, Any]):
 
 def getTags(uuid: UUID):
 
-    database.cur.execute("""
+    database.executeQuery("""
     SELECT * FROM public.users_tags
     WHERE user_id = %s
     """, (str(uuid),))
@@ -805,7 +823,7 @@ def updateTags(uuid: UUID, tags: dict[str, Any]):
 
     print(tags)
     # Adding is done by updating books, but will also happen here
-    database.cur.execute("""
+    database.executeQuery("""
     INSERT INTO public.users_tags (tag_id, user_id, colour, name)
     SELECT 
         (t->>'tag_id')::uuid,
@@ -825,7 +843,7 @@ def updateTags(uuid: UUID, tags: dict[str, Any]):
     # Deleting
 
     # Still applied Tags
-    database.cur.execute("""
+    database.executeQuery("""
     DELETE FROM public.applied_tags AS at
     USING public.users_tags AS ut
     WHERE at.tag_id = ut.tag_id
@@ -842,7 +860,7 @@ def updateTags(uuid: UUID, tags: dict[str, Any]):
     database.conn.commit()
 
     # Users Tags
-    database.cur.execute("""
+    database.executeQuery("""
     DELETE FROM public.users_tags AS users_tags
     WHERE users_tags.user_id = %s
         AND NOT EXISTS (
