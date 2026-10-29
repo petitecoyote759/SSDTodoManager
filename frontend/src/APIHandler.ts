@@ -37,7 +37,16 @@ export async function checkCurrentUser() {
 
 
 
+export async function logout() {
 
+    await fetch(`${url}/api/users/logout`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include"
+    })
+}
 
 
 

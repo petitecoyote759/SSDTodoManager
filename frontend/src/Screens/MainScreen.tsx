@@ -43,6 +43,8 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
     const [bookFormOpen, setBookFormOpen] = useState<boolean>(false)
 
+    const [userOpen, setUserOpen] = useState<boolean>(false)
+
 
     const [openBook, setOpenBook] = useState<Book>(client.books.length == 0 ? new Book("<<DEFAULT_BOOK>>", "") : client.books[0])
 
@@ -283,9 +285,31 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
           {/*User Profile*/}
           <div className="user-profile">
-            {/*Profile Picture*/}
-            {client.username}
-            {/*Add onclick stuff to show info*/}
+            <button
+              onPointerDown={e => e.stopPropagation()}
+              onClick={e => setUserOpen(!userOpen)}
+            >
+              {/*Profile Picture*/}
+              {client.username}
+              {/*Add onclick stuff to show info*/}
+            </button>
+
+            {userOpen && (
+              <div
+                className="user-settings"
+              >
+                <div className="user-settings-entry">
+                  <button 
+                    onPointerDown={e => e.stopPropagation()}
+                    onClick={e => {client.logout(); setClient(null)}}
+                  >Logout</button>
+                </div>
+                <button 
+                  className="user-settings-entry" 
+                  onPointerDown={e => e.stopPropagation()}                 
+                >Other</button>
+              </div>
+            )}
           </div>
         </aside>
 

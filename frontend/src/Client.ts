@@ -1,4 +1,4 @@
-import { login, getUserData, getUserBooks, saveBooks, getUsersTags, saveTags, checkCurrentUser } from "./APIHandler"
+import { login, getUserData, getUserBooks, saveBooks, getUsersTags, saveTags, checkCurrentUser, logout } from "./APIHandler"
 import { Book, Note, Entry, Tag } from "./Classes"
 
 
@@ -81,5 +81,11 @@ export class Client {
     async save() {
         await saveTags(this.uuid, {"tags": this.tags})
         await saveBooks(this.uuid, {"books": this.books.filter(book => book.name !== "<<DEFAULT_BOOK>>" && book.book_id !== "")})
+    }
+
+
+
+    async logout() {
+        await logout()
     }
 }

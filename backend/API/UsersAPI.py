@@ -8,7 +8,22 @@ import Settings
 
 
 
+@app.route('/api/users/logout', methods=['POST'])
+def logoutUser():
 
+    response = jsonify({"message": "logged out"})
+
+    response.set_cookie(
+        key="access_token",
+        value="",
+        max_age=0,
+        httponly=True,
+        secure=False,
+        samesite="Lax",
+        path="/"
+    )
+
+    return response, 200
 
 
 
