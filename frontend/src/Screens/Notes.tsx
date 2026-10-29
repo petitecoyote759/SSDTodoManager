@@ -205,7 +205,7 @@ export function NoteJSX({note, updateNotes, setContextMenu, client, searchFunc}:
 
 
         const positionX = Math.max(0,
-            Math.min(bounds.width - width, e.clientX - bounds.left - dragOffset.current.x))
+            Math.min(bounds.width - width, bounds.right - e.clientX - (width - dragOffset.current.x)))
 
         const positionY = Math.max(0,
             Math.min(bounds.height - height, e.clientY - bounds.top - dragOffset.current.y))
