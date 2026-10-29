@@ -268,7 +268,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                 }
               })
               .map((book, index) => (
-                <div key={book.book_id} className="book">
+                <div key={book.book_id} className={`book ${book.book_id == openBook.book_id ? 'open-book' : ''}`}>
                   <button
                     className="book-button"
                     onPointerDown={e => e.stopPropagation()}
