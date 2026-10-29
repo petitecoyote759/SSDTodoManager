@@ -423,14 +423,14 @@ export function NoteJSX({note, updateNotes, setContextMenu, client, searchFunc}:
 
     function entryMatches(entry: Entry): boolean {
       if (searchFunc != null) {
-          try {
-              const value = new RegExp(searchFunc).test(entry.text) 
-            console.log(`testing match of ${entry.text} - '${searchFunc}' - ${value}`)
-              return value
-          }
-          catch {
-              return false
-          }
+        try {
+          const regex = new RegExp(searchFunc) 
+          const result = regex.test(entry.text) || regex.test(entry.description) || entry.tags.some(tag => regex.test(tag.name)) 
+          return result
+        }
+        catch {
+          return false
+        }
       }
       return false      
     }
