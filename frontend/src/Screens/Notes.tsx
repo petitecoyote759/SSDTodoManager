@@ -582,13 +582,13 @@ export function NoteJSX({note, updateNotes, setContextMenu, client}: NoteParams)
                               entry.entry_id == openEntry && editingEntryId == null ? setOpenEntry(null) : setOpenEntry(entry.entry_id)
                           }    
                       >
-                        {(editingEntryId != entry.entry_id && (
+                        {((editingEntryId != entry.entry_id || openEntry != entry.entry_id) && (
                           <span className="note-entry-text">
                               {entry.text}
                           </span>))
                         }
                         {
-                          (editingEntryId == entry.entry_id && (
+                          ((editingEntryId == entry.entry_id && openEntry == entry.entry_id) && (
                             <input
                               className="note-entry-text-editing"
                               onKeyDown={e => {
