@@ -1,4 +1,4 @@
-import { login, getUserData, getUserBooks, saveBooks, getUsersTags, saveTags, checkCurrentUser, logout } from "./APIHandler"
+import { login, getUserData, getUserBooks, saveBooks, getUsersTags, saveTags, checkCurrentUser, logout, createUser } from "./APIHandler"
 import { Book, Note, Entry, Tag } from "./Classes"
 
 
@@ -26,7 +26,6 @@ export class Client {
 
 
     static async createClient(email: string, password: string) {
-        
         
         var result = await login(email, password)
         
@@ -74,6 +73,17 @@ export class Client {
         client.tags = await getUsersTags(uuid)
 
         return client
+    }
+
+    static async createNewClient(username: string, email: string, password: string): Promise<Client | null> {
+
+        var createResult = await createUser(username, email, password)
+
+        console.log(`Result = ${createResult}`)
+        
+        if (createResult == null) { return null; }
+
+        return await this.createClient(email, password)
     }
 
 

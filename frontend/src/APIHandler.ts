@@ -79,11 +79,43 @@ export async function login(email: string, password: string): Promise<string | n
     }
 
     const data = await response.json()
-    console.log(data)
     const uuid = data.uuid
 
     return uuid
 }
+
+export async function createUser(username: string, email: string, password: string) {
+    
+    const createData = { "username": username, "email": email, "password": password }
+
+    var response: Response;
+    try {
+        response = await fetch(`${url}/api/users/signup`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify(createData)
+        });
+    }
+    catch (error) {
+        console.error(`Something went wrong during creation. Error: ${error}`)
+        return null
+    }
+
+    if (!response.ok) {
+        console.error(
+            `Something went wrong during login. Error: ${response.status}`,
+            await response.text()
+        );
+        return null
+    }
+
+    const data = await response.json()
+
+    return data
+} 
 
 
 
