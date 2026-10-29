@@ -12,7 +12,7 @@ type NoteParams = {
     updateNotes: (updater: (prev: Note[]) => Note[]) => void,
     setContextMenu: React.Dispatch<SetStateAction<{noteId: string, x: number, y: number} | null>>,
     client: Client,
-    searchFunc: ((text: string) => boolean) | null,
+    searchFunc: string | null,
 }
 
 
@@ -568,7 +568,12 @@ export function NoteJSX({note, updateNotes, setContextMenu, client, searchFunc}:
                       className={`note-entry ${entry.entry_id === openEntry ? "note-entry-open" : ""} ${
                         (() => {
                             if (searchFunc != null) {
-                                return searchFunc(entry.text) ? "entry-match" : "0"
+                                try {
+                                    return new RegExp(`/${searchFunc}/`).test(entry.text) ? "entry-match" : ""
+                                }
+                                catch {
+                                    return ""
+                                }
                             }
                             return ""
                         })()}`} 

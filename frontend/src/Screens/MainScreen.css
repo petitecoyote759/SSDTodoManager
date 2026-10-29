@@ -156,6 +156,9 @@
 .note-entry-open {
     background-color: rgba(255, 255, 255, 0.2);
 }
+.note-entry:not(.entry-match) {
+    background-color: rgb(80, 80, 80);
+}
 
 
 .note-entry-completion {

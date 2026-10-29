@@ -34,7 +34,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
     const [bookSearch, setBookSearch] = useState<string>("")
     const [topSearch, setTopSearch] = useState<string>("")
-    const [searchFunc, setSearchFunc] = useState<((text: string) => boolean) | null>(null)
+    const [searchFunc, setSearchFunc] = useState<string | null>(null)
 
 
     const [changesMade, setChangesMade] = useState<boolean>(false)
@@ -189,25 +189,6 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
-    useEffect(() => {
-      if (topSearch == "") {
-        setSearchFunc(null)
-        return;
-      }
-
-      try {
-        const regex = new RegExp(topSearch, "i")
-        const tempFunc = (text: string) => regex.test(text) 
-        setSearchFunc(tempFunc) /*TODO: Fix*/
-        console.log(`created regex ${regex} in search func ${searchFunc}`)
-      } catch (e) {
-        console.log(`Error: ${e}`)
-      }
-    }, [topSearch])
-
-
-
-
 
     function updateNotes(
       updater: (previous: Note[]) => Note[]
@@ -329,6 +310,19 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             onChange={
               e => {
                 setTopSearch(e.target.value)
+                const searchText = e.target.value
+
+
+                if (searchText == "") {
+                  setSearchFunc(null)
+                  return;
+                }
+
+                try {
+                  setSearchFunc(searchText)
+                } catch (e) {
+                  console.log(`Error: ${e}`)
+                }
               }
             }
           >
