@@ -72,3 +72,18 @@ ENTRIES: (delete/get/post/put)
     Get entries
     Create entry
     Modify entry
+
+
+
+## CLI
+
+To use postgres from the cli, you need to install
+
+To use the cli tool, run 
+```
+sudo -u postgres psql databaseName
+```
+Then in the tool run
+```
+CREATE DATABASE databaseName
+```
