@@ -1,13 +1,47 @@
 import { Book, Note, Entry, EntryCompletion, Tag } from "./Classes";
 
 
-const url = "http://127.0.0.1:5000"
+const url = "http://localhost:5000"
 
 
 
 
 
-export async function login(email: string, password: string): Promise<[string, string] | null> {
+
+
+
+
+
+
+
+export async function checkCurrentUser() {
+    var response: Response
+    try {
+        response = await fetch(`${url}/api/user/auth`, {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            console.log(`checkCurrentUser errored, response - ${await response.text()}`)
+            return null;
+        }
+
+        const data = await response.json();
+        return data.uuid;
+    } catch (e) {
+        console.error("Session check failed:", e)
+        return null
+    }
+}
+
+
+
+
+
+
+
+export async function login(email: string, password: string): Promise<string | null> {
 
     const loginData = { "email": email, "password": password }
 
@@ -18,6 +52,7 @@ export async function login(email: string, password: string): Promise<[string, s
             headers: {
                 "Content-Type": "application/json"
             },
+            credentials: "include",
             body: JSON.stringify(loginData)
         });
     }
@@ -35,23 +70,23 @@ export async function login(email: string, password: string): Promise<[string, s
     }
 
     const data = await response.json()
-    const token = data.token
+    console.log(data)
     const uuid = data.uuid
 
-    return [uuid, token]
+    return uuid
 }
 
 
 
 
-export async function getUserData(uuid: string, token: string) {
+export async function getUserData(uuid: string) {
 
     const response = await fetch(`${url}/api/users/${uuid}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": token
-        }
+        },
+        credentials: "include"
     });
 
 
@@ -75,15 +110,15 @@ export async function getUserData(uuid: string, token: string) {
 
 
 
-export async function getUserBooks(uuid: string, token: string) {
+export async function getUserBooks(uuid: string) {
 
     const response = await fetch(`${url}/api/users/${uuid}/books`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": token,
             "recursive": "true"
-        }
+        },
+        credentials: "include"
     });
 
 
@@ -137,14 +172,14 @@ export async function getUserBooks(uuid: string, token: string) {
 
 
 
-export async function getUsersTags(uuid: string, token: string) {
+export async function getUsersTags(uuid: string) {
 
     const response = await fetch(`${url}/api/users/${uuid}/tags`, {
         method: 'GET',
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": token
-        }
+            "Content-Type": "application/json"
+        },
+        credentials: "include"
     })
     
 
@@ -168,27 +203,27 @@ export async function getUsersTags(uuid: string, token: string) {
 
 
 
-export async function saveBooks(uuid: string, token: string, books: Record<string, Book[]>) {
-    console.log(`Books : ${JSON.stringify(books)}`)
+export async function saveBooks(uuid: string, books: Record<string, Book[]>) {
+    
     const response = fetch(`${url}/api/users/${uuid}/books`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": token,
             "recursive": "true"
         },
-        body: JSON.stringify(books)
+        body: JSON.stringify(books),
+        credentials: "include"
     });
 }
 
 
-export async function saveTags(uuid: string, token: string, tags: Record<string, Tag[]>) {
+export async function saveTags(uuid: string, tags: Record<string, Tag[]>) {
     const response = fetch(`${url}/api/users/${uuid}/tags`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": token
         },
+        credentials: "include",
         body: JSON.stringify(tags)
     });
 }

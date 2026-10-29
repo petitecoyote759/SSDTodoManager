@@ -12,10 +12,11 @@ _signingKey: str = GlobalApp.private_key
 
 def checkAuthorisation(uuid: UUID) -> tuple[str, int]:
     """Returns ['Success', 200] if authorized, or ['error message', code]"""
-
-    token: str | None = request.headers.get("Authorization")
+    print("Incoming:", list(request.cookies.keys()))
+    token = request.cookies.get("access_token")
+    
     if token == None:
-        return 'Invalid token', 400
+        return 'Missing token', 400
 
     if authenticateUser(uuid, token) == False: # not authorised
         return 'User does not exist or you are not authorised', 401

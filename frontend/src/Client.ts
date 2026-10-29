@@ -1,4 +1,4 @@
-import { login, getUserData, getUserBooks, saveBooks, getUsersTags, saveTags } from "./APIHandler"
+import { login, getUserData, getUserBooks, saveBooks, getUsersTags, saveTags, checkCurrentUser } from "./APIHandler"
 import { Book, Note, Entry, Tag } from "./Classes"
 
 
@@ -6,9 +6,8 @@ import { Book, Note, Entry, Tag } from "./Classes"
 
 export class Client {
 
-    constructor(uuid: string, token: string, username: string, profilePicture: string) {
+    constructor(uuid: string, username: string, profilePicture: string) {
         this.uuid = uuid
-        this.token = token
         this.username = username
         this.profilePicture = profilePicture
         this.books = []
@@ -17,15 +16,9 @@ export class Client {
 
 
     uuid: string
-    token: string // TODO: save this in a safer location
 
     username: string
     profilePicture: string
-
-    getToken() {
-        return this.token;
-    }
-
 
 
     books: Book[]
@@ -39,25 +32,46 @@ export class Client {
         
         if (result == null) { return null; }
 
-        var [uuid, token] = result
+        var uuid = result
         console.log(`Logged in as ${uuid}`)
 
 
 
-        const dataResult = await getUserData(uuid, token)
+
+        const dataResult = await getUserData(uuid)
         if (dataResult == null) { return null; }
 
         const [username, _, profilePicture, created_at] = dataResult
 
 
+        const client: Client = new Client(uuid, username, profilePicture)
+
+        client.books = await getUserBooks(uuid)
+
+        client.tags = await getUsersTags(uuid)
+
+        return client
+    }
+
+    static async checkExistingClient(): Promise<Client | null> {
+        var result = await checkCurrentUser()
+
+        if (result == null) { return null }
+        
+        const uuid = result
+
+        
+        const dataResult = await getUserData(uuid)
+        if (dataResult == null) { return null; }
+
+        const [username, _, profilePicture, created_at] = dataResult
 
 
-        const client: Client = new Client(uuid, token, username, profilePicture)
-        token = ""
+        const client: Client = new Client(uuid, username, profilePicture)
 
-        client.books = await getUserBooks(uuid, client.getToken())
+        client.books = await getUserBooks(uuid)
 
-        client.tags = await getUsersTags(uuid, client.getToken())
+        client.tags = await getUsersTags(uuid)
 
         return client
     }
@@ -65,7 +79,7 @@ export class Client {
 
 
     async save() {
-        await saveTags(this.uuid, this.getToken(), {"tags": this.tags})
-        await saveBooks(this.uuid, this.getToken(), {"books": this.books.filter(book => book.name !== "<<DEFAULT_BOOK>>" && book.book_id !== "")})
+        await saveTags(this.uuid, {"tags": this.tags})
+        await saveBooks(this.uuid, {"books": this.books.filter(book => book.name !== "<<DEFAULT_BOOK>>" && book.book_id !== "")})
     }
 }

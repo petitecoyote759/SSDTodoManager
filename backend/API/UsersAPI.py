@@ -1,8 +1,9 @@
 from API.GlobalApp import app
-from flask import request, abort
+from flask import request, abort, jsonify
 from uuid import UUID
 import Handlers.DBHandler as DBHandler
 import API.TokenHandler as TokenHandler
+import Settings
 
 
 
@@ -24,8 +25,46 @@ def loginUser():
 
     if "error" in result:
         return result, 400
+
+    token = result.get("token")
+    if token == None:
+        return {"error": "login did not return token"}, 500
+
+    response = jsonify({
+        "uuid": result.get("uuid")
+    })
+
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=False,
+        samesite="Lax",
+        path="/",
+        max_age=Settings.tokenDuration * 60 * 60
+    )
     
-    return result
+    return response
+
+
+@app.route("/api/user/auth", methods=['GET'])
+def getCurrentUser():
+    token = request.cookies.get("access_token")
+
+    if token == None:
+        return {"error": "Missing token"}, 400
+
+    result = TokenHandler.getUuidFromJwt(token)
+
+    if isinstance(result, dict):
+        return result, 400 # actually error code
+    
+    uuid: UUID = result
+
+    if TokenHandler.authenticateUser(uuid, token) == False:
+        return {"error": "Invalid token"}, 401
+
+    return {"uuid": str(uuid)}, 200
 
 
 

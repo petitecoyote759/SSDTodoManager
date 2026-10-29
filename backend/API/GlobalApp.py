@@ -53,6 +53,12 @@ def getRequestJson(required: dict[str, type], soft: bool = False) -> dict[str, A
 
 
 app = Flask(__name__)
-CORS(app)
+CORS(app,
+     resources={
+         r"/api/*": {
+            "origins": ["http://localhost:5173"],     
+         }
+     },
+     supports_credentials=True)
 
 print(f"Good Key : {Flask.secret_key}")
