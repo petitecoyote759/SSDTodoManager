@@ -12,6 +12,7 @@ type NoteParams = {
     updateNotes: (updater: (prev: Note[]) => Note[]) => void,
     setContextMenu: React.Dispatch<SetStateAction<{noteId: string, x: number, y: number} | null>>,
     client: Client,
+    searchFunc: ((text: string) => boolean) | null,
 }
 
 
@@ -19,7 +20,7 @@ type NoteParams = {
 
 
 
-export function NoteJSX({note, updateNotes, setContextMenu, client}: NoteParams) {
+export function NoteJSX({note, updateNotes, setContextMenu, client, searchFunc}: NoteParams) {
 
 
 
@@ -396,8 +397,21 @@ export function NoteJSX({note, updateNotes, setContextMenu, client}: NoteParams)
 
 
 
+    function clamp(value: number, min: number, max: number) { return Math.min(Math.max(value, min), max); }
 
+    function modifyEntryPrio(entryId: string, change: number) {
 
+        updateNotes(prev =>
+            prev.map(note => ({
+                ...note,
+                entries: note.entries.map(entry => 
+                    entry.entry_id == entryId ?
+                        { ...entry, priority: clamp(entry.priority + change, 0, 3) }
+                        : entry
+                ) 
+            }))
+        )
+    }
 
 
 
@@ -420,12 +434,13 @@ export function NoteJSX({note, updateNotes, setContextMenu, client}: NoteParams)
 
     return (
         <div key={note.note_id}
-              className="note"
+              className={`note`}
               onContextMenu={e => handleNoteContextMenu(e, note)}
               style={{
                 left: note.posx,
                 top: note.posy,
-                background: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), ${note.colour}`,
+                background: searchFunc == null ? `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), ${note.colour}`
+                                                : `rgb(80, 80, 80)`,
                 color: note.white_text ? "#FFF" : "#000",
               }}>
 
@@ -550,7 +565,13 @@ export function NoteJSX({note, updateNotes, setContextMenu, client}: NoteParams)
 
 
                   <div 
-                      className={`note-entry ${entry.entry_id === openEntry ? "note-entry-open" : ""}`} 
+                      className={`note-entry ${entry.entry_id === openEntry ? "note-entry-open" : ""} ${
+                        (() => {
+                            if (searchFunc != null) {
+                                return searchFunc(entry.text) ? "entry-match" : "0"
+                            }
+                            return ""
+                        })()}`} 
                       style={{background: entry.entry_id === openEntry 
                         ? "rgba(255, 255, 255, 0.4)"
                         : `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), ${note.colour}`}}
@@ -583,12 +604,14 @@ export function NoteJSX({note, updateNotes, setContextMenu, client}: NoteParams)
                           }    
                       >
                         {((editingEntryId != entry.entry_id || openEntry != entry.entry_id) && (
-                          <span className="note-entry-text">
-                              {entry.text}
-                          </span>))
+                            <span className="note-entry-text">
+                                {entry.text}
+                            </span>                        
+                        ))
                         }
                         {
-                          ((editingEntryId == entry.entry_id && openEntry == entry.entry_id) && (
+                        ((editingEntryId == entry.entry_id && openEntry == entry.entry_id) && (
+                          <div className="note-entry-text-wrapper">
                             <input
                               className="note-entry-text-editing"
                               onKeyDown={e => {
@@ -600,6 +623,18 @@ export function NoteJSX({note, updateNotes, setContextMenu, client}: NoteParams)
                               value={editingEntryName}
                               onChange={e => setEditingEntryName(e.target.value)}
                             />
+                        
+                            <div className="note-entry-prio-switch-wrapper">
+                                <button className="note-entry-prio-switch-button"
+                                    onPointerDown={e => e.stopPropagation()}
+                                    onClick={e => modifyEntryPrio(entry.entry_id, 1)}
+                                >⮝</button>
+                                <button className="note-entry-prio-switch-button"
+                                    onPointerDown={e => e.stopPropagation()}
+                                    onClick={e => modifyEntryPrio(entry.entry_id, -1)}                                
+                                >⮟</button>
+                            </div>
+                        </div>
                           ))
                         }
 

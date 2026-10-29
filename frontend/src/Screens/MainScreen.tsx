@@ -33,7 +33,8 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
     const [bookSearch, setBookSearch] = useState<string>("")
-
+    const [topSearch, setTopSearch] = useState<string>("")
+    const [searchFunc, setSearchFunc] = useState<((text: string) => boolean) | null>(null)
 
 
     const [changesMade, setChangesMade] = useState<boolean>(false)
@@ -188,7 +189,21 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
+    useEffect(() => {
+      if (topSearch == "") {
+        setSearchFunc(null)
+        return;
+      }
 
+      try {
+        const regex = new RegExp(topSearch, "i")
+        const tempFunc = (text: string) => regex.test(text) 
+        setSearchFunc(tempFunc) /*TODO: Fix*/
+        console.log(`created regex ${regex} in search func ${searchFunc}`)
+      } catch (e) {
+        console.log(`Error: ${e}`)
+      }
+    }, [topSearch])
 
 
 
@@ -287,7 +302,8 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
           {/*User Profile*/}
           <div className="user-profile">
-            Here is the user
+            {/*Profile Picture*/}
+            {client.username}
             {/*Add onclick stuff to show info*/}
           </div>
         </aside>
@@ -299,7 +315,26 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
       <div className="main-content">
         <div className="top-bar">
-          Search...
+          
+
+          <textarea 
+            className="note-search"
+            placeholder="search notes..."
+            onKeyDown={e => {
+              if (e.key == "Enter") {
+                e.preventDefault()
+                e.currentTarget.blur()
+              }
+            }}  
+            onChange={
+              e => {
+                setTopSearch(e.target.value)
+              }
+            }
+          >
+          </textarea>
+
+
           <button
           className={`save-button`}
           onPointerDown={e => {e.stopPropagation()}}
@@ -338,7 +373,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
         <main className="list-area">
           {notes.map(note => (
             /*Notes*/
-            <NoteJSX note={note} updateNotes={updateNotes} setContextMenu={setContextMenu} client={client}/>
+            <NoteJSX note={note} updateNotes={updateNotes} setContextMenu={setContextMenu} client={client} searchFunc={searchFunc}/>
 
           ))}
         </main>

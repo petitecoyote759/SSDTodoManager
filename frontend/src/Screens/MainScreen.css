@@ -277,12 +277,20 @@
 
 
 .user-profile {
+    display: flex;
+    flex-direction: row;
     margin-top: auto;
     flex-direction: column;
     align-self: flex-end;
     width: 100%;
     background-color: #2e2338;
     border-right: 2px solid black;
+    align-content: center;
+    text-align: center;
+    flex: 0;
+    font-size: 40px;
+    font-weight: 700;
+    color: white
 }
 
 
@@ -573,6 +581,10 @@
 
 
 
+
+
+
+
 .note-header-invert-button {
     display: flex;
     position: relative;
@@ -701,7 +713,8 @@
 .note-entry-text-editing {
     display: block;
     width: 100%;
-    height: 100%;
+    height: 25px;
+    min-height: 100%;
     box-sizing: border-box;
     resize: none;
     margin: 0;
@@ -714,9 +727,42 @@
     border: none;
     color: white;
 
+    padding: 0;
     padding-left: 4px;
 }
+.note-entry-text-wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+.note-entry-prio-switch-wrapper {
+    display: flex;
+    margin-left: auto;
+    align-self: flex-end;
+    flex-direction: column;
+    font-size: 7px;
+    max-height: 100%;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.4);
+}
+.note-entry-prio-switch-button {
+    font-size: inherit;
+    font-weight: inherit;
+    padding: none;
+    border: none;
+    color: inherit;
+    margin-bottom: 0px;
+    background: inherit;
 
+}
+
+.note-entry-prio-switch-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
 
 .note-entry-date {
     white-space: nowrap;
@@ -939,6 +985,10 @@
 
 
 
+
+.note-searching:not(.entry-match) {
+    background-color: #444;
+}
 
 
 
