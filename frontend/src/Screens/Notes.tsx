@@ -460,16 +460,14 @@ export function NoteJSX({note, updateNotes, setContextMenu, client}: NoteParams)
                       onChange={e => setEditedNoteName(e.target.value)}
                       onPointerDown={e => e.stopPropagation()}
                       autoFocus
+                      onKeyDown={e => {
+                        if (e.key == "Enter") {
+                            e.preventDefault()
+                            setEditingNoteID(null)
+                            saveNoteName(note)
+                        }
+                      }}
                     />
-
-                    <button 
-                      type="button"
-                      className="note-button note-header-input-save"
-                      onPointerDown={e => e.stopPropagation()}
-                      onClick={() => {setEditingNoteID(null); saveNoteName(note)}}
-                      >
-                        Save
-                      </button>
                   </>
                 ) : (
                   <span className="note-header-text">{note.name}</span>

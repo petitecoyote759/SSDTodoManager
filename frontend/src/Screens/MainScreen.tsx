@@ -328,13 +328,14 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
         </div>
 
 
+
+
+
+
+
         {/* Main area only open if there is a book */}
         {openBook.book_id != "" && (() => 
         <main className="list-area">
-          
-
-
-
           {notes.map(note => (
             /*Notes*/
             <NoteJSX note={note} updateNotes={updateNotes} setContextMenu={setContextMenu} client={client}/>
@@ -342,6 +343,11 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
           ))}
         </main>
         )()}
+
+
+
+
+
 
 
         {/*  */}
