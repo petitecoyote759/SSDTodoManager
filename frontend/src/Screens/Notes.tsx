@@ -421,7 +421,19 @@ export function NoteJSX({note, updateNotes, setContextMenu, client, searchFunc}:
 
 
 
-
+    function entryMatches(entry: Entry): boolean {
+      if (searchFunc != null) {
+          try {
+              const value = new RegExp(searchFunc).test(entry.text) 
+            console.log(`testing match of ${entry.text} - '${searchFunc}' - ${value}`)
+              return value
+          }
+          catch {
+              return false
+          }
+      }
+      return false      
+    }
 
 
 
@@ -440,13 +452,13 @@ export function NoteJSX({note, updateNotes, setContextMenu, client, searchFunc}:
                 left: note.posx,
                 top: note.posy,
                 background: searchFunc == null ? `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), ${note.colour}`
-                                                : `rgb(80, 80, 80)`,
+                                                : `rgb(50, 50, 50)`,
                 color: note.white_text ? "#FFF" : "#000",
               }}>
 
                 {/*Note Header*/}
               <div className="note-header"
-                style={{backgroundColor: note.colour}}
+                style={{backgroundColor: searchFunc == null ? note.colour : "rgb(80, 80, 80)"}}
 
                 onPointerDown={e => startNoteDrag(e, note)}
                 onPointerMove={e => dragNote(e, note)}
@@ -565,21 +577,16 @@ export function NoteJSX({note, updateNotes, setContextMenu, client, searchFunc}:
 
 
                   <div 
-                      className={`note-entry ${entry.entry_id === openEntry ? "note-entry-open" : ""} ${
-                        (() => {
-                            if (searchFunc != null) {
-                                try {
-                                    return new RegExp(`/${searchFunc}/`).test(entry.text) ? "entry-match" : ""
-                                }
-                                catch {
-                                    return ""
-                                }
-                            }
-                            return ""
-                        })()}`} 
-                      style={{background: entry.entry_id === openEntry 
-                        ? "rgba(255, 255, 255, 0.4)"
-                        : `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), ${note.colour}`}}
+                      className={`note-entry ${entry.entry_id === openEntry ? "note-entry-open" : ""}`} 
+                      style={{
+                        background: 
+                          searchFunc != null 
+                            ? entryMatches(entry)
+                              ? note.colour
+                              : "rgb(80, 80, 80)"
+                            : entry.entry_id == openEntry
+                              ? "rgba(255, 255, 255, 0.2)"
+                              : `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), ${note.colour}`}}
                   >
                     <div className="completion-wrapper">
                       <select

@@ -322,7 +322,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
         <div className="top-bar">
           
 
-          <textarea 
+          <input
             className="note-search"
             placeholder="search notes..."
             onKeyDown={e => {
@@ -350,7 +350,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
               }
             }
           >
-          </textarea>
+          </input>
 
 
           <button
