@@ -49,6 +49,10 @@
     display: flex;
     flex-direction: row;
     width: 100%;
+    cursor: grab;
+}
+.dashboard-header:active {
+    cursor: grabbing;
 }
 .dashboard h1 {
     font-weight: 700;

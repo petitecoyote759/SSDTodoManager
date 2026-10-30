@@ -243,8 +243,12 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     const dragOffset = React.useRef({x: 0, y: 0})
 
     function startDraggingDashboard(e: React.PointerEvent<HTMLDivElement>) {
-      
+
       if (dashboard == null) { return; }
+
+      e.preventDefault()
+
+      e.currentTarget.setPointerCapture(e.pointerId)
 
       dragOffset.current = {
         x: e.clientX - dashboard.x,
@@ -260,7 +264,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
       if (dashboard == null || draggingDashboard == false || dragOffset == null) { return; }
 
-      setDashboard({bookId: dashboard.bookId, x: e.clientX + dragOffset.x, y: e.clientY + dragOffset.y})
+      setDashboard({bookId: dashboard.bookId, x: e.clientX - dragOffset.current.x, y: e.clientY - dragOffset.current.y})
       console.log(`Dragging`)
     }
     
