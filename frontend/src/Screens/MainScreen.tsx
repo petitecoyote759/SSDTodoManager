@@ -38,6 +38,10 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     const [searchFunc, setSearchFunc] = useState<string | null>(null)
 
 
+    const [editedBookName, setEditedBookName] = useState<string>("")
+    const [editingBookId, setEditingBookId] = useState<string | null>(null)
+
+
     const [changesMade, setChangesMade] = useState<boolean>(false)
 
 
@@ -232,6 +236,17 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
 
+    
+
+    function saveBookName(book: Book) {
+      book.name = editedBookName
+      client.books = client.books.map(b => b.book_id == book.book_id ? ({...b, name: editedBookName}) : b)
+
+      setEditingBookId(null)
+      setChangesMade(true)
+    }
+
+
 
 
 
@@ -367,7 +382,26 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                     onClick={e => { e.preventDefault(); setOpenBook(book); }}
                     value={bookSearch}
                   >
-                    {book.name}
+                    {editingBookId == book.book_id ? (
+                      <input
+                        className="edit-book-name"
+                      value={editedBookName}
+                      onChange={e => setEditedBookName(e.target.value)}
+                      onPointerDown={e => e.stopPropagation()}
+                      autoFocus
+                      onKeyDown={e => {
+                        if (e.key == "Enter") {
+                            e.preventDefault()
+                            setEditingBookId(null)
+                            saveBookName(book)
+                        }
+                        if (e.key == "Escape") {
+                          e.preventDefault()
+                          setEditingBookId(null)
+                        }
+                      }}
+                      />
+                    ) : (book.name)}
                   </button>
                 </div>
               ))
@@ -569,6 +603,14 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
               onClick={() => {deleteBook(book.book_id); setChangesMade(true)}}
             >
               Delete Book
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() => {setEditingBookId(book.book_id); setEditedBookName(book.name); setBookContextMenu(null)}}
+            >
+              Edit Book Name
             </button>
 
 

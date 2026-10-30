@@ -408,6 +408,13 @@
     border-left: 3px solid var(--purple-light);
 }
 
+.edit-book-name {
+    border: none;
+
+    background: none;
+    color: inherit
+}
+
 
 .book-button {
     margin: 0;
