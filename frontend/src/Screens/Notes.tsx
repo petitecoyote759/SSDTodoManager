@@ -1,7 +1,7 @@
 import React, { ChangeEvent, SetStateAction, useEffect, useState } from "react"
 import { Entry, EntryCompletion, Note, Tag } from "../Classes"
 import { Client } from "../Client"
-
+import "./Notes.css"
 
 
 

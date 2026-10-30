@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { Note, EntryCompletion, Tag } from "../Classes"
 import { Client } from "../Client"
+import "./Dashboard.css"
 
 
 type DashboardParams = {
