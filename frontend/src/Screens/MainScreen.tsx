@@ -4,6 +4,7 @@ import {darkenColour} from "../DarkenColour"
 import "./MainScreen.css"
 import { Client } from '../Client'
 import { NoteJSX } from "./Notes.tsx"
+import { Dashboard } from "./Dashboard.tsx"
 
 
 
@@ -614,7 +615,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             </div>
 
             <div className="dashboard-seperator"/>
-
+              <Dashboard notes={notes} client={client}/>
           </div>
         )
       })()
