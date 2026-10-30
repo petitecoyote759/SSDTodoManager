@@ -93,6 +93,10 @@
 
 
 .add-note-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     width: 34px;
     height: 32px;
 
@@ -120,7 +124,6 @@
 
 
 /* <Sidebar> */
-/*=============================================================================================================*/
 
 .sidebar {
     display: flex;
