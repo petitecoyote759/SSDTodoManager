@@ -47,6 +47,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
     const [openBook, setOpenBook] = useState<Book>(client.books.length == 0 ? new Book("<<DEFAULT_BOOK>>", "") : client.books[0])
+    const [dashboard, setDashboard] = useState<{bookId: string, x: number, y: number} | null>(null)
 
 
     const [notes, setNotes] = useState<Note[]>(openBook.notes)
@@ -224,6 +225,49 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
     })
 
     
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    // << Dragging Dashboard >> //
+    const [draggingDashboard, setDraggingDashboard] = useState<boolean>(false)
+    const dragOffset = React.useRef({x: 0, y: 0})
+
+    function startDraggingDashboard(e: React.PointerEvent<HTMLDivElement>) {
+      
+      if (dashboard == null) { return; }
+
+      dragOffset.current = {
+        x: e.clientX - dashboard.x,
+        y: e.clientY - dashboard.y
+      } 
+
+      setDraggingDashboard(true)
+      console.log(`Starting Drag = ${dragOffset}`)
+    }
+
+
+    function dragDashboard(e: React.PointerEvent<HTMLDivElement>) {
+
+      if (dashboard == null || draggingDashboard == false || dragOffset == null) { return; }
+
+      setDashboard({bookId: dashboard.bookId, x: e.clientX + dragOffset.x, y: e.clientY + dragOffset.y})
+      console.log(`Dragging`)
+    }
+    
+
+
+
+
 
 
 
@@ -518,8 +562,54 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
               type="button"
               onClick={() => {deleteBook(book.book_id); setChangesMade(true)}}
             >
-              Delete book
+              Delete Book
             </button>
+
+
+            <button
+              type="button"
+              onClick={() => {setDashboard({bookId: bookContextMenu.bookId, x: 100, y: 100}); setBookContextMenu(null)}}
+            >
+              Open Dashboard
+            </button>
+
+          </div>
+        )
+      })()
+    }
+
+
+
+      {/*Dashboard*/}
+      {dashboard && (() => {
+        const book = client.books.find(b => b.book_id == dashboard.bookId)
+
+        if (book == null) { setDashboard(null); return null; }
+
+        return (
+          <div
+            className="dashboard"
+            style={{left: dashboard.x, top: dashboard.y}}
+
+            onClick={e => e.stopPropagation()}
+            onPointerDown={e => e.stopPropagation()}
+          >
+            <div className="dashboard-header"
+                onPointerDown={e => startDraggingDashboard(e)}
+                onPointerMove={e => dragDashboard(e)}
+                onPointerUp={() => setDraggingDashboard(false)}
+                onPointerCancel={() => setDraggingDashboard(false)}
+            >
+              <h1>Dashboard</h1>
+              <button
+                type="button"
+                onClick={e => setDashboard(null)}
+              >
+                X
+              </button>
+            </div>
+
+            <div className="dashboard-seperator"/>
 
           </div>
         )

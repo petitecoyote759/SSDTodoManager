@@ -25,6 +25,65 @@
 
 
 
+
+
+
+
+
+.dashboard {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    z-index: 9998;
+    min-width: 500px;
+    min-height: 400px;
+    resize: both;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid black;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background-color: #222;
+    color: white;
+}
+.dashboard-header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.dashboard h1 {
+    font-weight: 700;
+}
+.dashboard-header button {
+    margin-left: auto;
+    width: 48px;
+    height: 48px;
+    font-size: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #ff8080;
+    border-radius: 8px;
+    flex-shrink: 0;
+    line-height: 1;
+    cursor: pointer;
+}
+.dashboard-header button:hover {
+    background: rgba(255, 0, 0, 0.4);
+}
+.dashboard-seperator {
+    height: 2px;
+    margin: 5px 0;
+    background: #555;
+}
+
+
+
+
+
+
+
+
+
 .note-context-menu {
     position: fixed;
     z-index: 9999;
