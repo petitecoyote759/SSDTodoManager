@@ -291,7 +291,7 @@
     align-content: center;
     text-align: center;
     flex: 0;
-    font-size: 40px;
+    font-size: 30px;
     font-weight: 700;
     color: white
 }
@@ -309,7 +309,7 @@
     position: absolute;
     display: flex;
     flex-direction: column;
-    top: -8px;
+    bottom: 10px;
     left: calc(100% + 8px);
     z-index: 1000;
     
