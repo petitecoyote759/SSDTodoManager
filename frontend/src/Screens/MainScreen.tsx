@@ -55,6 +55,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
 
     const [contextMenu, setContextMenu] = useState<{noteId: string, x: number, y: number} | null>(null) 
+    const [bookContextMenu, setBookContextMenu] = useState<{bookId: string, x: number, y: number} | null>(null)
 
 
 
@@ -176,11 +177,52 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
 
         setContextMenu(null)
     }
+    function deleteBook(bookId: string) {
+        const confirmed = window.confirm("Are you sure you want to delete this book?")
+
+        if (confirmed == false) { return; }
+
+        if (openBook.book_id == bookId) { setOpenBook(new Book("<<DEFAULT_BOOK>>", "")) }
+
+        client.books = client.books.filter(book => book.book_id != bookId)
+
+        setBookContextMenu(null)
+    }
 
     
     const copyNote = async (note: Note) => {
       await navigator.clipboard.writeText(JSON.stringify(note))
     }
+    
+
+
+    
+    
+
+
+    function handleBookContextMenu(e: React.MouseEvent<HTMLDivElement>, book: Book) {
+        e.preventDefault()
+
+        setBookContextMenu({
+        bookId: book.book_id,
+        x: e.clientX,
+        y: e.clientY
+        })
+    }
+
+
+    useEffect(() => {
+        function handleClickOutside() {
+        setBookContextMenu(null)
+        }
+
+        document.addEventListener("click", handleClickOutside)
+
+        return () => {
+        document.removeEventListener("click", handleClickOutside)
+        }
+    })
+
     
 
 
@@ -266,7 +308,9 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
                 }
               })
               .map((book, index) => (
-                <div key={book.book_id} className={`book ${book.book_id == openBook.book_id ? 'open-book' : ''}`}>
+                <div key={book.book_id} className={`book ${book.book_id == openBook.book_id ? 'open-book' : ''}`}
+                  onContextMenu={e => handleBookContextMenu(e, book)}
+                >
                   <button
                     className="book-button"
                     onPointerDown={e => e.stopPropagation()}
@@ -449,6 +493,39 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
           </div>
         )
       })()}
+
+
+
+      {/*Book Right Click Menu*/}
+      {bookContextMenu && (() => {
+        const book = client.books.find(b => b.book_id == bookContextMenu.bookId)
+
+        if (book == null) {return null}
+
+        return (
+          <div
+            className="note-context-menu"
+            style={{
+              left: bookContextMenu.x,
+              top: bookContextMenu.y
+            }}
+            onClick={e => e.stopPropagation()}
+            onPointerDown={e => e.stopPropagation()}
+            onContextMenu={e => e.preventDefault()}
+          > 
+
+            <button
+              type="button"
+              onClick={() => {deleteBook(book.book_id); setChangesMade(true)}}
+            >
+              Delete book
+            </button>
+
+          </div>
+        )
+      })()
+
+      }
     </div>
     )
 }
