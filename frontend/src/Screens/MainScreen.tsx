@@ -125,6 +125,7 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
       }
 
       setBookFormOpen(false)
+      setChangesMade(true)
     }
 
 
