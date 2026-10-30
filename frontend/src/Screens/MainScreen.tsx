@@ -600,7 +600,12 @@ export function MainScreen({ client, setClient }: MainScreenParams) {
             onPointerDown={e => e.stopPropagation()}
           >
             <div className="dashboard-header"
-                onPointerDown={e => startDraggingDashboard(e)}
+                onPointerDown={e => {
+                  if ((e.target as HTMLElement).closest("button")) {
+                    return;
+                  }
+                  startDraggingDashboard(e)
+                }}
                 onPointerMove={e => dragDashboard(e)}
                 onPointerUp={() => setDraggingDashboard(false)}
                 onPointerCancel={() => setDraggingDashboard(false)}
