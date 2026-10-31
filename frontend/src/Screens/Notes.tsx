@@ -1,5 +1,5 @@
 import React, { ChangeEvent, SetStateAction, useEffect, useState } from "react"
-import { Entry, EntryCompletion, Note, Tag } from "../Classes"
+import { Entry, EntryCompletion, EntryPriority, Note, Tag } from "../Classes"
 import { Client } from "../Client"
 import "./Notes.css"
 
@@ -406,7 +406,7 @@ export function NoteJSX({note, updateNotes, setContextMenu, client, searchFunc}:
                 ...note,
                 entries: note.entries.map(entry => 
                     entry.entry_id == entryId ?
-                        { ...entry, priority: clamp(entry.priority + change, 0, 3) }
+                        { ...entry, priority: clamp(entry.priority + change, EntryPriority.Low, EntryPriority.Critical) }
                         : entry
                 ) 
             }))
@@ -554,13 +554,13 @@ export function NoteJSX({note, updateNotes, setContextMenu, client, searchFunc}:
               
 
                 switch (entry.priority) {
-                  case 0:
+                  case EntryPriority.Low:
                     return "Low"
-                  case 1:
+                  case EntryPriority.Medium:
                     return "Medium"
-                  case 2:
+                  case EntryPriority.High:
                     return "High"
-                  case 3: 
+                  case EntryPriority.Critical: 
                     return "Critical"
                   default:
                     return "Error"

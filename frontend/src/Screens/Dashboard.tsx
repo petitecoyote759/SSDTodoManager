@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Note, EntryCompletion, Tag } from "../Classes"
+import { Note, EntryCompletion, Tag, EntryPriority } from "../Classes"
 import { Client } from "../Client"
 import "./Dashboard.css"
 
@@ -81,19 +81,19 @@ export function Dashboard({ notes, client }: DashboardParams) {
     const priorityData: BarData[] = [
         {
             label: "Low",
-            count: entries.filter(e => e.priority == 0).length,
+            count: entries.filter(e => e.priority == EntryPriority.Low).length,
             colour: "#65b98a"
         },{
             label: "Medium",
-            count: entries.filter(e => e.priority == 1).length,
+            count: entries.filter(e => e.priority == EntryPriority.Medium).length,
             colour: "#d9b65c"
         },{
             label: "High",
-            count: entries.filter(e => e.priority == 2).length,
+            count: entries.filter(e => e.priority == EntryPriority.High).length,
             colour: "#e68b54"
         },{
             label: "Critical",
-            count: entries.filter(e => e.priority == 3).length,
+            count: entries.filter(e => e.priority == EntryPriority.Critical).length,
             colour: "#e45b65"
         },
     ]

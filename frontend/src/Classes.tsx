@@ -69,7 +69,7 @@ export class Entry {
     entry_id: string
     text: string
     description: string
-    priority: number
+    priority: EntryPriority
     due_date: Date | null
     completion: EntryCompletion
     tags: Tag[]
@@ -80,6 +80,12 @@ export enum EntryCompletion {
     InProgress,
     Completed,
     Blocked
+}
+export enum EntryPriority {
+    Low,
+    Medium,
+    High,
+    Critical
 }
 
 
