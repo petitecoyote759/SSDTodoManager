@@ -7,7 +7,7 @@ from psycopg2.extras import register_uuid, Json
 from configparser import ConfigParser
 from pathlib import Path
 import os
-import API.TokenHandler as TokenHandler
+import Handlers.TokenHandler as TokenHandler
 import Handlers.HashHandler as HashHandler
 
 

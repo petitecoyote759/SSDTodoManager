@@ -2,7 +2,7 @@ from API.GlobalApp import app
 from flask import request, abort, jsonify
 from uuid import UUID
 import Handlers.DBHandler as DBHandler
-import API.TokenHandler as TokenHandler
+import Handlers.TokenHandler as TokenHandler
 import Settings
 
 

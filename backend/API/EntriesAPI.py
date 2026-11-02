@@ -1,6 +1,6 @@
 from API.GlobalApp import app
 from uuid import UUID
-import API.TokenHandler as TokenHandler
+import Handlers.TokenHandler as TokenHandler
 import Handlers.DBHandler as DBHandler
 from flask import request
 from typing import Any

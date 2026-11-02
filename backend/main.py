@@ -1,7 +1,7 @@
 import API.APIHandler
 import API.GlobalApp
 import Handlers.DBHandler as DBHandler
-import API.TokenHandler as TokenHandler
+import Handlers.TokenHandler as TokenHandler
 from uuid import UUID
 
 

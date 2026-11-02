@@ -2,7 +2,7 @@ from API.GlobalApp import app, getRequestJson
 from uuid import UUID
 from flask import request
 import Handlers.DBHandler as DBHandler
-import API.TokenHandler as TokenHandler
+import Handlers.TokenHandler as TokenHandler
 from typing import Any
 
 
