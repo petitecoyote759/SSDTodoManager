@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os, json
 from typing import Any
 from pathlib import Path
+from flask_wtf.csrf import CSRFProtect
 
 
 
@@ -60,5 +61,6 @@ CORS(app,
          }
      },
      supports_credentials=True)
+csrf = CSRFProtect(app)
 
 print(f"Good Key : {Flask.secret_key}")
