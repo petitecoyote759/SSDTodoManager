@@ -12,7 +12,6 @@ _signingKey: str = GlobalApp.private_key
 
 def checkAuthorisation(uuid: UUID) -> tuple[str, int]:
     """Returns ['Success', 200] if authorized, or ['error message', code]"""
-    print("Incoming:", list(request.cookies.keys()))
     token = request.cookies.get("access_token")
     
     if token == None:
@@ -40,8 +39,6 @@ def getUuidFromJwt(token: str) -> UUID | dict[str, str]:
 
 
 def generateUserToken(uuid: UUID):
-    # get sign key from env
-
     now = datetime.datetime.now()
 
     claims = {
@@ -62,7 +59,7 @@ def generateUserToken(uuid: UUID):
 
 def authenticateUser(uuid: UUID, token: str) -> bool:
     """
-    True if that user is who they claim to be
+    True if that user is who they claim to be and the token is not expired
     """
 
     decodedToken: dict[str, Any]

@@ -60,5 +60,3 @@ CORS(app,
          }
      },
      supports_credentials=True)
-
-print(f"Good Key : {Flask.secret_key}")
