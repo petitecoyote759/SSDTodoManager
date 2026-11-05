@@ -1,5 +1,5 @@
 from API.GlobalApp import app
-from flask import request, abort, jsonify
+from flask import request, abort, jsonify, session
 from uuid import UUID
 import Handlers.DBHandler as DBHandler
 import Handlers.TokenHandler as TokenHandler
@@ -65,6 +65,8 @@ def loginUser():
 @app.route("/api/user/auth", methods=['GET'])
 def getCurrentUser():
     token = request.cookies.get("access_token")
+
+    print(session.get('csrf_token'))
 
     if token == None:
         return {"error": "Missing token"}, 400

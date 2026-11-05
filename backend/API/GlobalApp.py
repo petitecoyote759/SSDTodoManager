@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, session
 from flask_cors import CORS
 import os, json
 from typing import Any
@@ -8,15 +8,14 @@ from flask_wtf.csrf import CSRFProtect
 
 
 
-def _getPrivateKey():
+def _getPrivateKeys():
 
-    sep = os.sep
     with open(Path(__file__).parent.parent / ".env") as file:
         text = file.read()
     data = json.loads(text)
-    return data["privateKey"]
+    return data["signingKey"], data["privateKey"]
 
-private_key = _getPrivateKey()
+signingKey, privateKey = _getPrivateKeys()
 
 
 
@@ -61,4 +60,7 @@ CORS(app,
          }
      },
      supports_credentials=True)
+
+
+app.secret_key = privateKey
 csrf = CSRFProtect(app)

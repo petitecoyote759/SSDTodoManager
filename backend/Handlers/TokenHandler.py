@@ -5,7 +5,7 @@ from typing import Any
 from flask import request
 
 
-_signingKey: str = GlobalApp.private_key
+_signingKey: str = GlobalApp.signingKey
 
 
 
