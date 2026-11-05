@@ -1,9 +1,10 @@
-from API.GlobalApp import app
+from API.GlobalApp import app, csrf
 from flask import request, abort, jsonify, session
 from uuid import UUID
 import Handlers.DBHandler as DBHandler
 import Handlers.TokenHandler as TokenHandler
 import Settings
+from flask_wtf.csrf import generate_csrf
 
 
 
@@ -63,25 +64,43 @@ def loginUser():
 
 
 @app.route("/api/user/auth", methods=['GET'])
-def getCurrentUser():
+@csrf.exempt
+def initAuthentication():
+    response = None
+
     token = request.cookies.get("access_token")
 
-    print(session.get('csrf_token'))
-
     if token == None:
-        return {"error": "Missing token"}, 400
+        response = jsonify({"error": "Missing token"}), 400
 
-    result = TokenHandler.getUuidFromJwt(token)
+    else:
+        result = TokenHandler.getUuidFromJwt(token)
 
-    if isinstance(result, dict):
-        return result, 400 # actually error code
+        if isinstance(result, dict):
+            return result, 400 # actually error code
+        
+        uuid: UUID = result
+
+        if TokenHandler.authenticateUser(uuid, token) == False:
+            response = jsonify({"error": "Invalid token"}), 401
+
+
+    # CSRF Token
+    csrf_token = generate_csrf()
+
+    if response == None:
+        response = jsonify({"uuid": str(uuid)}), 200
+
+    response[0].set_cookie(
+        "csrf_token", 
+        csrf_token,
+        httponly=False,
+        secure=False, # True in production
+        samesite="Lax",
+        path="/")
     
-    uuid: UUID = result
 
-    if TokenHandler.authenticateUser(uuid, token) == False:
-        return {"error": "Invalid token"}, 401
-
-    return {"uuid": str(uuid)}, 200
+    return response
 
 
 

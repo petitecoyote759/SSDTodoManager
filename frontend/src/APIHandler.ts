@@ -11,6 +11,26 @@ const url = "http://localhost:5000"
 
 
 
+function getCsrfToken(): string | null {
+    const cookie = document.cookie
+        .split("; ")
+        .find(row => row.startsWith("csrf_token="));
+
+    return cookie
+        ? decodeURIComponent(cookie.substring("csrf_token=".length))
+        : null;
+}
+function csrfHeaders(): HeadersInit {
+    const csrfToken = getCsrfToken();
+
+    return {
+        "X-CSRF-Token": csrfToken ?? ""
+    }
+}
+
+
+
+
 
 
 
@@ -19,11 +39,12 @@ export async function checkCurrentUser() {
     try {
         response = await fetch(`${url}/api/user/auth`, {
             method: "GET",
-            credentials: "include"
+            credentials: "include",
+            ...csrfHeaders()
         });
 
         if (!response.ok) {
-            console.log(`checkCurrentUser errored, response - ${await response.text()}`)
+            console.log(`checkCurrentUser errored, response - ${await response.text()}, CSRF = ${getCsrfToken()}`)
             return null;
         }
 
@@ -33,6 +54,8 @@ export async function checkCurrentUser() {
         console.error("Session check failed:", e)
         return null
     }
+
+    console.log(`CSRF Initialised : ${getCsrfToken() != null}`)
 }
 
 
@@ -42,7 +65,8 @@ export async function logout() {
     await fetch(`${url}/api/users/logout`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            ...csrfHeaders()
         },
         credentials: "include"
     })
@@ -59,7 +83,8 @@ export async function login(email: string, password: string): Promise<string | n
         response = await fetch(`${url}/api/users/login`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                ...csrfHeaders()
             },
             credentials: "include",
             body: JSON.stringify(loginData)
@@ -93,7 +118,8 @@ export async function createUser(username: string, email: string, password: stri
         response = await fetch(`${url}/api/users/signup`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                ...csrfHeaders()
             },
             credentials: "include",
             body: JSON.stringify(createData)
@@ -126,6 +152,7 @@ export async function getUserData(uuid: string) {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
+            ...csrfHeaders()
         },
         credentials: "include"
     });
@@ -157,7 +184,8 @@ export async function getUserBooks(uuid: string) {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "recursive": "true"
+            "recursive": "true",
+            ...csrfHeaders()
         },
         credentials: "include"
     });
@@ -218,7 +246,8 @@ export async function getUsersTags(uuid: string) {
     const response = await fetch(`${url}/api/users/${uuid}/tags`, {
         method: 'GET',
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            ...csrfHeaders()
         },
         credentials: "include"
     })
@@ -250,7 +279,8 @@ export async function saveBooks(uuid: string, books: Record<string, Book[]>) {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            "recursive": "true"
+            "recursive": "true",
+            ...csrfHeaders()
         },
         body: JSON.stringify(books),
         credentials: "include"
@@ -263,6 +293,7 @@ export async function saveTags(uuid: string, tags: Record<string, Tag[]>) {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
+            ...csrfHeaders()
         },
         credentials: "include",
         body: JSON.stringify(tags)

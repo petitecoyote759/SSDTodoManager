@@ -25,6 +25,7 @@ export class Client {
     tags: Tag[]
 
 
+
     static async createClient(email: string, password: string) {
         
         var result = await login(email, password)
