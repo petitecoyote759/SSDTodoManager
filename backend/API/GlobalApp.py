@@ -62,5 +62,3 @@ CORS(app,
      },
      supports_credentials=True)
 csrf = CSRFProtect(app)
-
-print(f"Good Key : {Flask.secret_key}")
