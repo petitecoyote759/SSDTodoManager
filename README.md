@@ -2,7 +2,12 @@
 
 ## Requirements
 ### Frontend
-To run the frontend you will need npm, and to install required packages run npm install in ```/ssd-todo-5724102/frontend```. To run in a development environment, run 
+To run the frontend you will need npm, and to install required packages run:
+```bash
+npm install
+``` 
+in ```/ssd-todo-5724102/frontend```. To run in a development environment, run 
+
 ```bash
 $ npm run dev
  ```
@@ -37,6 +42,7 @@ This program requires a .env in json format, an example is given in example.env,
 	"signingKey": "aswaewrgaergsdfghdfxghdfthdfthfthfthththt"
 }
 ```
+Either create a file at `/ssd-todo-5724102/backend/.env`, or rename `example.env` to `.env`.
 
 
 #### PostgreSQL
@@ -46,14 +52,23 @@ To setup PostgreSQL, you will need to setup a database, and set that database na
 
 To create a database on Linux, use the psql tool.
 ```bash
-$ sudo -u postgres psql -c "CREATE DATABASE databaseName;"
+$ sudo -u postgres psql -c "CREATE DATABASE databasename;"
 ```
+Note that the database name will become all lowercase on creation.
 
 To create the database on windows, you can use the command line by going to the program files or by using pgAdmin 4. To create it using the command line, go to `C:\Program Files\PostgreSQL\18\bin` (it may be a different number than 18, if it errors check that). Then run 
 ```bash
-$ psql -U postgres -c "CREATE DATABASE databaseName;"
+$ psql -U postgres -c "CREATE DATABASE databasename;"
 ```
+Note that the database name will become all lowercase on creation.
+
 If this doesn't work, use pgAdmin 4, and navigate to `Servers/PostgreSQL 18/Databases`, right click Databases and click Create->Database. Input a name in 'Database', and press Save.
+
+
+Once setup, ensure that your `/ssd-todo-5724102/backend/config/database.ini` is updated with your information and database name.
+
+
+
 
 #### Running
 To run the backend, in `/ssd-todo-5724102/backend/` run 
