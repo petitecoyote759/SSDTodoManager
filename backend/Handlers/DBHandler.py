@@ -6,8 +6,9 @@ from psycopg2.extensions import connection, cursor
 from psycopg2.extras import register_uuid, Json
 from configparser import ConfigParser
 from pathlib import Path
-import os
+import os, sys
 import Handlers.TokenHandler as TokenHandler
+import random
 import Handlers.HashHandler as HashHandler
 
 
@@ -91,7 +92,6 @@ class Database:
 
         else:
             print("Tables already exist, skipping setup")
-            print(f"{tableExists}")
 
 
 
@@ -234,8 +234,9 @@ def modifyUser(uuid: UUID, data: dict[str, str]) -> dict[str, str]:
             except UniqueViolation:
                 return {"error": f"email '{data['email']}' has already been registered"}
             except Exception as e:
-                print(f"error in account creation, error: {e}")
-                return {"error": f"unknown error in insert, message = '{type(e)}'"}
+                tag = random.randint(0, sys.maxsize)
+                print(f"error in account creation. Tag = {tag}, error: {e}")
+                return {"error": f"unknown error in insert, tag = {tag}"}
 
     return {}
             
@@ -274,11 +275,12 @@ def createUser(data: dict[str, Any]) -> dict[str, str]:
         """, (username, email, HashHandler.generateHash(password), profilePicture))
     except UniqueViolation:
         database.conn.rollback()
-        return {"error": f"email '{email}' has already been registered"} # should be replaced by confirm via email to prevent fuzzing
+        return {"error": f"email '{email}' has already been registered"} # should be replaced by confirm via email to prevent enumeration
     except Exception as e:
         database.conn.rollback()
-        print(f"error in account creation, error: {e}")
-        return {"error": f"unknown error in insert, type = '{type(e)}'"}
+        tag = random.randint(0, sys.maxsize)
+        print(f"error in account creation. Tag = {tag} error: {e}")
+        return {"error": f"unknown error in insert, tag = {tag}"}
 
     database.conn.commit()
 
@@ -286,8 +288,9 @@ def createUser(data: dict[str, Any]) -> dict[str, str]:
     # Create JWT
     value = database.cur.fetchone()
     if value == None:
-        print(f"Something went wrong with creation, data was \'{data}\'")
-        return {"error": "Unkown issue"}
+        tag = random.randint(0, sys.maxsize)
+        print(f"Something went wrong with creation, tag = {tag}, data was \'{data}\'")
+        return {"error": f"Unkown issue with tag = {tag}"}
 
     token = TokenHandler.generateUserToken(value[0])
 
@@ -819,7 +822,6 @@ def getTags(uuid: UUID):
 
 def updateTags(uuid: UUID, tags: dict[str, Any]):
 
-    print(tags)
     # Adding is done by updating books, but will also happen here
     database.executeQuery("""
     INSERT INTO public.users_tags (tag_id, user_id, colour, name)

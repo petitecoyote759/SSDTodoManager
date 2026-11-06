@@ -64,3 +64,7 @@ CORS(app,
 
 app.secret_key = privateKey
 csrf = CSRFProtect(app)
+
+
+def run():
+    app.run(host='0.0.0.0', port=5000, debug=True)

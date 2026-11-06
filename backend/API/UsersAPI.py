@@ -119,7 +119,6 @@ def createUser():
     result = DBHandler.createUser(data)
 
     if "error" in result:
-        print(f"E - {result["error"]}")
         return f"error during user creation.", 400
 
     return {"message": "success"}, 201
