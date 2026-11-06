@@ -235,6 +235,17 @@
 
 
 
+.login-failed-text {
+    text-align: center;
+    
+    color: rgb(247, 80, 80);
+    
+    font-weight: 400;
+    font-size: 8;
+}
+
+
+
 
 
 .login-footer {

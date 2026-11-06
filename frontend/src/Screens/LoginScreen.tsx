@@ -11,11 +11,13 @@ type loginFormParams = {
     loading: boolean,
     handleSubmitLogin: (event: Parameters<NonNullable<React.ComponentProps<"form">["onSubmit"]>>[0]) => void,
     setRegister: React.Dispatch<React.SetStateAction<boolean>>,
+
+    loginFailed: boolean,
 }
 
 
 
-function LoginForm({email, setEmail, password, setPassword, loading, handleSubmitLogin, setRegister}: loginFormParams) {
+function LoginForm({email, setEmail, password, setPassword, loading, handleSubmitLogin, setRegister, loginFailed}: loginFormParams) {
 
     return (
         <div className="login-form-content">
@@ -58,6 +60,10 @@ function LoginForm({email, setEmail, password, setPassword, loading, handleSubmi
                 </button>
 
             </form>
+
+            {loginFailed && (
+                <span className="login-failed-text"><i>Login Failed.</i></span>
+            )}
 
 
 
@@ -175,6 +181,7 @@ export function LoginScreen({ setClient }: LoginScreenParams) {
     const [loading, setLoading] = useState<boolean>(false)
     const [register, setRegister] = useState<boolean>(false)
 
+    const [loginFailed, setLoginFailed] = useState<boolean>(false)
 
 
     async function handleSubmitLogin(event: Parameters<NonNullable<React.ComponentProps<"form">["onSubmit"]>>[0]) {
@@ -188,6 +195,7 @@ export function LoginScreen({ setClient }: LoginScreenParams) {
         if (client == null) 
         {
             console.log(`Unsuccessful login.`) 
+            setLoginFailed(true)
             setLoading(false); return; 
         }
 
@@ -259,7 +267,7 @@ export function LoginScreen({ setClient }: LoginScreenParams) {
                     else {
                         return <LoginForm
                             email={email} setEmail={setEmail} password={password} setPassword={setPassword}
-                            loading={loading} handleSubmitLogin={handleSubmitLogin} setRegister={setRegister}
+                            loading={loading} handleSubmitLogin={handleSubmitLogin} setRegister={setRegister} loginFailed={loginFailed}
                         />
                     }
                     })()}
