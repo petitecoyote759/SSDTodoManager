@@ -1,0 +1,16 @@
+% <<<Definition Command>>> %
+\newcommand{\Variable}[2]{%
+  \expandafter\newcommand\csname #1\endcsname{#2}%
+}
+
+% Create variables via \Variable{variableName}{variableValue}
+% Then access via \variableName
+% You cant have it be the same as a command that exists though
+% But thats normal, just like functions in any other language
+
+% <<<Variables>>> %
+
+\Variable{CompanyName}{TaskFlow Solutions}
+\Variable{CurrentDate}{18th of November, 2026}
+\Variable{ReportTitle}{Todo List Full-Stack Application}
+\Variable{Author}{5724102}

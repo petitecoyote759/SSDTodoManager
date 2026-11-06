@@ -1,0 +1,98 @@
+\begin{longtable}{|p{1.5cm}|p{4.5cm}|p{8cm}|}
+     \hline
+
+    \hline
+    \textbf{ID} &
+    \textbf{Name} & 
+    \textbf{Description} \\ \hline
+    \endhead
+
+    TB1 & External Environment & The internet \\ \hline
+    TB2 & Server & The server running the service \\ \hline
+    TB3 & Database & The PostgreSQL database. \\ \hline
+    
+
+
+    E1 & User & User Client. \\ \hline
+    
+    P1 & Flask API & API handler. \\ \hline
+    P2 & Authentication & Handles user authentication and token management. \\ \hline
+    P3 & User Management & Handles Users. \\ \hline
+    P4 & Book Management & Handles Books. \\ \hline
+    
+    D1 & Users Table & Contains user information. \\ \hline
+    D2 & Books Table & Contains books. \\ \hline
+    D3 & Secret Variables (.env) & Contains environment variables. \\ \hline
+
+    \caption{DFD Elements}
+    \label{tab:dfdElements}
+
+\end{longtable}
+
+
+
+
+
+
+
+
+
+\begin{longtable}{|p{2cm}|p{1.4cm}|p{5.6cm}|p{5cm}|}
+    \hline
+
+    \textbf{STRIDE Category} &
+    \textbf{Affected ID} &
+    \textbf{Threat} &
+    \textbf{Mitigation} \\
+    \hline
+    \endfirsthead
+
+    \hline
+    \textbf{STRIDE Category} &
+    \textbf{Affected IDs} &
+    \textbf{Threat} &
+    \textbf{Mitigation} \\
+    \hline
+    \endhead
+
+    Spoofing & E1, P2 &
+    Impersonation of a legitimate user via stolen or forged credentials &
+    Ensure cookies are HTTP-Only, ensure JWTs are valid, ensure JWTs expire \\ \hline
+    
+    Tampering & P1 &
+    Modification of requests to manipulate application behaviour &
+    Validate users are authorised to access material. \\ \hline
+    
+    Tampering & E1 &
+    Bypassing client side validation &
+    Ensure authorisation occurs server side. \\ \hline
+    
+    Tampering & P3, D2 &
+    Modification of user records to gain authorisation &
+    Use minimal database permissions, use server side authorisation \\ \hline
+    
+    Tampering & P2 &
+    Tampering with JWT contents to alter claims &
+    Verify JWT signatures using secure algorithm \\ \hline
+    
+    Information Disclosure & P1 &
+    Internal errors are exposed through API request &
+    Return generic error messages. \\ \hline
+    
+    Information Disclosure & P2 &
+    JWTs or credentials are exposed through insecure communication &
+    Ensure HTTPS is enabled, use secure and HTTPOnly cookies. \\ \hline
+    
+    Information Disclosure & D3 &
+    Environment variables accessed, containing secret information like signing keys &
+    Exclude .env from git, use a secrets manager \\ \hline
+
+    
+
+
+
+    
+    \caption{STRIDE Threat Assessment}
+    \label{tab:stride}   
+    
+\end{longtable}

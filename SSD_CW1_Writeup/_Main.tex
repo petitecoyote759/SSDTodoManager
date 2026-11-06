@@ -1,0 +1,35 @@
+\documentclass{article}
+
+% Starting usings etc...
+
+%TC:ignore
+\input{Variables}
+\input{preamble}
+
+\begin{document}
+
+% Title
+\input{Sections/Title}
+
+\thispagestyle{empty} % No footers or headers for ToC
+\tableofcontents
+\newpage
+%TC:endignore
+
+\input{Sections/SecureDesign}
+\input{Sections/Implementation}
+\input{Sections/Evidence}
+\input{Sections/CriticalReflection}
+\vspace{30pt}
+\clearpage
+%TC:ignore
+\begin{appendices}
+\input{Sections/Appendix}
+\end{appendices}
+%TC:endignore
+\end{document}
+
+
+% TODO:
+
+% Thorough testing on new machines

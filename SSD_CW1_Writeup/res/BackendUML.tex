@@ -1,0 +1,156 @@
+\begin{figure}[htbp]
+    \centering
+
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}[
+        endpoint/.style={
+            draw,
+            rounded corners,
+            thick,
+            fill=white,
+            align=left,
+            text width=5cm,
+            inner sep=6pt,
+            font=\small
+        },
+        api/.style={
+            draw,
+            rounded corners,
+            thick,
+            fill=blue!5,
+            inner sep=14pt
+        },
+        api title/.style={
+            font=\bfseries\large,
+            anchor=west
+        },
+        outer/.style={
+            draw,
+            rounded corners,
+            very thick,
+            fill=gray!8,
+            inner sep=15pt
+        },
+        outer title/.style={
+            font=\bfseries\Large,
+            anchor=west
+        }
+    ]
+
+    % <<Users API>> %
+
+    \node[endpoint] (login) {
+        \textbf{loginUser()}\\
+        POST /api/users/login\\
+        Parameters: email, password
+    };
+    
+    \node[endpoint, below=3pt of login] (logout) {
+        \textbf{logoutUser()}\\
+        POST /api/users/logout\\
+        Parameters: None
+    };
+
+    \node[endpoint, below=3pt of logout] (auth) {
+        \textbf{getCurrentUser()}\\
+        GET /api/user/auth\\
+        Parameters: access\_token cookie
+    };
+
+    \node[endpoint, below=3pt of auth] (signup) {
+        \textbf{createUser()}\\
+        POST /api/users/signup\\
+        Parameters: username, email, password
+    };
+
+    \node[endpoint, below=3pt of signup] (deleteuser) {
+        \textbf{deleteUser()}\\
+        DELETE /api/users/\{uuid\}\\
+        Parameters: uuid (URL)
+    };
+
+    \node[endpoint, below=3pt of deleteuser] (getuser) {
+        \textbf{getUserInfo()}\\
+        GET /api/users/\{uuid\}\\
+        Parameters: uuid (URL)
+    };
+
+    \node[endpoint, below=3pt of getuser] (modifyuser) {
+        \textbf{modifyUser()}\\
+        PUT /api/users/\{uuid\}\\
+        Parameters: uuid (URL), username/email/profile\_picture
+    };
+
+    \begin{scope}[on background layer]
+    \node[api, fit=(login)(logout)(auth)(signup)
+        (deleteuser)(getuser)(modifyuser)] (users) {};
+    \end{scope}
+
+    \node[api title] at (users.north west)
+        [xshift=5pt, yshift=-5pt] {Users API};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+    % <<Books API>> %
+
+    \node[endpoint, right=1pt of login] (createbook) {
+        \textbf{createBook()}\\
+        POST /api/users/\{uuid\}/books\\
+        Parameters: uuid (URL), name
+    };
+
+    \node[endpoint, below=3pt of createbook] (getbooks) {
+        \textbf{getBooks()}\\
+        GET /api/users/\{uuid\}/books\\
+        Parameters: uuid (URL), recursive (header)
+    };
+
+    \node[endpoint, below=3pt of getbooks] (deletebook) {
+        \textbf{deleteBook()}\\
+        DELETE /api/users/\{uuid\}/books/\{buid\}\\
+        Parameters: uuid, buid (URL)
+    };
+
+    \node[endpoint, below=3pt of deletebook] (modifybook) {
+        \textbf{modifyBook()}\\
+        PUT /api/users/\{uuid\}/books/\{buid\}\\
+        Parameters: uuid, buid (URL), name
+    };
+
+    \node[endpoint, below=3pt of modifybook] (modifybooks) {
+        \textbf{modifyBooks()}\\
+        PUT /api/users/\{uuid\}/books/\{buid\}\\
+        Parameters: uuid, buid (URL), books (JSON)
+    };
+    
+
+    \begin{scope}[on background layer]
+    \node[api, fit=(createbook)(getbooks)(deletebook)(modifybook)(modifybooks)] (books) {};
+    \end{scope}
+
+    \node[api title] at (books.north west)
+        [xshift=5pt, yshift=-5pt] {Books API};
+    
+
+
+    
+        
+    \end{tikzpicture}%
+    }
+    
+    \caption{Caption}
+    \label{fig:placeholder}
+\end{figure}

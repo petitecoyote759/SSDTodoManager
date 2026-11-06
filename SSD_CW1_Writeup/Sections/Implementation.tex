@@ -1,0 +1,88 @@
+
+\newpage
+\section{Implementation}
+
+\subsection{Primary Requirements}
+\subsubsection{Task Status}
+Task status' represent the progress of a given task, with values consisting of \textit{Not Started}, \textit{In Progress}, \textit{Completed}, or \textit{Blocked}.
+These are implemented using an Enum, which will contain the set of possible values, improving consistency and readability in the codebase.
+
+In the database, the Enum is stored as a \verb|smallint|, this more compact integer allows for expansion of the possible values while keeping memory costs low. 
+
+The user modifies a tasks status by changing it in a drop-down menu as there is a set list of possible values.
+The status is shown as a coloured circle with a tooltip of the status name so that users can quickly see a tasks current status.
+
+
+\subsubsection{Task Priority}
+Task priority represent how important a given task is, with values consisting of \textit{Low}, \textit{Medium}, \textit{High}, or \textit{Critical}.
+These are implemented using an Enum, which contains a set of all possible values, for the same reasons as status.
+
+In the database, this will also be saved as \verb|smallint|s, which again allow for expansion while reducing storage load.
+
+The user can select priority by either setting it in task creation, or by changing it while editing the task.
+
+
+
+\subsubsection{Task Descriptions}
+Task descriptions are stored as a PostgreSQL \verb|text| field to be able to handle variable length user input. Users can create and edit descriptions.
+
+
+\subsection{Organizational Features}
+\subsubsection{Task Tags}
+Task tags allow the user to give different entries categories, which can be used to quickly see which tasks are of a certain category when paired with searching.
+
+These tags are stored in a table, with a \verb|varchar(255)| for the name, and a \verb|varchar(31)| for the colour.
+
+The tags can be created and applied when the tag is being edited.
+
+
+\subsubsection{Dashboard}
+The dashboard allows the user to see how many entries there are, broken down by priority, completion, or by tag. This is done per book.
+
+
+
+\subsection{Authentication and Security}
+
+\subsubsection{User Login}
+Users are able to login to the system by sending their email and password to the server, where it checks that the password matches and on success returns a cookie containing the JWT that allows the user to access their notes. 
+
+\subsubsection{Secure Password Handling}
+
+Passwords are stored with Argon2 hashes instead of plaintext to prevent password leaks in a data breach. Argon2 is a slow hashing algorithm, making brute force attacks computationally expensive.
+
+\subsubsection{Session and Token Management}
+
+Upon login, users receive a cookie containing a JWT with their UUID and expiry date. When accessing data the server validates the token to verify authentication, authorisation, and no expiry date.
+
+The cookie is HTTP only, preventing JavaScript access and reducing risk of token theft, however this does not stop all cross site attacks. CSRF protection is implemented via a CSRF token, validated by Flask-WTF.
+
+Tokens expire after 24 hours, a duration configurable in the settings file. This limits an attackers duration in an account after stealing their token.
+
+\subsubsection{Enumeration Prevention}
+To prevent username enumeration, the server returns an error 401 on unauthorized access and on attempt to access a user that does not exist, as if a 404 was returned the user could know if that user exists.
+
+\subsubsection{HTTPS}
+HTTPS is currently disabled while on a testing server, however once this server is put into production HTTPS must be enabled to ensure no man in the middle attacks occur on the users passwords.
+
+\subsection{Implementation Quality}
+
+\subsubsection{Input Validation and Error Handling}
+Inputs are validated across the frontend, backend, and data management layers.
+
+The database handler wraps queries in try/except blocks, returning only safe, predictable responses to the backend. This prevents revealing information about the application through internal database errors.
+
+\subsubsection{Database Management}
+The database is managed by "\textit{DatabaseHandler.py}", which acts as an abstraction layer between the backend and PostgreSQL, improving backend readability and allowing database changes with minimal changes to other sections of code.
+
+\subsubsection{Code Organisation and Maintainability}
+The code for this application has been properly separated into individual sections, including the API, which has been split up into each type of endpoint, and the database, which has its own handler.
+
+This will improve modularity and improve maintainability as the code is more readable.
+
+
+
+
+
+
+
+

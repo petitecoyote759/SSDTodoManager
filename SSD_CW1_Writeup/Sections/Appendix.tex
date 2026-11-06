@@ -1,0 +1,71 @@
+
+
+
+
+
+
+
+
+
+
+
+\section{GitLab Commit History}
+
+
+
+\arrayrulecolor{dividergray}
+
+\newcommand{\GitCommitEntry}[3]{%
+    \rowcolor{rowgray}%
+    \raisebox{\baselineskip}[0pt][0pt]{\hypertarget{#3}{}}%
+    #1 & \texttt{#2} \\ \hline
+}
+
+
+
+
+\begin{longtable}{
+    >{\raggedright\arraybackslash}p{0.76\textwidth}
+    >{\centering\arraybackslash}p{0.18\textwidth}
+    }
+    
+    \label{app:git-commits} \\
+    
+    \rowcolor{headerblue}
+    \color{white}\textbf{Commit Message} &
+    \color{white}\textbf{Commit ID} \\
+    
+    \endfirsthead
+    
+    \rowcolor{headerblue}
+    \color{white}\textbf{Commit Message} &
+    \color{white}\textbf{Commit ID} \\
+    
+    \endhead
+    
+    \midrule
+    \multicolumn{2}{r}{\small\textcolor{textgray}{Continued on the next page}}\\
+    \endfoot
+    
+    \endlastfoot
+    
+    \input{res/CommitHistory} \\
+    
+    \caption{GitLab Commit Reference}
+
+\end{longtable}
+
+
+
+
+
+
+
+\section{Repository}
+
+To access code, go to '\verb|https://git-lab.cyber.warwick.ac.uk/shortstuff/ssd-todo-5724102|' or clone via '\verb|https://git-lab.cyber.warwick.ac.uk/shortstuff/ssd-todo-5724102.git|'
+
+
+\section{AI Statement}
+
+No AI tools were used in this project.

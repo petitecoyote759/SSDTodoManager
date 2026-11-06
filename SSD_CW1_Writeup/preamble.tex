@@ -1,0 +1,114 @@
+% <<<Misc>>> %
+\usepackage[a4paper,margin=1in]{geometry} % Page margin setup
+\usepackage{graphicx} % Required for inserting images
+\usepackage[toc,page]{appendix} % Appendix package
+\usepackage{float}
+\usepackage[toc]{glossaries}
+\usepackage{nameref} 
+\usepackage[hypcap=true]{caption} % fixes figure reference clicking
+
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    breaklines=true,
+    columns=fullflexible,
+    mathescape=false
+}
+
+
+
+% <<<Fonts>>> %
+\usepackage{lmodern}
+
+
+
+% <<<Colours>>> %
+% used for tables
+\usepackage{xcolor}
+\newcommand{\definecolour}[3]{\definecolor{#1}{#2}{#3}} % remap cause colour
+\definecolor{headerblue}{HTML}{243B53}
+\definecolor{dividergray}{HTML}{D9E0E6}
+\definecolor{rowgray}{HTML}{F2F5F8}
+\definecolor{textgray}{HTML}{52616B}
+
+
+
+
+% <<<Tables>>> %
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit, backgrounds}
+
+\renewcommand{\arraystretch}{1.2}
+
+\setlength{\LTpre}{6pt}
+\setlength{\LTpost}{6pt}
+
+
+
+
+% <<<Links>>> %
+\usepackage[hidelinks]{hyperref}
+
+
+
+% <<<Better Spacing>>> %
+\usepackage{setspace}
+\setstretch{1.12}
+
+
+
+% <<<Page Headings>>> %
+\usepackage{fancyhdr}
+\usepackage{extramarks}
+\pagestyle{fancy}
+
+\fancyhf{} % clears previous
+
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}{}} % removes full caps
+\renewcommand{\subsectionmark}[1]{} % Ignore subsections
+
+
+%\fancyhead[L]{\includegraphics[height=0.4cm]{Images/logo.jpg}}
+%\fancyhead[L]{\textcolor{gray}{\nouppercase{\rightmark}}}
+\fancyhead[L]{\textcolor{gray}{\ReportTitle}}
+\fancyhead[R]{\textcolor{gray}{\CurrentDate}}
+
+\fancyfoot[L]{\textcolor{gray}{Confidential}}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{\textcolor{gray}{\Author}}
+
+
+
+% <<<Counters>>> %
+\newcounter{method}
+\renewcommand{\themethod}{M.\arabic{method}}
+
+\newcounter{appendixItem}
+\renewcommand{\theappendixItem}{A.\arabic{appendixItem}}
+
+
+
+% <<< Custom Commands>>> %
+
+
+\newcommand{\note}[1]{%
+\textcolor{gray}{#1}%
+}
+% Remove Notes
+% \renewcommand{\note}[1]{}
+
+\newcommand{\refcommit}[1]{%
+    \hyperlink{git:#1}{\texttt{#1}}%
+}
+
+
+
+\newcommand{\figref}[1]{\hyperref[#1]{Figure \ref*{#1}}}

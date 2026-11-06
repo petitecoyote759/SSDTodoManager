@@ -1,0 +1,67 @@
+
+
+\clearpage
+\section{Critical Reflection}
+
+
+\subsection{Agile Planning} % 100 words?
+% How did you organise your development?
+
+This application was developed using incremental development, allowing for features to be focused on individually, leading to a more modular structure. Each feature was initially a git issue, it was planned out, developed, and tested. This is seen in several commits such as: 
+\begin{itemize}
+    \itemsep0em
+    \item \refcommit{23ad6bfd} - 'Added REST API plan'
+    \item \refcommit{7a042224} - 'Added database design'
+    \item \refcommit{4b652dfa} - 'Added login screen functionality'
+    \item \refcommit{828cc627} - 'Added searching for tags and description'
+    \item \refcommit{9e4d6b0c} - 'Fixed priority moving bug'
+\end{itemize}
+
+The implemented features were chosen to improve user experience, with several organizational features. Other features were chosen to improve security, such as secure password handling and a secure login system.
+
+However, incremental development can cause a lack of a holistic view, leading to poor integration between components.
+
+
+\subsection{Comparison of Security Approaches} % 150 words?
+
+% A) compare frontend validation vs backend validation
+During development there were two approaches to validation: Frontend vs Backend. Frontend validation reduces server load, as invalid requests are never sent, it also gives immediate feedback. However, frontend validation can be bypassed so it is not a trusted security boundary. Backend validation requires server side processing, however it can't be avoided. 
+
+Backend validation was selected as the primary validation system, with frontend validation providing additional non-security benefits.\noindent\vspace{20pt}\\%
+%
+%
+% B) JWT authentication vs server-side sessions
+Another decision required during development was JWT authentication vs server side sessions.
+
+JWT authentication allows for stateless authentication. However, token theft needs to be avoided, and revocation is far more difficult than with a server side session.
+
+Sever side sessions require a centralised session handler, session storage, and session management, however session revocation is quick and easy.
+
+JWTs were chosen for this project as they allow for authentication without requiring a query since not database backed checks are required for this application, improving request speed and reducing server load. The 24 hour expiry JWT system trades more expensive revocation for lower server side complexity. However, there are still many benefits of switching to a server side session manager.
+
+
+% Hashing algoirthms?
+
+\subsection{Secure Development Across Lifecycle} % 150 words?
+
+Ensuring user data was protected was a key security requirement, as well as maintaining confidentiality, integrity, and preventing unauthorised access. These requirements influenced the design through principles of separation of concerns, authentication, authorisation, and least privilege.
+
+During implementation, Argon2 password hashing was used to protect stored credentials, HTTPOnly JWT cookies were used to stop JavaScript access to authentication tokens, and parametrised queries were used to prevent SQL injection. These measures satisfied the initial security requirements.
+
+Testing included unauthorised access, token expiry, and invalid inputs, However these checks cannot show that this application has no vulnerabilities, so further and more comprehensive security testing will be required.
+
+
+
+\subsection{Limitations and Future Development} % 150 words?
+
+Currently HTTPS is not enabled, which is a serious security vulnerability allowing man in the middle attacks on login, where passwords are transferred in plaintext, as well as the returning authentication cookie. In production HTTPS should be properly deployed and cookies should have required security configurations.
+
+JWTs cannot be immediately revoked, meaning if a users token is stolen their account is compromised for a maximum of 24 hours. Future development could include server side session management. The cookie also currently does not have Secure enabled, which could enable some attacks to be able to obtain the authentication token.
+
+Currently, limited manual security testing has been used, which does not demonstrate resistance against many other possible malicious attacks. Automated tests and more thorough manual tests could improve confidence and find further vulnerabilities, as automated tests could systematically check inputs to the APIs, and more thorough manual tests could find vulnerabilities not covered by ordinary functional testing.
+
+
+
+
+
+
